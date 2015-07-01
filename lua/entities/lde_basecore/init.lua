@@ -74,7 +74,7 @@ function ENT:LinkConstrained()
 		if (ent and LDE:CheckValid( ent ) )then
 			if (!ent.LDE) then ent.LDE = {} end
 			
-			LDE.HeatSim.SetTemperture(ent,0)
+			LDE.HeatSim.SetTemperature(ent,0)
 			
 			if string.find(ent:GetClass(),"spore") then 
 				continue

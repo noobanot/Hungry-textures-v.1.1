@@ -311,9 +311,9 @@ function LDE:Spawned( ent )
 		end
 		--HeatSimulation Variables
 		ent.LDE.Temperature=0
-		ent:SetNWInt("LDEEntTemp", ent.LDE.Temperature) --Network the current temperture, 0
+		ent:SetNWInt("LDEEntTemp", ent.LDE.Temperature) --Network the current Temperature, 0
 		ent.LDE.MeltingPoint=LDE:CalcHealth(ent)/10
-		ent:SetNWInt("LDEMaxTemp", ent.LDE.MeltingPoint) --Network the max temperture
+		ent:SetNWInt("LDEMaxTemp", ent.LDE.MeltingPoint) --Network the max Temperature
 		ent.LDE.FreezingPoint=(LDE:CalcHealth(ent)/20)*-1
 		ent:SetNWInt("LDEMinTemp", ent.LDE.FreezingPoint)
 		ent.LDE.OverHeating = false

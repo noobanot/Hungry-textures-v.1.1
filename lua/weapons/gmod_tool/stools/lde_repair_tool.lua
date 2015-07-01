@@ -36,7 +36,7 @@ if (SERVER) then
 		if not IsReallyValid(trace) then return end
 		ply:SetNetworkedFloat("ToolHealth", LDE:GetHealth(trace.Entity) or 0)
 		ply:SetNetworkedFloat("ToolMaxHealth", LDE:CalcHealth(trace.Entity) or 0)
-		ply:SetNetworkedFloat("ToolTemp", trace.Entity.LDE.Temperture or 0)
+		ply:SetNetworkedFloat("ToolTemp", trace.Entity.LDE.Temperature or 0)
 		ply:SetNetworkedFloat("ToolMaxTemp", trace.Entity.LDE.MeltingPoint or 0)
 	end
 end
@@ -74,7 +74,7 @@ if CLIENT then
 		local maxtemp = LocalPlayer():GetNWInt( "ToolMaxTemp" )
 		local text = "Health: "..hp
 		local text2 = "MaxHealth: "..maxhealth
-		local text3 = "Temperture: "..math.Round(temp)
+		local text3 = "Temperature: "..math.Round(temp)
 		local text4 = "Melt Point: "..math.Round(maxtemp)
 		
 		local pos = (trace.Entity:LocalToWorld(trace.Entity:OBBCenter())):ToScreen()

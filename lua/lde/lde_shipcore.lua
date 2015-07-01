@@ -94,7 +94,7 @@ LDE.CoreSys.CoreHealth = function(self,Data)
 		if (ent and LDE:CheckValid( ent ) )then
 			if (!ent.LDE) then ent.LDE = {} end
 			
-			LDE.HeatSim.SetTemperture(ent,0)
+			LDE.HeatSim.SetTemperature(ent,0)
 
 			if(!self.PropHealth)then self.PropHealth={} end --Make sure we have the prop health table.		
 			if (!ent.LDEHealth or !ent.LDEMaxMass) then LDE:CalcHealth( ent ) end

@@ -57,7 +57,7 @@ function ENT:CoolNode()
 				if(water>=Rate and Rate>0) then
 					self:ConsumeResource("water", Rate)
 					self:SupplyResource("steam",math.Round(Rate/2.5))
-					LDE.HeatSim.CoolTemperture(v,Rate)
+					LDE.HeatSim.CoolTemperature(v,Rate)
 					--v.LDE.Temperature=v.LDE.Temperature-Rate
 					--v:SetNWInt("LDEEntTemp", v.LDE.Temperature)
 				end

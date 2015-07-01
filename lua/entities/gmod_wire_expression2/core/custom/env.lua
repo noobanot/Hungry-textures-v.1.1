@@ -153,7 +153,7 @@ end
 e2function number entity:getheat()
 	if not IsValid(this) then return 0 end
 	if(not this.LDE)then return 0 end
-	return this.LDE.Temperture or 0
+	return this.LDE.Temperature or 0
 end
 
 e2function number entity:getmaxheat()
@@ -173,12 +173,12 @@ e2function void transferheat(entity ent, entity ent2,amount)
 	if not EnvExp.ValidAction(self, ent, "link") then return void end
 	if not EnvExp.ValidAction(self, ent2, "link") then return void end
 	if(!ent.LDE or !ent2.LDE)then return end
-	if(ent.LDE.Temperture<1)then return end 
-	if(ent.LDE.Temperture<amount)then
-		amount = amount - ent.LDE.Temperture
+	if(ent.LDE.Temperature<1)then return end 
+	if(ent.LDE.Temperature<amount)then
+		amount = amount - ent.LDE.Temperature
 	end
-	ent.LDE.Temperture = ent.LDE.Temperture-amount
-	if(ent.LDE.Temperture<0)then ent.LDE.Temperture=0 end
+	ent.LDE.Temperature = ent.LDE.Temperature-amount
+	if(ent.LDE.Temperature<0)then ent.LDE.Temperature=0 end
 	LDE.HeatSim.ApplyHeat(ent2,amount,0)
 end
 

@@ -109,7 +109,7 @@ function LDE.HeatSim.HeatCheck(Ent)
 	end
 end
 
-function LDE.HeatSim.SetTemperture(Ent,Amount)
+function LDE.HeatSim.SetTemperature(Ent,Amount)
 	Ent.LDE.Temperature=Amount
 	cont = Ent:GetNWInt("LDEEntTemp")
 	if (!cont or cont != Ent.LDE.Temperature) then
@@ -117,12 +117,12 @@ function LDE.HeatSim.SetTemperture(Ent,Amount)
 	end
 end
 
-function LDE.HeatSim.CoolTemperture(Ent,Amount)
-	LDE.HeatSim.SetTemperture(Ent,Ent.LDE.Temperature-(Amount))
+function LDE.HeatSim.CoolTemperature(Ent,Amount)
+	LDE.HeatSim.SetTemperature(Ent,Ent.LDE.Temperature-(Amount))
 end
 
-function LDE.HeatSim.HeatTemperture(Ent,Amount)
-	LDE.HeatSim.SetTemperture(Ent,Ent.LDE.Temperature+(Amount))
+function LDE.HeatSim.HeatTemperature(Ent,Amount)
+	LDE.HeatSim.SetTemperature(Ent,Ent.LDE.Temperature+(Amount))
 end
 
 function LDE.HeatSim.ApplyHeat(Ent,Amount,Spread)
@@ -134,16 +134,16 @@ function LDE.HeatSim.ApplyHeat(Ent,Amount,Spread)
 			HotEnt = Ent
 			Ent = Ent.LDE.Core
 
-			LDE.HeatSim.HeatTemperture(HotEnt,0)
-			--LDE.HeatSim.HeatTemperture(Ent,Amount)
+			LDE.HeatSim.HeatTemperature(HotEnt,0)
+			--LDE.HeatSim.HeatTemperature(Ent,Amount)
 			Ent:ChangeTemp(Amount)
 			
 			WireLib.TriggerOutput( Ent, "Temperature", Ent.LDE.CoreTemp)	
 		else
-			LDE.HeatSim.HeatTemperture(Ent,Amount)
+			LDE.HeatSim.HeatTemperature(Ent,Amount)
 		end
 	else
-		LDE.HeatSim.SetTemperture(Ent,0)--Set the Temperature of the entity.
+		LDE.HeatSim.SetTemperature(Ent,0)--Set the Temperature of the entity.
 	end
 	LDE.HeatSim.HeatCheck(Ent)
 	//end
