@@ -49,6 +49,7 @@ else
 	LoadFile("vgui/HUD.lua",0)
 	
 	function EnvX.SpaceEntity(ent)
+		if not ent or not IsValid(ent) then return end
 		if ent:IsPlayer() then
 			ent:SetGravity( 0.00001 )
 			ent:SetNWBool( "inspace", true )
@@ -72,7 +73,7 @@ else
 				end
 			else
 				local phys = ent:GetPhysicsObject()
-				if phys then
+				if phys and IsValid(phys) then
 					phys:EnableDrag( false )
 					phys:EnableGravity( false )
 				end
