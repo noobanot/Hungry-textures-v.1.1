@@ -165,42 +165,7 @@ if(SERVER)then
 				end
 			end
 		end
-	end
-	
-	--[[----------------------------------------------------
-	Serverside Chat Functions.
-	----------------------------------------------------]]--
-	util.AddNetworkString( "sing_sendcolchat" )
-	
-	function Utl:NotifyPlayers(Source,String,Color)
-		local plys = player.GetAll()
-		for k,v in pairs(plys) do
-			v:SendColorChat(Source,Color,String)
-		end
-	end
-	
-	local meta = FindMetaTable("Player")
-
-	function meta:SendColorChat(nam,col,msg)
-		net.Start("sing_sendcolchat")
-			net.WriteString(nam)
-			net.WriteVector(Vector(col.r,col.g,col.b))
-			net.WriteString(msg)
-		net.Send(self)
-	end
-	
-else
-	--[[----------------------------------------------------
-	ClientSide Chat Handling.
-	----------------------------------------------------]]--
-	net.Receive( "sing_sendcolchat", function( length )
-		local nam = net.ReadString()
-		local vcol = net.ReadVector()
-		local col = Color(vcol.x,vcol.y,vcol.z)
-		local msg = net.ReadString()
-		
-		chat.AddText(unpack({col, nam,Color(255,255,255),": "..msg}))
-	end)
+	end	
 end
 
 --[[----------------------------------------------------

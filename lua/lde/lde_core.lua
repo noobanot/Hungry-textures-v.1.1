@@ -1,21 +1,5 @@
-local function TellPlayers(Text)
-	local plys = player.GetAll()
-	for k,v in pairs(plys) do
-		v:ChatPrint(Text)
-	end
-end
-
---[[
-function LDE:Debug(Message)
-	if(LDE.ChatDebug)then
-		TellPlayers(Message)
-	end
-	if(LDE.ConDebug)then
-		print(Message)
-	end
-	LDE.Utl:Debug("Debug",Message,2)
-end
-]]
+local LDE = LDE
+local Utl = LDE.Utl
 
 --List of models we want to scan clients for.
 LDERequiredModels={
@@ -198,8 +182,35 @@ if(SERVER)then
 	end )
    
 	util.AddNetworkString( "PlyRequestModel" )
+		
+	--[[----------------------------------------------------
+	Serverside Chat Functions.
+	----------------------------------------------------]]--	
+	function Utl:NotifyPlayers(Source,String,Color)
+		local plys = player.GetAll()
+		for k,v in pairs(plys) do
+			v:SendColorChat(Source,Color,String)
+		end
+	end
+	
+	local meta = FindMetaTable("Player")
+
+	function meta:SendColorChat(nam,col,msg)
+		Utl.NetMan.AddData({Name="envx_colorchat",Val=1,Dat={MSG={col,name,Color(255,255,255,255),": "..msg}}},self)
+	end
+	
+	function meta:SendColorChatAdvanced(Dat)
+		Utl.NetMan.AddData({Name="envx_colorchat",Val=1,Dat={MSG=Dat}},self)
+	end
 	
 else
+	--[[----------------------------------------------------
+	ClientSide Chat Handling.
+	----------------------------------------------------]]--
+	Utl:HookNet("envx_colorchat",function(Data)
+		chat.AddText(unpack(data.MSG))
+	end)
+
 	Missing = {}
 	function HasModelPacks()
 		local State = "True"
