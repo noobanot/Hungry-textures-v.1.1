@@ -169,6 +169,10 @@ local maxtemp = 305
 local mino2 = 11
 local maxsize = 512
 function ENT:Regulate()
+	if not self.environment then
+		self.environment = Space()
+	end
+	
 	local temperature = self.environment.temperature or 0
 	local pressure = self.environment.pressure
 	--Msg("Temperature: "..tostring(temperature)..", pressure: " ..tostring(pressure).."\n")
