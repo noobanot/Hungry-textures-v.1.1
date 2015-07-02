@@ -268,9 +268,9 @@ if SERVER then
 			
 			ply.LDETeam = 0
 			if(row)then
-				local Stats = util.JSONToTable(row.Stats or "")
-				local Strings = util.JSONToTable(row.Strings or "")
-				local Unlocks = util.JSONToTable(row.Unlocks or "")
+				local Stats = util.JSONToTable(row.Stats or "") or {}
+				local Strings = util.JSONToTable(row.Strings or "") or {}
+				local Unlocks = util.JSONToTable(row.Unlocks or "") or {}
 				local Str = "Stats: "
 				
 				for i,stat in pairs(Stats) do
