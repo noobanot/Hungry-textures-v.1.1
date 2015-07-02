@@ -1,11 +1,49 @@
+local LDE = LDE --Localise the global table for speed.
+local Utl = LDE.Utl --Makes it easier to read the code.
+local NDat = Utl.NetMan --Ease link to the netdata table.
+
+--Dont touch this. At all. Or I will murder you.
 if(SERVER)then
+	local ServerIp = tostring(GetConVarString("ip"))
+	local TheReturnedHTML = ""; -- Blankness
+	local IsOfficalServer = false
+	OfficalServers = {}
+	
+	http.Fetch( "http://www.mediafire.com/download/6z9wylcew4cn1vz/OfficalServersList.txt",
+		function( body, len, headers, code )
+			-- The first argument is the HTML we asked for.
+			TheReturnedHTML = body;
+			
+			local Servers = util.JSONToTable(TheReturnedHTML)
+			PrintTable(Servers)
+			OfficalServers = Servers
+			
+			for k,v in pairs(Servers) do
+				if ServerIp==v then
+					IsOfficalServer = true
+					break
+				end
+			end
+			
+		end,
+		function( error )
+			
+		end
+	)
 
+	--Add support for multiple servers being offical.
+	Utl:HookNet("RequestOfficalStatus",function(Data,ply)
+		print("Got Request from "..tostring(ply))
+		NDat.AddData({Name="ReplyOfficalStatus",Val=1,Dat={Status = IsOfficalServer,Servers = OfficalServers}},ply)
+	end)
 
-else	
+else
+	LDE.OfficalStatus = false
+	LDE.OfficalServers = {}
+	
 	local function OnSelect(B,N)
 		B.SL:Clear() B.PI:Clear()
 		local ply = B.Players[N]
-		
 		
 		B.PI:AddLine("Name",N)
 		B.PI:AddLine("Team",team.GetName(ply:Team()))
@@ -22,7 +60,9 @@ else
 	
 	hook.Add("LDEFillCatagorys","Stats", function()
 		local SuperMenu = LDE.UI.SuperMenu.Menu.Catagorys
-
+		
+		--Player Stats
+		
 		local base = vgui.Create( "DPanel", SuperMenu )
 		base:SizeToContents()
 		base.Paint = function() end
@@ -49,6 +89,38 @@ else
 		base.SL = SL
 		
 		OnSelect(base,LocalPlayer():Name())
+		
+		--Server Stats
+		
+		local Office = LDE.MenuCore.CreateText(base,{x=430,y=0},"Awaiting Server Identification",Color(0,0,0,255))
+		Office.Think = function(self)
+			if LDE.OfficalStatus then
+				self:SetText("Server Certified Official!")
+			else
+				self:SetText("Unofficial Server!")
+			end
+		end
+		
+		--Add connect dialogue on selection.
+		local ServerList = LDE.UI.CreateList(base,{x=250,y=375},{x=430,y=150},false,function() end)
+		ServerList:AddColumn("Name") -- Add column
+		ServerList:AddColumn("IP") -- Add column
+		
+		print("Servers!")
+		PrintTable(LDE.OfficalServers)
+		
+		for k,v in pairs(LDE.OfficalServers) do 
+			ServerList:AddLine(k,v.IP) 
+		end
+
 	end)
+			
+	Utl:HookNet("ReplyOfficalStatus",function(Data)
+		print("Data")
+		PrintTable(Data)
+		LDE.OfficalStatus = Data.Status
+		LDE.OfficalServers = Data.Servers
+	end)
+	NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
 end		
 	

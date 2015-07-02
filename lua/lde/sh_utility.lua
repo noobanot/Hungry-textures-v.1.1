@@ -88,7 +88,7 @@ function Utl:MakeHook(Name) --Make the hookhook storage.
 		local Func = function(a1,a2,a3,a4,a5)
 			Utl:RunHooks(Name,a1,a2,a3,a4,a5)
 		end
-		hook.Add(Name,"SingHookMake",Func)
+		hook.Add(Name,"EnvxHookMake",Func)
 	else
 		Utl:Debug("Hooks","There already is a Hook table for "..Name,"Error")
 	end
@@ -101,7 +101,7 @@ MasterThink Loop
 local Thinks = Utl.ThinkLoop --Faster Access to the think loop table.
 
 --Our Think Loop, Processes all the functions in one place.
-hook.Add("Think","SingularityMainLoop",function()
+hook.Add("Think","EnvironmentsX MainLoop",function()
 	xpcall(function()
 		for I, T in pairs( Thinks ) do --Loop all the think functions.
 			if(T.S+T.D<CurTime())then --Check if its time to run the function.

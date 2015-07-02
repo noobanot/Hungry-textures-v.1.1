@@ -15,6 +15,12 @@ function ENT:Initialize()
 	
 	self.maxresources = {}
 	self.Active = 0
+	
+	local Phys = self:GetPhysicsObject()  	
+	if not IsValid(Phys) then  	
+		self:Remove()
+		return 
+	end
 end
 
 function ENT:SetActive( value, caller )

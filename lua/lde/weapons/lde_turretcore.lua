@@ -182,7 +182,7 @@ function LDE.Weapons.RegisterTurret(Data)
 			end
 			
 			for i,w in pairs(self.TurretBits) do
-				if not self.TBDat[i] then continue end
+				if not self.TBDat[i] or not IsValid(self.TBDat[i]) then continue end
 				local R = self.TBDat[i].G
 				w.DE:SetAngles(AB:LocalToWorldAngles(Angle(Ang.Pitch*R.P,Ang.Yaw*R.Y,Ang.Roll*R.R)))
 			end

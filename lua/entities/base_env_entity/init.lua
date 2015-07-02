@@ -15,6 +15,13 @@ function ENT:Initialize()
 	self.Multiplier = 1
 	
 	self.maxresources = {}
+	
+	--Failsafe against bad models check!
+	local Phys = self:GetPhysicsObject()  	
+	if not IsValid(Phys) then  	
+		self:Remove()
+		return 
+	end
 end
    
 function ENT:SetActive( value, caller )

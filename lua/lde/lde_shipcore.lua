@@ -173,7 +173,6 @@ LDE.CoreSys.CoreModels = {
 "models/Slyfo_2/rocketpod_bigrockethalf.mdl",
 "models/Slyfo_2/miscequipmentmount.mdl",
 "models/props_lab/reciever01b.mdl",
-"models/LifeSupport/Generators/fusiongen.mdl",
 "models/SBEP_community/d12shieldemitter.mdl"
 }
 

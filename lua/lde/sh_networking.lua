@@ -13,16 +13,20 @@ local BoolNum = function(V) if V>0 then return true else return false end end --
 
 NDat.NetDTWrite = {S=net.WriteString,E=function(V) net.WriteFloat(V:EntIndex()) end,F=net.WriteFloat,V=net.WriteVector,A=net.WriteAngle,B=function(V) net.WriteFloat(NumBool(V)) end,T=function(T) net.WriteString(util.TableToJSON(T)) end}
 NDat.NetDTRead = {S=net.ReadString,E=function(V) return Entity(net.ReadFloat()) end,F=net.ReadFloat,V=net.ReadVector,A=net.ReadAngle,B=function() return BoolNum(net.ReadFloat()) end,T=function() return util.JSONToTable(net.ReadString()) or {} end}
+NDat.Types = {string="S",entity="E",number="F",vector="V",angle="A",boolean="B",table="T"}
 
 --Actually sends the data out.
 function NDat.SendData(Data,Name,ply)
+	print("Sending Data: "..Name)
 	net.Start("sing_basenetmessage")
 		net.WriteString(Name)
 		net.WriteFloat(table.Count(Data.Dat))
 		for I, S in pairs( Data.Dat ) do --Loop all the variables.
-			net.WriteString(S.N)--Get the variable name.
-			net.WriteString(S.T)
-			NDat.NetDTWrite[S.T](S.V)
+			local Type = NDat.Types[type(S)]
+			--print(type(S))
+			net.WriteString(I)--Get the variable name.
+			net.WriteString(Type)--Automagically grab the type.
+			NDat.NetDTWrite[Type](S)
 		end
 	if SERVER then
 		net.Send(ply)
@@ -31,7 +35,7 @@ function NDat.SendData(Data,Name,ply)
 	end
 end
 
-function Utl:HookNet(MSG,ID,Func) NDat.NHook[MSG] = Func end
+function Utl:HookNet(MSG,Func) NDat.NHook[MSG] = Func end
 function NDat:InNetF(MSG,Data,ply) 
 	if(NDat.NHook[MSG])then
 		NDat.NHook[MSG](Data,ply) 
@@ -64,7 +68,7 @@ if(SERVER)then
 	--Loops the players and prepares to send their data.
 	function NDat.CyclePlayers()
 		for nick, pdat in pairs( NDat.Data ) do
-			local Max = 200
+			local Max = 50
 			for id, Data in pairs( pdat.Data ) do
 				if(Max<=0)then return end--We reached the maximum amount of data for this player.
 				Max=Max-Data.Val
@@ -75,13 +79,13 @@ if(SERVER)then
 	end
 
 	--[[
-		Data={Name="example",Val=1,Dat={{N="D",T="S",V="example"}}}
+		Data={Name="example",Val=1,Dat={VName="example"}}
 	]]	
 	function NDat.AddData(Data,ply)
 		local T=NDat.Data[ply:Nick()]
 		if not T then return end
 		for I, S in pairs( Data.Dat ) do
-			if S.V == nil or S.T == nil or S.N == nil then 
+			if S == nil then 
 				Data.Dat[I]=nil
 			end
 		end
@@ -97,7 +101,7 @@ if(SERVER)then
 		NDat.Data[ply:Nick()]={Data={},Ent=ply}
 	end
 	
-	Utl:SetupThinkHook("SyncNetData",0.1,0,NDat.CyclePlayers)	
+	Utl:SetupThinkHook("SyncNetData",0.01,0,NDat.CyclePlayers)	
 	Utl:HookHook("PlayerInitialSpawn","NetDatHook",NDat.AddPlay,1)	
 	
 else
@@ -113,7 +117,7 @@ else
 		end
 	end
 	
-	Utl:SetupThinkHook("SendToServer",0.1,0,NDat.SendToServer)	
+	Utl:SetupThinkHook("SendToServer",0.01,0,NDat.SendToServer)	
 	
 end
 

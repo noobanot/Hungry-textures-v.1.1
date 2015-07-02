@@ -2,11 +2,11 @@
 Jupiter Menu Core -Provides a modular menu system.
 ----------------------------------------------------]]--
 
-local SCF = LDE --Localise the global table for speed.
-SCF.MenuCore = {}
-SCF.MenuCore.SuperMenu = {}
+local LDE = LDE --Localise the global table for speed.
+LDE.MenuCore = {}
+LDE.MenuCore.SuperMenu = {}
 
-local MC = SCF.MenuCore
+local MC = LDE.MenuCore
 
 if(CLIENT)then
 	---------------------------------------------------------------
@@ -158,7 +158,7 @@ if(CLIENT)then
 	end
 	
 	function MC.LoadHtml(Parent,Text)
-		SCF.Debug("Opening Url: "..Text,3,"MenuCore")
+		LDE.Debug("Opening Url: "..Text,3,"MenuCore")
 		local label = vgui.Create("HTML",Parent)
 		label:SetSize(800, 200)
 		label:OpenURL(Text)
