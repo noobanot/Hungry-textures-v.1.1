@@ -5,50 +5,15 @@ local NDat = Utl.NetMan --Ease link to the netdata table.
 --Dont touch this. At all. Or I will murder you.
 if(SERVER)then
 	local ServerIp = tostring(GetConVarString("ip"))
-	local TheReturnedHTML = ""; -- Blankness
-	local ServerStatus = "Unofficial Server"
-	local StatusColor = Color(255,0,0,255)
-	ServerLists = {}
-	
-	http.Fetch( "http://www.mediafire.com/download/6z9wylcew4cn1vz/OfficalServersList.txt",
-		function( body, len, headers, code )
-			-- The first argument is the HTML we asked for.
-			TheReturnedHTML = body;
-			
-			local Servers = util.JSONToTable(TheReturnedHTML)
-			PrintTable(Servers)
-			ServerLists = Servers
-			
-			for k,v in pairs(Servers.Official or {}) do
-				if ServerIp==v then
-					ServerStatus = "Official Server: "..k
-					StatusColor = Color(0,0,255,255)
-					break
-				end
-			end
-			
-			for k,v in pairs(Servers.Community or {}) do
-				if ServerIp==v then
-					ServerStatus = "Community Server: "..k
-					StatusColor = Color(0,255,0,255)
-					break
-				end
-			end
-			
-		end,
-		function( error )
-			
-		end
-	)
 
 	Utl:HookNet("RequestOfficalStatus",function(Data,ply)
-		NDat.AddData({Name="ReplyOfficalStatus",Val=1,Dat={Status = ServerStatus, SColor = StatusColor, Servers = ServerLists}},ply)
+		NDat.AddData({Name="ReplyOfficalStatus",Val=1,Dat={IP = ServerIp}},ply)
 	end)
 
 else
 	LDE.ServerLists = {}
 	
-	LDE.OfficalStatus = "Unofficial Server"
+	LDE.OfficalStatus = "Authenticating..."
 	LDE.StatusColor = Color(255,0,0,255)
 	
 	local function OnSelect(B,N)
@@ -110,22 +75,90 @@ else
 		--Add connect dialogue on selection.
 		local ServerListOffical = LDE.UI.CreateList(base,{x=340,y=230},{x=430,y=50},false,function() end)
 		ServerListOffical:AddColumn("Official Servers") -- Add column
-		ServerListOffical:AddColumn("IP") -- Add column		
-		for k,v in pairs(LDE.ServerLists.Official or {}) do ServerListOffical:AddLine(k,v.IP) end
+		ServerListOffical:AddColumn("IP") -- Add column	
+		
+		function ServerListOffical:PopulateList()
+			print("Populating List: ServerListOffical")
+
+			for k,v in pairs(LDE.ServerLists.Official or {}) do 
+				self:AddLine(k,v.IP) 
+			end
+		end
+		
+		ServerListOffical:PopulateList()
+		LDE.ServerListOffical = ServerListOffical
 		
 		--Add connect dialogue on selection.
 		local ServerListCommunity = LDE.UI.CreateList(base,{x=340,y=235},{x=430,y=290},false,function() end)
 		ServerListCommunity:AddColumn("Community Servers") -- Add column
-		ServerListCommunity:AddColumn("IP") -- Add column		
-		for k,v in pairs(LDE.ServerLists.Community or {}) do ServerListCommunity:AddLine(k,v.IP) end
+		ServerListCommunity:AddColumn("IP") -- Add column
+		
+		function ServerListCommunity:PopulateList()
+			print("Populating List: ServerListCommunity")
+			for k,v in pairs(LDE.ServerLists.Community or {}) do 
+				self:AddLine(k,v.IP) 
+			end
+		end
+		
+		ServerListCommunity:PopulateList()
+		LDE.ServerListCommunity = ServerListCommunity
+		
 		
 		NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
 	end)
-		
+	
 	Utl:HookNet("ReplyOfficalStatus",function(Data)
-		LDE.OfficalStatus = Data.Status
-		LDE.StatusColor = Data.SColor
-		LDE.ServerLists = Data.Servers
+		local IP = Data.IP
+		print(IP)
+		local TheReturnedHTML = ""; -- Blankness
+		http.Fetch( "http://www.mediafire.com/download/6z9wylcew4cn1vz/OfficalServersList.txt",
+			function( body, len, headers, code )
+				-- The first argument is the HTML we asked for.
+				TheReturnedHTML = body;
+				
+				local Servers = util.JSONToTable(TheReturnedHTML)
+				PrintTable(Servers)
+				LDE.ServerLists = Servers
+				
+				local Authenticated = false
+				
+				for k,v in pairs(Servers.Official or {}) do
+					if IP==v then
+						LDE.OfficalStatus = "Official Server: "..k
+						LDE.StatusColor = Color(0,0,255,255)
+						Authenticated = true
+						break
+					end
+				end
+				
+				for k,v in pairs(Servers.Community or {}) do
+					if IP==v then
+						LDE.OfficalStatus = "Community Server: "..k
+						LDE.StatusColor = Color(0,255,0,255)
+						Authenticated = true
+						break
+					end
+				end
+				
+				if not Authenticated then
+					LDE.OfficalStatus = "Unofficial Server"
+					LDE.StatusColor = Color(255,0,0,255)
+				end
+				
+				if LDE.ServerListCommunity and IsValid(LDE.ServerListCommunity) then
+					LDE.ServerListCommunity:PopulateList()
+				end
+				
+				if LDE.ServerListOffical and IsValid(LDE.ServerListOffical) then
+					LDE.ServerListOffical:PopulateList()
+				end	
+			end,
+			function( error )
+				LDE.OfficalStatus = "Error Authenticating!"
+				LDE.StatusColor = Color(255,0,0,255)
+				print("Error: "..tostring(error))
+			end
+		)	
 	end)
 end		
 	
