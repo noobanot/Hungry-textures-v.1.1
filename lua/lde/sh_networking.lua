@@ -17,7 +17,7 @@ NDat.Types = {string="S",entity="E",number="F",vector="V",angle="A",boolean="B",
 
 --Actually sends the data out.
 function NDat.SendData(Data,Name,ply)
-	print("Sending Data: "..Name)
+	--print("Sending Data: "..Name)
 	net.Start("sing_basenetmessage")
 		net.WriteString(Name)
 		net.WriteFloat(table.Count(Data.Dat))

@@ -6,8 +6,9 @@ local NDat = Utl.NetMan --Ease link to the netdata table.
 if(SERVER)then
 	local ServerIp = tostring(GetConVarString("ip"))
 	local TheReturnedHTML = ""; -- Blankness
-	local IsOfficalServer = false
-	OfficalServers = {}
+	local ServerStatus = "Unofficial Server"
+	local StatusColor = Color(255,0,0,255)
+	ServerLists = {}
 	
 	http.Fetch( "http://www.mediafire.com/download/6z9wylcew4cn1vz/OfficalServersList.txt",
 		function( body, len, headers, code )
@@ -16,11 +17,20 @@ if(SERVER)then
 			
 			local Servers = util.JSONToTable(TheReturnedHTML)
 			PrintTable(Servers)
-			OfficalServers = Servers
+			ServerLists = Servers
 			
-			for k,v in pairs(Servers) do
+			for k,v in pairs(Servers.Official or {}) do
 				if ServerIp==v then
-					IsOfficalServer = true
+					ServerStatus = "Official Server: "..k
+					StatusColor = Color(0,0,255,255)
+					break
+				end
+			end
+			
+			for k,v in pairs(Servers.Community or {}) do
+				if ServerIp==v then
+					ServerStatus = "Community Server: "..k
+					StatusColor = Color(0,255,0,255)
 					break
 				end
 			end
@@ -31,15 +41,15 @@ if(SERVER)then
 		end
 	)
 
-	--Add support for multiple servers being offical.
 	Utl:HookNet("RequestOfficalStatus",function(Data,ply)
-		print("Got Request from "..tostring(ply))
-		NDat.AddData({Name="ReplyOfficalStatus",Val=1,Dat={Status = IsOfficalServer,Servers = OfficalServers}},ply)
+		NDat.AddData({Name="ReplyOfficalStatus",Val=1,Dat={Status = ServerStatus, SColor = StatusColor, Servers = ServerLists}},ply)
 	end)
 
 else
-	LDE.OfficalStatus = false
-	LDE.OfficalServers = {}
+	LDE.ServerLists = {}
+	
+	LDE.OfficalStatus = "Unofficial Server"
+	LDE.StatusColor = Color(255,0,0,255)
 	
 	local function OnSelect(B,N)
 		B.SL:Clear() B.PI:Clear()
@@ -69,7 +79,6 @@ else
 		SuperMenu:AddSheet( "Stats", base, "icon16/chart_bar.png", false, false, "View your stats." ) 
 		base.Players = {}
 		
-		
 		local PL = LDE.UI.CreateList(base,{x=160,y=525},{x=0,y=0},false,function(V) OnSelect(base,V) end)
 		PL:AddColumn("Player") -- Add column
 		for k,v in pairs(player.GetAll()) do base.Players[v:Name()]=v PL:AddLine(v:Name()) end
@@ -92,34 +101,30 @@ else
 		
 		--Server Stats
 		
-		local Office = LDE.MenuCore.CreateText(base,{x=430,y=0},"Awaiting Server Identification",Color(0,0,0,255))
+		local Office = LDE.MenuCore.CreateButton(base,{x=340,y=40},{x=430,y=0},"Awaiting Server Identification",function() end)
 		Office.Think = function(self)
-			if LDE.OfficalStatus then
-				self:SetText("Server Certified Official!")
-			else
-				self:SetText("Unofficial Server!")
-			end
+			self:SetText(LDE.OfficalStatus)
+			self:SetColor(LDE.StatusColor)
 		end
 		
 		--Add connect dialogue on selection.
-		local ServerList = LDE.UI.CreateList(base,{x=250,y=375},{x=430,y=150},false,function() end)
-		ServerList:AddColumn("Name") -- Add column
-		ServerList:AddColumn("IP") -- Add column
+		local ServerListOffical = LDE.UI.CreateList(base,{x=340,y=230},{x=430,y=50},false,function() end)
+		ServerListOffical:AddColumn("Official Servers") -- Add column
+		ServerListOffical:AddColumn("IP") -- Add column		
+		for k,v in pairs(LDE.ServerLists.Official or {}) do ServerListOffical:AddLine(k,v.IP) end
 		
-		print("Servers!")
-		PrintTable(LDE.OfficalServers)
+		--Add connect dialogue on selection.
+		local ServerListCommunity = LDE.UI.CreateList(base,{x=340,y=235},{x=430,y=290},false,function() end)
+		ServerListCommunity:AddColumn("Community Servers") -- Add column
+		ServerListCommunity:AddColumn("IP") -- Add column		
+		for k,v in pairs(LDE.ServerLists.Community or {}) do ServerListCommunity:AddLine(k,v.IP) end
 		
-		for k,v in pairs(LDE.OfficalServers) do 
-			ServerList:AddLine(k,v.IP) 
-		end
-
 	end)
-			
+		
 	Utl:HookNet("ReplyOfficalStatus",function(Data)
-		print("Data")
-		PrintTable(Data)
 		LDE.OfficalStatus = Data.Status
-		LDE.OfficalServers = Data.Servers
+		LDE.StatusColor = Data.SColor
+		LDE.ServerLists = Data.Servers
 	end)
 	NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
 end		

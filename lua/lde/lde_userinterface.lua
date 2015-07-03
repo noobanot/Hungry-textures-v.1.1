@@ -157,6 +157,7 @@ LoadFile(P.."xmenu/help.lua",1)
 LoadFile(P.."xmenu/debug.lua",1)
 LoadFile(P.."xmenu/unlocks.lua",1)
 LoadFile(P.."xmenu/stats.lua",1)
+LoadFile(P.."xmenu/bugreport.lua",1)
 
 LoadFile(P.."factorymenu.lua",1)
 LoadFile(P.."missingmodels.lua",1)
