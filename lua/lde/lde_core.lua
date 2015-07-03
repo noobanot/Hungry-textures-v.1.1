@@ -196,7 +196,7 @@ if(SERVER)then
 	local meta = FindMetaTable("Player")
 
 	function meta:SendColorChat(nam,col,msg)
-		Utl.NetMan.AddData({Name="envx_colorchat",Val=1,Dat={MSG={col,name,Color(255,255,255,255),": "..msg}}},self)
+		Utl.NetMan.AddData({Name="envx_colorchat",Val=1,Dat={MSG={col,nam,Color(255,255,255,255),": "..msg}}},self)
 	end
 	
 	function meta:SendColorChatAdvanced(Dat)
