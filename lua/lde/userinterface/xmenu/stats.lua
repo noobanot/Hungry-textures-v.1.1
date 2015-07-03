@@ -76,12 +76,13 @@ else
 		local ServerListOffical = LDE.UI.CreateList(base,{x=340,y=230},{x=430,y=50},false,function() end)
 		ServerListOffical:AddColumn("Official Servers") -- Add column
 		ServerListOffical:AddColumn("IP") -- Add column	
-		
+		ServerListOffical:AddColumn("Port") -- Add column	
+				
 		function ServerListOffical:PopulateList()
-			print("Populating List: ServerListOffical")
-
+			--print("Populating List: ServerListOffical")
+			self:Clear()
 			for k,v in pairs(LDE.ServerLists.Official or {}) do 
-				self:AddLine(k,v.IP) 
+				self:AddLine(k,v.IP,v.Port) 
 			end
 		end
 		
@@ -92,11 +93,13 @@ else
 		local ServerListCommunity = LDE.UI.CreateList(base,{x=340,y=235},{x=430,y=290},false,function() end)
 		ServerListCommunity:AddColumn("Community Servers") -- Add column
 		ServerListCommunity:AddColumn("IP") -- Add column
+		ServerListCommunity:AddColumn("Port") -- Add column	
 		
 		function ServerListCommunity:PopulateList()
-			print("Populating List: ServerListCommunity")
+			--print("Populating List: ServerListCommunity")
+			self:Clear()
 			for k,v in pairs(LDE.ServerLists.Community or {}) do 
-				self:AddLine(k,v.IP) 
+				self:AddLine(k,v.IP,v.Port) 
 			end
 		end
 		
@@ -123,7 +126,7 @@ else
 				local Authenticated = false
 				
 				for k,v in pairs(Servers.Official or {}) do
-					if IP==v then
+					if IP==v.IP then
 						LDE.OfficalStatus = "Official Server: "..k
 						LDE.StatusColor = Color(0,0,255,255)
 						Authenticated = true
@@ -132,7 +135,7 @@ else
 				end
 				
 				for k,v in pairs(Servers.Community or {}) do
-					if IP==v then
+					if IP==v.IP then
 						LDE.OfficalStatus = "Community Server: "..k
 						LDE.StatusColor = Color(0,255,0,255)
 						Authenticated = true
