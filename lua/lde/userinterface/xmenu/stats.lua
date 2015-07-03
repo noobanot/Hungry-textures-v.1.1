@@ -119,6 +119,7 @@ else
 		ServerListCommunity:AddColumn("IP") -- Add column		
 		for k,v in pairs(LDE.ServerLists.Community or {}) do ServerListCommunity:AddLine(k,v.IP) end
 		
+		NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
 	end)
 		
 	Utl:HookNet("ReplyOfficalStatus",function(Data)
@@ -126,6 +127,5 @@ else
 		LDE.StatusColor = Data.SColor
 		LDE.ServerLists = Data.Servers
 	end)
-	NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
 end		
 	

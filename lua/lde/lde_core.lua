@@ -208,7 +208,7 @@ else
 	ClientSide Chat Handling.
 	----------------------------------------------------]]--
 	Utl:HookNet("envx_colorchat",function(Data)
-		chat.AddText(unpack(data.MSG))
+		chat.AddText(unpack(Data.MSG))
 	end)
 
 	Missing = {}
