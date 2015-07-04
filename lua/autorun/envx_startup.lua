@@ -25,7 +25,34 @@ EnvX.Environments = EnvX.Environments or {}
 Environments = EnvX.Environments
 
 LoadFile("envx/sh_envxload.lua",1)
-LoadFile("scoreboard/init.lua",1)
+
+--Lets Load our configs....
+local Loaded = util.JSONToTable(file.Read("envx.txt","DATA") or "") or {Config={},GlobalConfig={}}
+
+EnvX.Config = Loaded.Config
+EnvX.GlobalConfig = Loaded.GlobalConfig
+
+function EnvX.Save()
+	file.Write("envx.txt", util.TableToJSON({Config = EnvX.Config, GlobalConfig=EnvX.GlobalConfig}))
+end
+
+hook.Add("Shutdown","EnvX SaveSettings",EnvX.Save)
+
+concommand.Add("envx_saveconfig", function(ply,cmd,args) 
+	if ply:IsValid() and not ply:IsAdmin() then return end
+	
+	EnvX.Save()
+end)
+
+--Set Default configs.
+for k,v in pairs({scoreboard=false}) do
+	if EnvX.Config[k] == nil then EnvX.Config[k] = v end
+end
+--Run Config
+
+--if EnvX.Config.scoreboard then 
+	--LoadFile("scoreboard/init.lua",1) 
+--end
 
 if CLIENT then
 	function Load(msg)
