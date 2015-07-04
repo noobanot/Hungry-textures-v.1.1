@@ -55,10 +55,9 @@ for k,v in pairs({scoreboard=false}) do
 	if EnvX.Config[k] == nil then EnvX.Config[k] = v end
 end
 --Run Config
+--Yay scoreboard can go fuck itself repeatedly
+LoadFile("scoreboard/init.lua",1) 
 
---if EnvX.Config.scoreboard then 
-	--LoadFile("scoreboard/init.lua",1) 
---end
 
 if CLIENT then
 	function Load(msg)

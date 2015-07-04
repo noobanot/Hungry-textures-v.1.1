@@ -9,46 +9,46 @@ LoadFile(ScorF.."scoreboard.lua",0)
 if CLIENT then
 	EnvironmentXBoard = nil
 
-		
-	function GAMEMODE:CreateScoreboard()
-		
-		if ( ScoreBoard ) then
+	timer.Simple(1.5, function()	--This is needed. No fucking clue why
+		function GAMEMODE:CreateScoreboard()
 			
-			ScoreBoard:Remove()
-			ScoreBoard = nil
+			if ( ScoreBoard ) then
+				
+				ScoreBoard:Remove()
+				ScoreBoard = nil
+				
+			end
+			EnvironmentXBoard = vgui.Create( "EnvironmentXBoard" )
+				
+			return true
 			
 		end
-		EnvironmentXBoard = vgui.Create( "EnvironmentXBoard" )
 			
-		return true
-		
-	end
-		
-	function GAMEMODE:ScoreboardShow()
-		
-		if not EnvironmentXBoard then
-			self:CreateScoreboard()
+		function GAMEMODE:ScoreboardShow()
+			
+			if not EnvironmentXBoard then
+				self:CreateScoreboard()
+			end
+
+			GAMEMODE.ShowScoreboard = true
+			gui.EnableScreenClicker( true )
+
+			EnvironmentXBoard:SetVisible( true )
+			EnvironmentXBoard:UpdateScoreboard( true )
+				
+			return true
+
 		end
-
-		GAMEMODE.ShowScoreboard = true
-		gui.EnableScreenClicker( true )
-
-		EnvironmentXBoard:SetVisible( true )
-		EnvironmentXBoard:UpdateScoreboard( true )
 			
-		return true
+		function GAMEMODE:ScoreboardHide()
 
-	end
-		
-	function GAMEMODE:ScoreboardHide()
+			GAMEMODE.ShowScoreboard = false
+			gui.EnableScreenClicker( false )
 
-		GAMEMODE.ShowScoreboard = false
-		gui.EnableScreenClicker( false )
-
-		EnvironmentXBoard:SetVisible( false )
-			
-		return true
-			
-	end
-		
+			EnvironmentXBoard:SetVisible( false )
+				
+			return true
+				
+		end
+	end)
 end		
