@@ -101,7 +101,7 @@ function PANEL:UpdatePlayerData()
 	self.lblName:SetText( self.Player:Nick() )
 	self.lblTeam:SetText( team.GetName(self.Player:Team()) )
 	self.lblPing:SetText( self.Player:Ping() )
-	self.lblMoney:SetText( self.Player:GetLDEStat("Cash"))
+	self.lblMoney:SetText( math.round(self.Player:GetLDEStat("Cash")))
 
 end
 
