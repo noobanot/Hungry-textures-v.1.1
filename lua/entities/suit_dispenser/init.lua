@@ -91,4 +91,4 @@ function ENT:SetActive( value, caller )
 end
 
 
-duplicator.RegisterEntityClass("suit_dispenser", Environments.DupeFix, "Data" )
+--duplicator.RegisterEntityClass("suit_dispenser", Environments.DupeFix, "Data" )

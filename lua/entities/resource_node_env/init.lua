@@ -249,3 +249,5 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 		WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)
 	end
 end
+
+duplicator.RegisterEntityClass("resource_node_env", Environments.DupeFix, "Data" )

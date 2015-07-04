@@ -694,7 +694,7 @@ Environments.Tooldata = {}
 function Environments.RegisterDevice(toolname, genname, devname, class, model, skin, extra, description, tooltip)
 
 	--Allow Duplicators to dupe this class.
-	duplicator.Allow(class)
+	duplicator.RegisterEntityClass(class, Environments.DupeFix, "Data" )
 
 	if !Environments.Tooldata[toolname] then
 		Environments.Tooldata[toolname] = {}
