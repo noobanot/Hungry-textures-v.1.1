@@ -4,10 +4,11 @@ function LDE:Normalise(Vec)
 end
 
 local metaent = FindMetaTable("Entity")
-local metaply = FindMetaTable("Player")
+--metaent.LDE = {Temperature=0,MeltingPoint=1,FreezingPoint=-1,OverHeating=false}	
 
-metaent.LDE = {MetaWorked = true}	
-		
+local metaply = FindMetaTable("Player")
+metaply.CanGlobalPrint = 1
+	
 if SERVER then
 	duplicator.RegisterEntityClass("gyropod_advanced", Environments.DupeFix, "Data" )
 	duplicator.RegisterEntityClass("sbep_base_door", Environments.DupeFix, "Data" )

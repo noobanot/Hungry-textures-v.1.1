@@ -335,7 +335,7 @@ function LDE.Weapons.RegisterWeapon(Data,Models)
 		end
 		
 		function ENT:FireWeapon()
-			self.SPL = self.LDEOwner
+			self.SPL = self:CPPIGetOwner()
 			self.Active=self.Active or 0
 			self.LDE = self.LDE or {}
 
@@ -476,7 +476,7 @@ function LDE.Weapons.RegisterBomb(Data)
 		function ENT:ExplodeME(Data)
 			if(not self.Armed)then return end
 			self.Exploded = true
-			util.BlastDamage(self.Entity, self.LDEOwner, self.Entity:GetPos(), Data.Range, Data.Damage)
+			util.BlastDamage(self.Entity, self:CPPIGetOwner(), self.Entity:GetPos(), Data.Range, Data.Damage)
 		
 			self:EmitSound("explode_9")
 			local effectdata = EffectData() effectdata:SetOrigin(self:GetPos()) effectdata:SetStart(self:GetPos()) effectdata:SetMagnitude(3)

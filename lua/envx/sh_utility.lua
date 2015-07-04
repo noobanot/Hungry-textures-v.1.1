@@ -2,17 +2,17 @@
 Shared Utility LUA -Holds all the utility functions for the mod.
 ----------------------------------------------------]]--
 
-local LDE = LDE --Localise the global table for speed.
-LDE.Utl = {} --Make a Utility Table.
-local Utl = LDE.Utl --Makes it easier to read the code.
+local EnvX = EnvX --Localise the global table for speed.
+EnvX.Utl = {} --Make a Utility Table.
+local Utl = EnvX.Utl --Makes it easier to read the code.
 
 Utl.ThinkLoop = Utl.ThinkLoop or {} --Create the think loop table.
 Utl.DebugTable = Utl.DebugTable or {} --Create the debug output storage.
 Utl.Hooks = Utl.Hooks or {} --Create the hook table.
 Utl.Effect = Utl.Effect or {} --Create a table to store effect data in.
 
-local DTable = Utl.DebugTable --Localise the debug storage.
-local HTable = Utl.Hooks --Localise the hook table for speed.
+local DTable = EnvX.Utl.DebugTable --Localise the debug storage.
+local HTable = EnvX.Utl.Hooks --Localise the hook table for speed.
 
 function Utl:TableRand(Table)
 	local Rand = math.random(1,table.Count(Table))
@@ -31,7 +31,7 @@ Debugging Functions.
 
 --The Debug function, allows us to easily enable/disable debugging.
 function Utl:Debug(Source,String,Type)
-	LDE.Debug(String,2,"["..Type.."]"..Source)--Redirect this to use the debug.lua debug functions.
+	EnvX.Debug(String,2,"["..Type.."]"..Source)--Redirect this to use the debug.lua debug functions.
 	--print("["..Type.."]: "..Source..": "..String)
 end
 
@@ -74,7 +74,13 @@ function Utl:HookHook(Hook,Name,Func,Impo) --Makes the HookHook in the hook tabl
 		Func: The function called when the hook is called.
 		Impo: The Importance of the HookHook, this is for figuring out what we return to the hook from all HookHooks.
 	]]
-	if(HTable[Hook][Name])then
+	--print(tostring(Hook).." "..tostring(Name))
+	--[[if not HTable then
+		print("Error....")
+		PrintTable(Utl)
+	end]]
+	
+	if HTable[Hook][Name] then
 		Utl:Debug("Hooks","There already is a HookHook in "..Hook.." for "..Name.." overwriting!","Error")
 	end
 	HTable[Hook][Name]={N=Name,F=Func,I=Impo}
@@ -136,6 +142,10 @@ function Utl:RemoveThinkHook(Name)
 	Thinks[Name]=nil
 end
 
+
+Utl:MakeHook("OnEntityCreated")
+Utl:MakeHook("PlayerLeaveVehicle")
+
 --[[----------------------------------------------------
 NonShared Utility Functions.
 ----------------------------------------------------]]--
@@ -147,14 +157,13 @@ if(SERVER)then
 	Utl:MakeHook("PlayerSpawnedEffect")
 	Utl:MakeHook("PlayerSpawnedRagdoll") 
 	Utl:MakeHook("PlayerInitialSpawn") 
-	Utl:MakeHook("OnEntityCreated")
 	Utl:MakeHook("PlayerSpawn")
 	Utl:MakeHook("PlayerDisconnected")
 	Utl:MakeHook("PlayerConnect")
 	Utl:MakeHook("PlayerInitialSpawn")
 	Utl:MakeHook("OnRemove")
 	Utl:MakeHook("Shutdown")
-	
+		
 	function Utl:LoopValidPlayers(F,A1,A2,A3,A4,A5)
 		local players = player.GetAll()	
 		for _, ply in ipairs( players ) do
@@ -165,7 +174,11 @@ if(SERVER)then
 				end
 			end
 		end
-	end	
+	end
+else
+	Utl:MakeHook("SpawnMenuOpen")
+	Utl:MakeHook("PopulateToolMenu")
+	Utl:MakeHook("HUDPaint")
 end
 
 --[[----------------------------------------------------

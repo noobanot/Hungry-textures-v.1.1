@@ -129,7 +129,7 @@ function LDE.LifeSupport.DrillEnt(self,Class,Rate)
 		if v:GetClass()==Class then --Make sure the entity is the right class.
 			ore = LDE:GetHealth(v) --Get its health
 			if(v and v:IsValid() and ore and ore>0)then
-				--Owner=self.LDEOwner Owner:GiveLDEStat("Mined", (Rate*self:GetSizeMultiplier()))
+				--Owner=self:CPPIGetOwner() Owner:GiveLDEStat("Mined", (Rate*self:GetSizeMultiplier()))
 				if(ore>=Rate)then
 					if(not v.LDEHealth)then return end --Make sure the entity has health.
 					v.LDEHealth=v.LDEHealth-(Rate) --Harvest some of the entitys health.

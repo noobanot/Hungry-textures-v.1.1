@@ -1,5 +1,5 @@
 local LDE = LDE --Localise the global table for speed.
-local Utl = LDE.Utl --Makes it easier to read the code.
+local Utl = EnvX.Utl --Makes it easier to read the code.
 local NDat = Utl.NetMan --Ease link to the netdata table.
 
 --Dont touch this. At all. Or I will murder you.

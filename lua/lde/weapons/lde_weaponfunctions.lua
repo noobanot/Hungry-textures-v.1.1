@@ -74,7 +74,7 @@ end
 //Charge up function
 LDE.Weapons.ChargeDamage = function(self,Data,tr)
 	if(Data.Explosive)then
-		--util.BlastDamage(self.Entity, self.LDEOwner, tr.HitPos, self.Charge*Data.Radius, self.Charge*Data.Dpc) -- Git outta hurr hairy man
+		--util.BlastDamage(self.Entity, self:CPPIGetOwner(), tr.HitPos, self.Charge*Data.Radius, self.Charge*Data.Dpc) -- Git outta hurr hairy man
 		local NewData = { 
 		Pos 					=		tr.HitPos,							--Required--		--Position of the Explosion, World vector
 		--ShrapDamage	=		0,										--Optional--		--Amount of Damage dealt by each Shrapnel that hits, if 0 or nil then other Shap vars are not required
@@ -86,7 +86,7 @@ LDE.Weapons.ChargeDamage = function(self,Data,tr)
 		ShockRadius		=		self.Charge*Data.Radius,							--How far the Shockwave travels in a sphere
 		--Ignore			=		Entity,								--Optional--		--Entity that Shrapnel and Shockwaves ignore, Example: A missile entity so that Shrapnel doesn't hit it before it's removed
 		Inflictor				=		self,							--Required--		--The weapon or player that is dealing the damage
-		Owner				=		self.LDEOwner					--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
+		Owner				=		self:CPPIGetOwner()					--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
 		}
 		LDE:BlastDamage(NewData)
 		local effectdata = EffectData()

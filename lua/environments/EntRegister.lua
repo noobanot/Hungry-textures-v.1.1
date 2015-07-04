@@ -348,6 +348,20 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 	print("Storage Registered: "..class)
 end
 
+Environments.ToolMenus = {}
+
+if CLIENT then
+	EnvX.Utl:HookHook("SpawnMenuOpen", "EnvReloadToolMenus", function()
+		--print("Reload?")
+		for k,v in pairs(Environments.ToolMenus) do
+			if v and IsValid(v) then
+				--print("Reloading Lists!")
+				v:SetupLists()
+			end
+		end
+	end,1)
+end
+
 function Environments.RegisterTool(name, filename, category, description, cleanupgroup, limit)//add descriptions for devices
 	local TOOL = ToolObj:Create()
 	
@@ -610,6 +624,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 	local name = TOOL.Mode
 	
 	local self = TOOL
+	--Environments.ToolMenus
 	function TOOL.BuildCPanel( CPanel )
 		-- Header stuff
 		CPanel:ClearControls()
@@ -617,11 +632,13 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		--CPanel:AddDefaultControls()
 		CPanel:AddControl("Header", { Text = "#tool."..name..".name", Description = "#tool."..name..".desc" })
 		
-		local list = vgui.Create( "DPanelList" )
+		local list = vgui.Create( "DListLayout" )
 		list:SetTall( 400 )
-		list:SetPadding( 1 )
-		list:SetSpacing( 1 )
-		list:EnableVerticalScrollbar(true)
+		list.Tool = self
+		list.OldLists = {}
+		--list:SetPadding( 1 )
+		--list:SetSpacing( 1 )
+		--list:EnableVerticalScrollbar(true)
 		
 		local ccv_type		= self.Mode.."_type"
 		local ccv_sub_type	= self.Mode.."_sub_type"
@@ -631,50 +648,62 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		local cur_sub_type	= GetConVarString(ccv_sub_type)
 		local cur_model	 	= GetConVarString(ccv_model)
 		
-		for cat,tab in pairs(Environments.Tooldata[self.Name]) do
-			local c = vgui.Create("DCollapsibleCategory")
-			c:SetLabel(cat)
-			c:SetExpanded(false)
-			
-			local CategoryList = vgui.Create( "DPanelList" )
-			CategoryList:SetAutoSize( true )
-			CategoryList:SetSpacing( 6 )
-			CategoryList:SetPadding( 3 )
-			CategoryList:EnableHorizontal( true )
-			CategoryList:EnableVerticalScrollbar( true )
-			
-			for k,v in pairs(tab) do
-				local icon = vgui.Create("SpawnIcon")
-				
-				util.PrecacheModel(v.model)
-				icon:SetModel(v.model, v.skin or 0)
-				icon.tool = self
-				icon.model = v.model
-				icon.class = v.class
-				icon.skin = v.skin
-				icon.devname = k
-				icon.devtype = cat
-				icon.description = v.description
-				if v.tooltip then
-					icon:SetTooltip(v.tooltip)
-				else
-					icon:SetTooltip(k)
+		function list:SetupLists()
+			for k,v in pairs(self.OldLists) do
+				if v and IsValid(v)then
+					v:Remove()
 				end
-				icon.DoClick = function(self)
-					self.tool.Model = self.model
-					self.tool.description_label:SetText(icon.description or icon.devname)
-					RunConsoleCommand( ccv_type, self.devtype )
-					RunConsoleCommand( ccv_sub_type, self.devname )
-					RunConsoleCommand( ccv_model, self.model )
-				end
-				
-				CategoryList:AddItem(icon)
+				self.OldLists[k]=nil
 			end
 			
-			c:SetContents(CategoryList)
-			list:AddItem(c)
+			for cat,tab in pairs(Environments.Tooldata[self.Tool.Name]) do
+				local c = vgui.Create("DCollapsibleCategory")
+				c:SetLabel(cat)
+				c:SetExpanded(false)
+				table.insert(self.OldLists,c)
+				
+				local CategoryList	= vgui.Create( "DIconLayout" )
+				CategoryList:SetSize( self:GetWide(), 400 )
+				CategoryList:SetSpaceY( 5 ) //Sets the space in between the panels on the X Axis by 5
+				CategoryList:SetSpaceX( 5 ) //Sets the space in between the panels on the Y Axis by 5
+				
+				for k,v in pairs(tab) do
+					local icon = vgui.Create("SpawnIcon")
+					
+					util.PrecacheModel(v.model)
+					icon:SetModel(v.model, v.skin or 0)
+					icon.tool = self.Tool
+					icon.model = v.model
+					icon.class = v.class
+					icon.skin = v.skin
+					icon.devname = k
+					icon.devtype = cat
+					icon.description = v.description
+					if v.tooltip then
+						icon:SetTooltip(v.tooltip)
+					else
+						icon:SetTooltip(k)
+					end
+					icon.DoClick = function(self)
+						self.tool.Model = self.model
+						self.tool.description_label:SetText(icon.description or icon.devname)
+						RunConsoleCommand( ccv_type, self.devtype )
+						RunConsoleCommand( ccv_sub_type, self.devname )
+						RunConsoleCommand( ccv_model, self.model )
+					end
+					
+					CategoryList:Add(icon)
+				end				
+				
+				c:SetContents(CategoryList)
+				list:Add(c)
+			end
 		end
+		
 		CPanel:AddPanel(list)
+		list:SetupLists()
+		
+		table.insert(Environments.ToolMenus,list)
 		
 		TOOL.description_label = CPanel:AddControl( "Label", { Text = "Hello World!" }  )//vgui.Create("DButton")
 		TOOL.description_label:SetText("description goes here")

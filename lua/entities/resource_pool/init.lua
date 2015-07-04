@@ -95,7 +95,7 @@ end
 
 -- Cleanup on Remove.
 function ENT:OnRemove()
-	for k,v in pairs(LDE.Anons.ResourcePools[self.planetname]) do
+	for k,v in pairs(LDE.Anons.ResourcePools[self.planetname] or {}) do
 		if v == self then
 			LDE.Anons.ResourcePools[self.planetname][k]=nil
 		end

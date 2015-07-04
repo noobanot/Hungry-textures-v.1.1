@@ -183,7 +183,8 @@ end
 usermessage.Hook( "ZGRagdoll", ZeroGravRagdoll );
 
 function ZGR(ply)
-	local ent = ply:GetRagdollEntity();
+	if not ply.GetRagdollEntity then return end
+	local ent = ply:GetRagdollEntity()
 	
 	if( ent and ent:IsValid() ) then
 		for i = 0, ent:GetPhysicsObjectCount() do	

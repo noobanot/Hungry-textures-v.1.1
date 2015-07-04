@@ -1,6 +1,5 @@
-local LDE = LDE --Localise the global table for speed.
-LDE.Utl = LDE.Utl or {}
-local Utl = LDE.Utl --Makes it easier to read the code.
+local EnvX = EnvX --Localise the global table for speed.
+local Utl = EnvX.Utl --Makes it easier to read the code.
 
 Utl.NetMan = Utl.NetMan or {} --Where we store the queued up data to sync.
 

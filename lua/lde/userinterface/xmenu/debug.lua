@@ -1,10 +1,10 @@
-local Utl = LDE.Utl --Makes it easier to read the code.
+local Utl = EnvX.Utl --Makes it easier to read the code.
 
 if(SERVER)then
 	util.AddNetworkString('Jupiter_Debug_MSG')
 
 	function SendDebugTypes(ply)
-		for k, log in pairs(LDE.DebugLogs) do
+		for k, log in pairs(EnvX.DebugLogs) do
 			net.Start( "Jupiter_Debug_MSG" )
 				net.WriteString("Types")
 				net.WriteString(k)
@@ -14,7 +14,7 @@ if(SERVER)then
 	
 	function SendDebugLogs(ply,Type)
 		local num = 1
-		for k, log in pairs(LDE.DebugLogs[Type] or {}) do
+		for k, log in pairs(EnvX.DebugLogs[Type] or {}) do
 			timer.Simple((num*0.1)+0.01, function() 
 				net.Start( "Jupiter_Debug_MSG" )
 					net.WriteString("Logs")

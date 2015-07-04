@@ -1,5 +1,5 @@
 local LDE = LDE
-local Utl = LDE.Utl
+local Utl = EnvX.Utl
 
 --List of models we want to scan clients for.
 LDERequiredModels={
@@ -85,21 +85,21 @@ if(SERVER)then
 			ply:SetLDERole(Role.name)
 			ply:SetLDEStat("Moral",Role.Moral)
 			
-			LDE.Debug(Text,2,"Player Related")
+			EnvX.Debug(Text,2,"Player Related")
 		end
 
 		LDE.Cash:UpdatePerson(ply)
 	end
 	
 	function LDEPlayDeath(victim, weapon, killer)
-		if(not victim:IsValid())then return end --Idk This is wierd
+		if not IsValid(victim) then return end --Idk This is wierd
 
 		LDE.Mutations.HandleMutations(victim,"OnDeath",{weapon=weapon,attacker=attacker}) --Call the ondeath hook for mutations.
 		LDE.Mutations.HandleMutations(killer,"OnKill",{weapon=weapon,victim=victim}) --Call the ondeath hook for mutations.
 		victim:ClearMutations()	--Clear all mutations.
 		
-		if(not killer:IsPlayer())then killer = killer.LDEOwner end
-		if(victim==killer or not killer or not killer:IsValid() or not killer.GiveLDEStat)then 
+		if not killer:IsPlayer() then killer = killer:CPPIGetOwner() end
+		if victim==killer or not killer or not IsValid(killer) or not killer.GiveLDEStat then 
 			local Text = victim:GetName().." has died through their own means."
 			--LDE.Logger.LogEvent( Text )
 			return 
@@ -127,36 +127,27 @@ if(SERVER)then
 		net.WriteString( ply:GetName() )
 		net.Send( ply )
 
-		LDE.Debug(Text,3,"Player Related")
+		EnvX.Debug(Text,3,"Player Related")
 	end
-	hook.Add("PlayerInitialSpawn","ldeplayerispawn",LDEFirstSpawn)
+	Utl:HookHook("PlayerInitialSpawn","ldeplayerispawn",LDEFirstSpawn,1)
 	
 	function LDELeftServ(ply)
 		local Text = ply:GetName().." has disconnected from the server. (SteamID: "..ply:SteamID().." )"
 		--TellPlayers(Text) --Fixed
 		LDE:NotifyPlayers("Server",Text,{r=150,g=150,b=150})
-		LDE.Debug(Text,3,"Player Related")
+		EnvX.Debug(Text,3,"Player Related")
 		
 		hook.Call("LDEPlyLeft",nil,ply)
 	end
-	hook.Add("PlayerDisconnected","ldedisconnected",LDELeftServ)
+	Utl:HookHook("PlayerDisconnected","ldedisconnected",LDELeftServ,1)
 	
 	function LDEPlayConnect( name, address )
 		local Text = name .. " has connected from IP: " .. address
 		--TellPlayers( Text )
 		LDE:NotifyPlayers("Server",Text,{r=150,g=150,b=150})
-		LDE.Debug(Text,3,"Player Related")
+		EnvX.Debug(Text,3,"Player Related")
 	end
-	hook.Add("PlayerConnect","ldeconnected",LDEPlayConnect)	
-	
-	function LDESetOwner(ply,ent) --So we dont have to rely on any prop protection mods.
-		if !IsValid(ent) or !IsValid(ply) or ent:IsPlayer() or !ply:IsPlayer() then return end
-		ent.LDEOwner = ply
-	end
-	
-	hook.Add("PlayerSpawnedSENT", "LDE.PlayerSpawnedSENT", LDESetOwner)
-	hook.Add("PlayerSpawnedVehicle", "LDE.PlayerSpawnedVehicle", LDESetOwner)
-	hook.Add("PlayerSpawnedSWEP", "LDE.PlayerSpawnedSWEP", LDESetOwner)
+	Utl:HookHook("PlayerConnect","ldeconnected",LDEPlayConnect,1)
 
 	net.Receive( "PlyRequestModel", function( len )
 		local Stat = net.ReadString()
@@ -248,7 +239,7 @@ else
 end
 
 function LDE:IsLifeSupport(ent)
-	if(not ent or not ent:IsValid())then return end
+	if(not ent or not IsValid(ent))then return end
 	if(ent.IsLS and not ent.IsNode)then
 		return true
 	else
@@ -263,8 +254,9 @@ function LDE_EntCreated(ent)--Entity Spawn hook.
 	if ent:IsValid() and not ent:IsWeapon() and CurTime() > 5 then
 		timer.Simple( 0.25, function()  if(not ent or not ent:IsValid())then return end LDE_Filter( ent ) end)  --Need the timer or the ent will be detect as the base class and with no model.
 	end
-end 
-hook.Add( "OnEntityCreated", "LDE_EntCreated", LDE_EntCreated)
+end
+Utl:HookHook("OnEntityCreated", "LDE_EntCreated", LDE_EntCreated,1)
+
 
 function LDE_Filter(ent) --Because the hook finds EVERYTHING, lets filter out some usless junk 	
 	if not ent:IsValid() then return false end
@@ -278,7 +270,7 @@ end
 hook.Add( "CanDrive","FUCKCANDRIVE", function( ply, ent ) return false end)
 
 function LDE:CheckBanned(ent)
-	if ent == nil or !ent:IsValid() then print("Null LDE CheckBanned Ent") return false end
+	if ent == nil or not IsValid(ent) then print("Null LDE CheckBanned Ent") return false end
 	local str = ent:GetClass()
 	for _,v in pairs(LDE.BannedClasses) do
 		if(string.find(str,v))then
@@ -289,15 +281,12 @@ function LDE:CheckBanned(ent)
 end
 
 function LDE:Spawned( ent )
-	if(not ent or not IsValid(ent))then print("LDE: Error Invalid Entity Spawn Report!") return end
-	if (!ent.LDE) then ent.LDE = {} end--Format the entity to be LDE friendly.	
-
+	if not ent or not IsValid(ent) then print("LDE: Error Invalid Entity Spawn Report!") return end
+	ent.LDE = ent.LDE or {} 
+	
 	if(SERVER)then
 	
-		if(ent:IsPlayer())then
-			ent.CanGlobalPrint=1
-			return
-		end
+		if ent:IsPlayer() then return end
 
 		--Heat Simulation Spawn Function
 		if LDE:IsLifeSupport(ent) then 
@@ -311,15 +300,16 @@ function LDE:Spawned( ent )
 				end
 			end
 		end
+		
 		--HeatSimulation Variables
-		ent.LDE.Temperature=0
+		ent.LDE.Temperature = 0
 		ent:SetNWInt("LDEEntTemp", ent.LDE.Temperature) --Network the current Temperature, 0
 		ent.LDE.MeltingPoint=LDE:CalcHealth(ent)/10
 		ent:SetNWInt("LDEMaxTemp", ent.LDE.MeltingPoint) --Network the max Temperature
 		ent.LDE.FreezingPoint=(LDE:CalcHealth(ent)/20)*-1
 		ent:SetNWInt("LDEMinTemp", ent.LDE.FreezingPoint)
 		ent.LDE.OverHeating = false
-
+		
 		--Damage Control Spawn function
 		local MaxHealth = LDE:MaxHealth()
 		local MinHealth = LDE:MinHealth()
@@ -353,35 +343,6 @@ function LDE:Spawned( ent )
 	end
 end
 
---Winch Compatability code.
-function GravyPunt( ply, ent )
-	
-	if ent.Puntable then
-		return ent:Punt( ply )
-	end
-	return true
-end
- 
-hook.Add( "GravGunPunt", "GravyPunt", GravyPunt )
-
-local function GravyGrab( ply, ent )
-	if ent.GravyGrab then
-		return ent:GravyGrab( ply )
-	end	
-	return true
-end
-
-hook.Add("GravGunPickupAllowed", "GravyGrab", GravyGrab)
-
-local function GravyDrop( ply, ent )
-	if ent.GravyDrop then
-		return ent:GravyGrab( ply )
-	end	
-	return true
-end
-
-hook.Add("GravGunOnDropped", "GravyDrop", GravyDrop)
-
 -- This function basically deals with stuff that happens when a player hops out of a vehicle
 function SetExPoint(player, vehicle)
 	if vehicle.ExitPoint and vehicle.ExitPoint:IsValid() then
@@ -400,7 +361,7 @@ function SetExPoint(player, vehicle)
 	end
 end
 
-hook.Add("PlayerLeaveVehicle", "PlayerRepositioning", SetExPoint)
+Utl:HookHook("PlayerLeaveVehicle", "PlayerRepositioning", SetExPoint,1)
 LDE.SetExPoint = SetExPoint
 
 

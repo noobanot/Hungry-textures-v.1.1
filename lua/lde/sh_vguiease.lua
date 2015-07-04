@@ -158,7 +158,7 @@ if(CLIENT)then
 	end
 	
 	function MC.LoadHtml(Parent,Text)
-		LDE.Debug("Opening Url: "..Text,3,"MenuCore")
+		EnvX.Debug("Opening Url: "..Text,3,"MenuCore")
 		local label = vgui.Create("HTML",Parent)
 		label:SetSize(800, 200)
 		label:OpenURL(Text)

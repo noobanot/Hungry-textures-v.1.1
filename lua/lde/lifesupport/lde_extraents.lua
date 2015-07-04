@@ -44,8 +44,8 @@ function LDE.LifeSupport.BeginReplication(self, product, data, ply )
 		ent.productmodel = data.model
 		ent.factory = self
 		ent:SetParent(self)
-		ent.LDEOwner=ply
-
+		ent:CPPISetOwner(ply)
+		
 		self.activeEntity = ent
 		self:EmitSound( "k_lab.teleport_malfunction_sound" )		
 			

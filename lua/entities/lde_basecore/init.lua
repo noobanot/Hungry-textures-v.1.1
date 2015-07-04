@@ -10,11 +10,11 @@ util.AddNetworkString('base_pylons')
 function ENT:Initialize()
 	//self.BaseClass.Initialize(self) --use this in all ents
 	timer.Simple(0.1,function()
-		if(self.LDEOwner.Base and self.LDEOwner.Base:IsValid())then
+		if(self:CPPIGetOwner().Base and self:CPPIGetOwner().Base:IsValid())then
 			self:Remove()
 			print("Player already owns a base!!!")
 		else
-			self.LDEOwner.Base = self
+			self:CPPIGetOwner().Base = self
 			print("Im now the owners base!! :)")
 		end
 	end)

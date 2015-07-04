@@ -51,7 +51,7 @@ function PANEL:Init()
 	
 	// Update the scoreboard every 1 second
 	//timer.Create( "ScoreboardUpdater", 1, 0, function() self.UpdateScoreboard(true) end )
-	LDE.Utl:SetupThinkHook("ScoreboardUpdater",1,0,function() 
+	EnvX.Utl:SetupThinkHook("ScoreboardUpdater",1,0,function() 
 		 self.UpdateScoreboard(true) 
 	end)
 	

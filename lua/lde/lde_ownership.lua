@@ -1,5 +1,5 @@
 local LDE = LDE
-local Debug = function(MSG) LDE.Debug(MSG,3,"LSSOwner") end
+local Debug = function(MSG) EnvX.Debug(MSG,3,"LSSOwner") end
 
 function LoadPP()
 	if CPPI and CPPI.GetName then

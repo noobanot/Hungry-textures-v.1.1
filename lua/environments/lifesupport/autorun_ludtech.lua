@@ -1,11 +1,7 @@
 AddCSLuaFile("environments/lifesupport/autorun_ludtech.lua") 
 
 LDE = LDE or {}
-
-LDE.EnableMenu = false
-
---local DebugTypes = {Verbose=3,Basic=2,None=1}
-LDE.DebugMode="Verbose"
+local LDE = LDE
 
 print("=========================")
 print("LDE Starting up.")
@@ -17,9 +13,9 @@ local P = "lde/"
 LoadFile(P.."lde_variables.lua",2)
 LoadFile(P.."sh_constraints.lua",1)
 
-LoadFile(P.."sh_debug.lua",1)
-LoadFile(P.."sh_utility.lua",1)
-LoadFile(P.."sh_networking.lua",1)
+--LoadFile(P.."sh_debug.lua",1)
+--LoadFile(P.."sh_utility.lua",1)
+--LoadFile(P.."sh_networking.lua",1)
 LoadFile(P.."lde_ownership.lua",1)
 
 LoadFile(P.."lde_userinterface.lua",1)

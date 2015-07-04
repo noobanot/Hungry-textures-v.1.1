@@ -1,7 +1,7 @@
 LDE.UI = {}
 LDE.UI.SuperMenu = {}
 
-local Utl = LDE.Utl
+local Utl = EnvX.Utl
 local NDat = Utl.NetMan
 
 if(CLIENT)then

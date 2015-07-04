@@ -10,7 +10,7 @@ local BulletFunc=function(self,Data,attacker,tr)
 		ShockRadius		=		Data.Radius,												--How far the Shockwave travels in a sphere
 		--Ignore			=		self,									--Optional--		--Entity that Shrapnel and Shockwaves ignore, Example: A missile entity so that Shrapnel doesn't hit it before it's removed
 		Inflictor				=		self,							--Required--		--The weapon or player that is dealing the damage
-		Owner				=		self.LDEOwner					--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
+		Owner				=		self:CPPIGetOwner()					--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
 	}
 	LDE:BlastDamage(NewData)
 	local effectdata = EffectData()

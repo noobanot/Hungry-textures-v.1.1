@@ -112,7 +112,7 @@ function LDE.LifeSupport.Bases.RegisterBaseModule(Data,Inner)
 	if SERVER then
 	
 		function ENT:OnPurchase()
-			local Core = self.LDEOwner.Base
+			local Core = self:CPPIGetOwner().Base
 			if(Core and Core:IsValid())then
 				if(LDE.LifeSupport.Bases.AffordModule(self,Core))then
 					--self:Link(Core)
@@ -188,7 +188,7 @@ function LDE.LifeSupport.Bases.RegisterBaseModule(Data,Inner)
 						self.TraceTarg=v:GetPos()
 						local Trace =LDE.Weapons.DoTrace(self,self.Data.Bullet)
 						local OwnerCheck = false
-						if(Trace.Entity and Trace.Entity.LDEOwner==self.LDEOwner)then
+						if(Trace.Entity and Trace.Entity:CPPIGetOwner()==self:CPPIGetOwner())then
 							OwnerCheck = true
 						end
 						
@@ -308,8 +308,8 @@ function LDE.LifeSupport.Bases.RegisterBaseModule(Data,Inner)
 					self.maxresources=self.Data.storage
 				end
 				
-				self:Link(self.LDEOwner.Base)
-				self.LDEOwner.Base:Link(self)
+				self:Link(self:CPPIGetOwner().Base)
+				self:CPPIGetOwner().Base:Link(self)
 				--print("DING")
 			else
 				print("Error Module already built!!!")
@@ -761,7 +761,7 @@ Data["Weapon"]=function(self,Data)
 	Bullet.ShootPos = vStart
 	Bullet.Direction = vForward --Position * -1,
 	Bullet.Spread = Data.Spread or 0
-	Bullet.Attacker = self.LDEOwner
+	Bullet.Attacker = self:CPPIGetOwner()
 	Bullet.ProjSpeed = Data.Speed or 50
 	Bullet.Drop=0
 	Bullet.Model = Data.Model or "models/Items/AR2_Grenade.mdl"
@@ -827,7 +827,7 @@ Data["Weapon"]=function(self,Data)
 	Bullet.ShootPos = vStart
 	Bullet.Direction = vForward --Position * -1,
 	Bullet.Spread = Data.Spread or 0
-	Bullet.Attacker = self.LDEOwner
+	Bullet.Attacker = self:CPPIGetOwner()
 	Bullet.ProjSpeed = Data.Speed or 50
 	Bullet.Drop=0
 	Bullet.Model = Data.Model or "models/Items/AR2_Grenade.mdl"

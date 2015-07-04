@@ -83,7 +83,7 @@ function LDE:ApplyPlayerDamage(ent,dmginfo,amount)
 	
 	if(ent:IsPlayer() and attacker)then
 		--print("Attacker ent: "..tostring(attacker))
-		if(not attacker:IsPlayer())then attacker=attacker.LDEOwner end
+		if(not attacker:IsPlayer())then attacker=attacker:CPPIGetOwner() end
 		if(attacker and attacker:IsPlayer())then
 			--print("Attacker "..attacker:Name().." \n")
 			local Text = ent:GetName().." was damaged by "..attacker:GetName().." for "..amount
@@ -325,7 +325,7 @@ function LDE:CoreDeath(ent)
 	
 	//Role system stuff
 	--print("A core just died.")
-	local owner = ent.LDEOwner
+	local owner = ent:CPPIGetOwner()
 	if(owner)then
 		local ownername = owner:GetName() or "ERROR"
 		local Text = ownername.."'s Ship core was destroyed." 
@@ -333,7 +333,7 @@ function LDE:CoreDeath(ent)
 		local attacker = ent.Attacker
 		if(attacker)then
 			--print("Attacker ent: "..tostring(attacker))
-			if(not attacker:IsPlayer())then attacker=attacker.LDEOwner end
+			if(not attacker:IsPlayer())then attacker=attacker:CPPIGetOwner() end
 				if(attacker and attacker:IsPlayer())then
 					local AStats=attacker:GetStats()
 					--print("Attacker "..attacker:Name().." \n")
@@ -509,9 +509,9 @@ function LDE:DealDamage(ent,amount,attacker,inflictor,ignoresafe)
 	
 	if amount<=0 then return end
 	local inflictorowner = "None"
-	if(inflictor and inflictor.LDEOwner)then inflictorowner = inflictor.LDEOwner or "Error" end
+	if(inflictor and inflictor:CPPIGetOwner())then inflictorowner = inflictor:CPPIGetOwner() or "Error" end
 	
-	local targetowner = ent.LDEOwner or ""
+	local targetowner = ent:CPPIGetOwner() or ""
 	
 	if(not ignoresafe or ignoresafe==false )then
 		if(LDE:IsInSafeZone(ent))then
@@ -545,7 +545,7 @@ function LDE:DealPlyDamage(ent,amount,attacker,inflictor)
 	
 	if(attacker)then
 		--print("Attacker ent: "..tostring(attacker))
-		if(not attacker:IsPlayer())then attacker=attacker.LDEOwner end
+		if(not attacker:IsPlayer())then attacker=attacker:CPPIGetOwner() end
 		if(attacker and attacker:IsPlayer())then
 			--print("Attacker "..attacker:Name().." \n")
 			local Text = ent:GetName().." was damaged by "..attacker:GetName().." for "..amount

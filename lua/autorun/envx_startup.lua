@@ -3,7 +3,7 @@
 ------------------------------------------
 local start = SysTime()
 
-EnvX = EnvX or {}
+EnvX = {}
 local EnvX = EnvX --MAH SPEED
 
 EnvX.Version = "InDev V:68"
@@ -16,13 +16,19 @@ Types:
 "Basic"-Prints Basic Debugging messages.
 "None"-Doesnt print to console at all.
 */ 
+print("==============================================")
+print("==       Environments X    Loading...       ==")
+print("==============================================")
 
 include("envx/load.lua")
 if SERVER then AddCSLuaFile("envx/load.lua") end
 local LoadFile = EnvX.LoadFile --Lel Speed.
 
-EnvX.Environments = EnvX.Environments or {}
-Environments = EnvX.Environments
+Environments = Environments or {}
+
+LoadFile("envx/sh_debug.lua",1)
+LoadFile("envx/sh_utility.lua",1)
+LoadFile("envx/sh_networking.lua",1)
 
 LoadFile("envx/sh_envxload.lua",1)
 

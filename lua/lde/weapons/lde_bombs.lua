@@ -12,7 +12,7 @@ local Func = function(self) if(!self.Exploded and self.Armed) then
 			ShockRadius		=		dat.Range,										--How far the Shockwave travels in a sphere
 			Ignore				=		self,									--Optional Entity that Shrapnel and Shockwaves ignore, Example: A missile entity so that Shrapnel doesn't hit it before it's removed
 			Inflictor				=		self,			--Required--		--The weapon or player that is dealing the damage
-			Owner				=		self.LDEOwner			--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
+			Owner				=		self:CPPIGetOwner()			--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
 		}
 		LDE:BlastDamage(Boom)
 		self.Exploded = true 

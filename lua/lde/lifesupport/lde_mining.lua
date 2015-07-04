@@ -73,7 +73,7 @@ LDE.LifeSupport.CompileDevice(Data,Makeup)
 local Func = function(self) if(self.Active==1)then
 if(LDE.LifeSupport.HasNeeded(self,self.Data.In))then LDE.LifeSupport.UseResources(self,self.Data.In)
 if(LDE.LifeSupport.DrillEnt(self,"lde_spore"))then rand = math.random(1,3) self:SupplyResource("Liquid Polylodarium",(1+rand)*self.Mult)
-Owner=self.LDEOwner
+Owner=self:CPPIGetOwner()
 Owner:GiveLDEStat("Mined", (4+rand*self.Mult))
 end end end end
 local Data={name="Spore Laser",class="lde_spore_harvester",In={"energy"},Out={"Liquid Polylodarium"},shootfunc=Func,InUse={300},OutMake={0}}
@@ -89,7 +89,7 @@ local Func = function(self) if(self.Active==1)then
 if(LDE.LifeSupport.HasNeeded(self,self.Data.In))then LDE.LifeSupport.UseResources(self,self.Data.In)
 if(LDE.LifeSupport.DrillWorld(self))then rand = math.random(0,3) --self:SupplyResource("Raw Ore",(2+rand)*self.Mult) No more mining ore with drills. >:(
 if self.environment:GetTemperature(self) > 300 then self:SupplyResource("Crystalised Polylodarium",(1+rand)*self.Mult)
-Owner=self.LDEOwner
+Owner=self:CPPIGetOwner()
 Owner:GiveLDEStat("Mined", (4+rand*self.Mult))
 end end end end end
 local Data={name="Polylodarium Drill",class="lde_ore_drill",In={"energy"},Out={"Crystalised Polylodarium"},shootfunc=Func,InUse={600},OutMake={0}}

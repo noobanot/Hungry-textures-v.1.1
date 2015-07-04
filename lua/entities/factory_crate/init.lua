@@ -22,7 +22,7 @@ function ENT:Think()
 	ent:SetPos( self.factory:LocalToWorld(Vector(0,0,60)) )
 	ent:Spawn()
 
-	self:CPPISetOwner(self.LDEOwner)
+	ent:CPPISetOwner(self:CPPIGetOwner())
 	ent.WasMade=true
 	local phys = ent:GetPhysicsObject()
 	

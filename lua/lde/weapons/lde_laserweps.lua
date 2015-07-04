@@ -77,7 +77,7 @@ local Func = function(self,CanFire)
 			if(LDE.LifeSupport.ManageResources(self,1))then
 				local bull = self.Data.Bullet
 				local trace=LDE.Weapons.FireLaser(self,bull)
-				LDE.Weapons.Blast(self,trace.HitPos,bull.Radius,bull.Damage,self.LDEOwner)
+				LDE.Weapons.Blast(self,trace.HitPos,bull.Radius,bull.Damage,self:CPPIGetOwner())
 				return true
 			end
 		end
