@@ -25,6 +25,7 @@ EnvX.Environments = EnvX.Environments or {}
 Environments = EnvX.Environments
 
 LoadFile("envx/sh_envxload.lua",1)
+LoadFile("scoreboard/init.lua",1)
 
 if CLIENT then
 	function Load(msg)
