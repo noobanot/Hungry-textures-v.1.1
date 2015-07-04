@@ -288,19 +288,6 @@ function LDE:Spawned( ent )
 	
 		if ent:IsPlayer() then return end
 
-		--Heat Simulation Spawn Function
-		if LDE:IsLifeSupport(ent) then 
-			if(not ent.IsLDEC and not ent.UpdateStorage and not ent.quiet_steam)then
-				if(ent.Think)then
-					ent.OldThink = ent.Think or function() end
-					ent.Think = function(self) --Overwrite think function
-						LDE.HeatSim.HeatThink(self) --Run Heat Sim Code
-						self:OldThink()--Run old think Function
-					end
-				end
-			end
-		end
-		
 		--HeatSimulation Variables
 		ent.LDE.Temperature = 0
 		ent:SetNWInt("LDEEntTemp", ent.LDE.Temperature) --Network the current Temperature, 0
@@ -328,17 +315,6 @@ function LDE:Spawned( ent )
 			//Msg("I am: "..tostring(ent).."	My Health is Min at: "..tostring(MinHealth).." from: "..tostring(Health))
 		else
 			//Msg("You Broke Somthing... in the part where health is figured out")
-		end
-	else --Client related things
-		ent.UpdateEnvOverlay = function(self) --My overlay modification.
-			if(not self.ExtraOverlayData)then self.ExtraOverlayData={} end --Make sure we have a table to add to.
-			if(self:GetNWInt("LDEMaxTemp")==0)then return end
-			self.ExtraOverlayData.Heat=math.Round(self:GetNWInt("LDEMinTemp")).."/("..math.Round(self:GetNWInt("LDEEntTemp"))..")/"..math.Round(self:GetNWInt("LDEMaxTemp")) --Add heat to the extras table.
-		end
-		ent.OldNormDraw = ent.DoNormalDraw --Copy the entitys draw function.
-		ent.DoNormalDraw = function(blah) --Replace the entitys draw function.
-			ent.UpdateEnvOverlay(ent) --Run our overlay modification code
-			ent.OldNormDraw(blah) --Run the old draw function.
 		end
 	end
 end
