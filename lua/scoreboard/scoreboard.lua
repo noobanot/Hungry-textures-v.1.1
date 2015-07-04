@@ -90,15 +90,15 @@ end
 ---------------------------------------------------------*/
 function PANEL:Paint()
 
-	draw.RoundedBox( 10, 0, 0, self:GetWide(), self:GetTall(), Color( 50, 50, 50, 205 ) )
+	draw.RoundedBox( 10, 0, 0, self:GetWide(), self:GetTall(), Color( 50, 50, 50, 150 ) )
 	surface.SetTexture( texGradient )
 	surface.SetDrawColor( 100, 100, 100, 155 )
 	surface.DrawTexturedRect( 0, 0, self:GetWide(), self:GetTall() ) 
 	
 	// White Inner Box
-	draw.RoundedBox( 6, 15, self.Description.y - 8, self:GetWide() - 30, self:GetTall() - self.Description.y - 6, Color( 230, 230, 230, 100 ) )
+	draw.RoundedBox( 6, 15, self.Description.y - 8, self:GetWide() - 30, self:GetTall() - self.Description.y - 6, Color( 0, 0, 0, 150 ) )
 	surface.SetTexture( texGradient )
-	surface.SetDrawColor( 255, 255, 255, 50 )
+	surface.SetDrawColor( 255, 255, 255, 30 )
 	surface.DrawTexturedRect( 15, self.Description.y - 8, self:GetWide() - 30, self:GetTall() - self.Description.y - 8 )
 	
 	// Sub Header
@@ -129,10 +129,10 @@ function PANEL:Paint()
 	else 
 		tColorGradientB = tColor.b
 	end
-	draw.RoundedBox( 8, 24, 12, 80, 80, Color( tColor.r, tColor.g, tColor.b, 200 ) )
+	draw.RoundedBox( 8, 24, 12, 80, 80, Color( 50,50,50, 200 ) )
 	surface.SetTexture( texGradient )
-	surface.SetDrawColor( tColorGradientR, tColorGradientG, tColorGradientB, 225 )
-	surface.DrawTexturedRect( 24, 12, 80, 80 ) 
+	--surface.SetDrawColor( tColorGradientR, tColorGradientG, tColorGradientB, 225 )
+	surface.DrawTexturedRect( 24, 12, 80, 40 ) 
 end
 
 
@@ -207,7 +207,7 @@ function PANEL:ApplySchemeSettings()
 	if (ColorCmp( team.GetColor(21), Color( 255, 255, 100, 255 ))) then
 		tColor = Color( 255, 155, 0, 255 )
 	else
-  		tColor = team.GetColor(21) 		
+  		tColor = team.GetColor(21)	
  	end 
 	
 	self.Hostname:SetFGColor( Color( tColor.r, tColor.g, tColor.b, 255 ) )
@@ -220,6 +220,8 @@ function PANEL:ApplySchemeSettings()
 		
 	self.lblPing:SetFGColor( Color( 0, 0, 0, 255 ) )
 	self.lblTeam:SetFGColor( Color( 0, 0, 0, 255 ) )
+	
+	self.Logog:SetTextColor( Color( 0,140,220,255 ) )
 end
 
 

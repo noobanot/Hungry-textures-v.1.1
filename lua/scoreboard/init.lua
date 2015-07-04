@@ -30,7 +30,7 @@ if CLIENT then
 		
 			if not EnvironmentXBoard then
 				self:CreateScoreboard()
-			end 
+			end
 
 			GAMEMODE.ShowScoreboard = true
 			gui.EnableScreenClicker( true )

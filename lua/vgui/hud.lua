@@ -16,6 +16,8 @@ t.additive = false
 t.antialias = true
 surface.CreateFont("lcd2", t)
 
+local texGradient 	= surface.GetTextureID( "gui/center_gradient" )
+
 local NoDraw = {
 	"CHudHealth",
 	"CHudBattery"
