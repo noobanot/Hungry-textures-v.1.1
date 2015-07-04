@@ -452,3 +452,5 @@ function ENT:Deploy()
 	--print(type(self.Hose).." "..type(self.rope))
 	if WireAddon then Wire_TriggerOutput(self, "InUse", 1) end
 end
+
+duplicator.RegisterEntityClass("env_pump", Environments.DupeFix, "Data" )
