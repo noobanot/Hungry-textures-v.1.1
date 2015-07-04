@@ -341,7 +341,8 @@ end
 
 local SwepThrustSound = "npc/env_headcrabcanister/hiss.wav"
 local SwepThrustSoundObj = Sound(SwepThrustSound)
-local ThrustForce = 6
+local ThrustForce = 800 --Aka Speed
+local SpeedBoost = 2
 local self = {}
 
 function meta:MMUStopSound()
@@ -394,44 +395,55 @@ function meta:MMUThink()
 
 	local Moved = false
 	local Power = ThrustForce
+	local Fuse = 0
 	
-	if self:KeyDown(IN_FORWARD) then
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetAimVector()*Power)) Moved=true
-		end
-	elseif self:KeyDown(IN_BACK) then
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetAimVector()*-Power)) Moved=true
-		end
-	elseif self:KeyDown(IN_MOVELEFT) then
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetAngles():Right()*-Power)) Moved=true
-		end
-	elseif self:KeyDown(IN_MOVERIGHT) then
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetAngles():Right()*Power)) Moved=true
-		end
-	elseif self:KeyDown(IN_JUMP) then 
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetAngles():Up()*Power)) Moved=true
-		end
-	elseif self:KeyDown(IN_DUCK) then
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetAngles():Up()*-Power)) Moved=true
-		end
-	elseif self:KeyDown(IN_WALK) then	
-		if self.suit.fuel >= 1 then
-			self:SetVelocity((self:GetVelocity()/-10)) Moved=true
-		end
+	if self:KeyDown(IN_SPEED) then
+		Power=Power*SpeedBoost
 	end
 	
+	local Move = Vector(0,0,0)
+	
+	if self.suit.fuel >= 1 then
+		if self:KeyDown(IN_FORWARD) then
+			Move = Move +(self:GetAimVector()*Power) Moved=true Fuse=Fuse+1
+		end
+		
+		if self:KeyDown(IN_BACK) then
+			Move = Move +(self:GetAimVector()*-Power) Moved=true Fuse=Fuse+1
+		end
+		
+		if self:KeyDown(IN_MOVELEFT) then
+			Move = Move +(self:GetAngles():Right()*-Power) Moved=true Fuse=Fuse+1
+		end
+		
+		if self:KeyDown(IN_MOVERIGHT) then
+			Move = Move +(self:GetAngles():Right()*Power) Moved=true Fuse=Fuse+1
+		end
+		
+		if self:KeyDown(IN_JUMP) then 
+			Move = Move +(self:GetAngles():Up()*Power) Moved=true Fuse=Fuse+1
+		end
+	
+		self:SetLocalVelocity(Move)
+	end
 	if Moved then
+		if self:KeyDown(IN_SPEED) then
+			Fuse=Fuse*4
+			if Fuse<=1 then
+				Fuse = 1
+			end
+		end
+		
 		if not self.SoundFileThing then
 			self.SoundFileThing = CreateSound(self,SwepThrustSoundObj)
 			self.SoundFileThing:Play()
+			self.SoundFileThing:ChangeVolume(0.1)
+		else
+			self.SoundFileThing:ChangePitch(50+(Fuse))
 		end
 		self:MMUStopSound()
-		self.suit.fuel = self.suit.fuel - 1
+		
+		self.suit.fuel = self.suit.fuel - Fuse
 		--self.Fuel = math.Clamp(self.Fuel-FuelConsumption,0,self.MaxFuel)
 	end
 	self.Moved = Moved

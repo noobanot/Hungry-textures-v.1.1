@@ -94,42 +94,38 @@ local Client = function(ENT)
 end
 local Touch = function(self,activator) self:Blackhole(activator) end
 local Think = function(self)
-	local ent = self
-	local pos = ent:GetPos()
-	local ents = ents.FindInSphere(pos,self.Radius)
-	--Msg(" \n Thinking: ")
+	local ents = ents.FindInSphere(self:GetPos(),self.Radius)
 	for _,v in pairs(ents) do
-		--Msg("Entity Pull! ")
-		if IsValid(v) and v:GetCreationID()~=self:GetCreationID() then
-			--Msg("IsUsable! ")
-			local range = v:GetPos():Distance(ent:GetPos())
-			if(not LDE:IsImmune(v) and not LDE:IsInSafeZone(v))then
-				--Msg("NOT IMMUNE! ")
-				local dir = (v:GetPos()-ent:GetPos()) --LDE:Normalise(v:GetPos()-ent:GetPos())
-				dir:Normalize()
-				local phys = v:GetPhysicsObject()
-				if math.random(1,15) == 1 then
-					if (phys:IsValid()) then 
-						phys:EnableMotion(true)
-						phys:Wake()	
-					end
-				end
+		if IsValid(v) and v:EntIndex()~=self:EntIndex() then
+			local range = v:GetPos():Distance(self:GetPos())
+			local dir = (v:GetPos()-self:GetPos()) --LDE:Normalise(v:GetPos()-ent:GetPos())
+			dir:Normalize()
+			
+			if not LDE:IsImmune(v) and not LDE:IsInSafeZone(v) then
 				if(range<80)then self:Blackhole(v) end
-				if(v:GetClass()=="player")then
-					if(range<1000 and v:Alive())then
-						v:SetDSP( 29, false )
-					else
-						v:SetDSP( 0, false )
-					end
-					
+				if v:IsPlayer() and v:Alive() then	
 					local pow= (self.Power*phys:GetMass()/range+1^2)
-					local force = ((v:GetPos()-self:GetPos())*Vector(-pow,-pow,-pow))*(range/self.Radius)
+					local force = (dir*Vector(-pow,-pow,-pow))*(self.Radius/range)
 					v:SetVelocity(force)
 				else
+					local phys = v:GetPhysicsObject()
+					if math.random(1,15) == 1 then
+						if (phys:IsValid()) then 
+							phys:EnableMotion(true)
+							phys:Wake()	
+						end
+					end
+					
+					--print(self.Power*(range/self.Radius))
+					--print("P: "..self.Power.." range: "..range.." radius: "..self.Radius.." D/R: "..range/self.Radius.." R/D: "..self.Radius/range)
+					
+					
+					LDE:DealDamage(v,self.Power*(self.Radius/range),self,self,false)
+					
 					if(IsValid(phys)) then
 						local dir = (v:GetPos()-self:GetPos())
 						local pow= (self.Power*phys:GetMass()/range+1^2)
-						local force = (dir*Vector(-pow,-pow,-pow))*(range/self.Radius)
+						local force = (dir*Vector(-pow,-pow,-pow))*(self.Radius/range)
 						phys:ApplyForceCenter(force)
 						--Msg("Applying force! \n")
 					end
@@ -138,6 +134,7 @@ local Think = function(self)
 		end
 	end
 end
+
 local Server = function(ENT)
 	
 	ENT.StartingPower = 500
@@ -180,6 +177,8 @@ local Server = function(ENT)
 			Owner				=		self		--Required--		--The player that owns the weapon, or the Player if the Inflictor is a player
 		}
 		LDE:BlastDamage(Boom)
+		
+		--[[ Disabling this, implementing new system to get this.
 		local Resources = {Blackholium={amount=10,name="Blackholium"}}
 		local scrap = ents.Create("resource_clump")
 			scrap:SetPos(self:GetPos()+Vector(math.random(-10,10),math.random(-10,10),math.random(-10,10)))
@@ -191,24 +190,22 @@ local Server = function(ENT)
 			local delay = (math.random(900, 1800))
 			scrap:Fire("break","",tostring(delay + 10))
 			scrap:Fire("kill","",tostring(delay + 10))
+		]]
 		self:Remove()
 	end
 	
 	function ENT:Blackhole(ent)
-		if(not IsValid(ent))then return end
-		if(not LDE:IsImmune(ent) and not LDE:IsInSafeZone(v))then
-			local phyx = ent:GetPhysicsObject()
-			str = ent:GetClass()
-			if(IsValid(phyx))then
-				mass =(phyx:GetMass()/10)
-			else
-				mass = 0
-			end
-			if ent:GetClass() == "player" then
+		if not IsValid(ent) then return end
+		if not LDE:IsImmune(ent) and not LDE:IsInSafeZone(v) then
+			if ent:IsPlayer() then
 				if(ent:Alive())then--Only kill living players.
 					ent:Kill()
-				end
+				end			
 			else
+				local mass = 0
+				local phyx = ent:GetPhysicsObject()
+				if(IsValid(phyx))then mass =(phyx:GetMass()/10) end
+
 				self.Power=self.Power+mass
 				self.Radius=math.Clamp(self.Radius+mass,self.StartingRadius,self.MaximumRadius)
 				ent:Remove()
@@ -217,5 +214,6 @@ local Server = function(ENT)
 		if(self.Power>=self.MaximumPower)then self:Explode() end
 	end
 end
+
 local Data={name="BlackHole",class="hypermass",Type="Space",Touch=Touch,Think=Think,Server=Server,Client=Client,Startup=Int,ThinkSpeed=0.05,SpawnMe=Spawn,minimal=1}
 LDE.Anons.GenerateAnomaly(Data)

@@ -131,7 +131,7 @@ function LDE.SporeAI.Attach(self,ent)
 	if(not self.Attached)then
 		self.Attached = ent
 		self.Host = ent
-		constraint.Weld(self, ent, 0, 0, 0, true)
+		--constraint.Weld(self, ent, 0, 0, 0, true)
 		self:SetParent(ent)
 		self.NextEvolve=CurTime()+20
 	end
@@ -154,7 +154,7 @@ function LDE.SporeAI.Stickto(self,ent)
 		self.Attached = ent
 		self.Host = ent
 		self.CanFlower = true
-		constraint.Weld(self, ent, 0, 0, 0, true)
+		--constraint.Weld(self, ent, 0, 0, 0, true)
 		self:SetParent(ent)
 		self.NextEvolve=CurTime()+20
 	end

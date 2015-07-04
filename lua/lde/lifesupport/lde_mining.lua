@@ -4,7 +4,7 @@ local Base = {Tool="Mining Devices",Type="Polylodarium"}
 
 --Crystalised Polylodarium Refinery
 local Func = function(self) if(self.Active==1)then LDE.LifeSupport.ManageResources(self) end end
-local Data={name="Crystalised Polylodarium Refinery",class="generator_crys_poly_refine",In={"Crystalised Polylodarium","energy"},Out={"Liquid Polylodarium"},shootfunc=Func,InUse={30,2000},OutMake={10}}
+local Data={name="Crystalised Polylodarium Refinery",class="generator_crys_poly_refine",In={"Crystalised Polylodarium","energy"},Out={"Liquid Polylodarium","AntiMatter"},shootfunc=Func,InUse={1200,10000},OutMake={400,1}}
 local Makeup = {name={"Crystalised Polylodarium Refinery"},model={"models/Cerus/Modbridge/Misc/LS/ls_gen11a.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class}
 LDE.LifeSupport.CompileDevice(Data,Makeup)
 

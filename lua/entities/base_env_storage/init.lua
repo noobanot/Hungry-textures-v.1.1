@@ -15,9 +15,8 @@ function ENT:Initialize()
 	
 	self.maxresources = {}
 	self.Active = 0
-	
-	local Phys = self:GetPhysicsObject()  	
-	if not IsValid(Phys) then  	
+		
+	if not util.IsValidProp( self:GetModel() ) then  	
 		self:Remove()
 		return 
 	end

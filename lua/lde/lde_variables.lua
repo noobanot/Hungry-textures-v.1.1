@@ -12,7 +12,6 @@ LDE.Blocked = {"phygun_beam",
 "sent_spaceanon",
 "env_",
 "star",
-"wire",
 "gyro",
 "hypermass"
 }
@@ -61,25 +60,6 @@ LDE.BannedClasses = {"edit_sun",
 "hoverdrive",
 "npc_tf2_ghost",
 "livable_module"
-}
-
----------------------ADVERTS-------------------------
-
-LDE.Adverts = {
-"Don't Forget that you can sell and buy resources using a Trade console.",
---"Missing Models? Read the !xmotd.",
-"Found a bug? Report it on the TauSC group discussions.",
-"Devices overheating? Weld them to a ship core with a radiator.",
-"Space is full of interesting things, go explore it.",
-"Got a suggestion? Post it on the TauSC group discussions.",
-"This server is running a mod made by the TauSC group.",
-"Run out of Jetpack fuel? Gather some Hydrogen, and use a suit dispenser to refuel.",
-"Remember Spawn planet is a safe zone, No damage can happen in safe zones.",
-"Join the TauSC, We have Science!",
-"See those rocks in space? They are minable with mining lasers.",
-"Space Holds a terrible secret! We must protect you.",
-"Watch out for space spores, An infection is very dangeruss.",
-"Dont use Air Compressers, use a water splitter instead."
 }
 
 --------------------Role System---------------
@@ -144,17 +124,8 @@ LDE.Rolesys.CreateRole("Well Known Pirate",{Bounty=5000},{},2,16)
 LDE.Rolesys.CreateRole("Wanted Criminal",{Bounty=10000},{},2,17)
 LDE.Rolesys.CreateRole("Public Enemy #1",{Bounty=50000},{},2,18)
 
---[[
-LDE.Rolesys.CreateRole("Hunter",{Kills=1},{},2,13.4)
-LDE.Rolesys.CreateRole("Mass Slayer",{Kills=10},{},2,14.1)
-LDE.Rolesys.CreateRole("Soul Collector",{Kills=100},{},2,18.5)
-
-LDE.Rolesys.CreateRole("Evil Genius",{Bounty=10000,Kills=200},{},2,20.5)
-]]
-
 --Misc Roles
 LDE.Rolesys.CreateRole("Civilian",{},Bad,0,1)
-
 
 --Extra Roles
 LDE.Rolesys.CreateRole("Developer",{Developer=1},{},0,9001)

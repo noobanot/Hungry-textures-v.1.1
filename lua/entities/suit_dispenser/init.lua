@@ -46,7 +46,7 @@ local function quiet_steam(ent)
 	ent:StopSound( "ambient.steam01" )
 end
 
-local MaxAmount = 4000
+local SuitDat = EnvX.DefaultSuitData
 local Multiplier = 1.5
 local Divider = 1/Multiplier
 
@@ -55,20 +55,20 @@ function ENT:SetActive( value, caller )
 	if self.Locked then return end
 	local energy,water,oxygen,fuel = self:GetResourceAmount("energy"),self:GetResourceAmount("water"),self:GetResourceAmount("oxygen"),self:GetResourceAmount("hydrogen")
 	
-	local Res_needed = math.ceil((MaxAmount - caller.suit.energy) * Divider)
+	local Res_needed = math.ceil((SuitDat.maxenergy - caller.suit.energy) * Divider)
 	
 	local MaxEng,MaxWat,MaxAir = math.floor(energy/10),math.floor(water/1),math.floor(oxygen/2)
 	
 	local MaxCharge = MaxEng
-	if MaxCharge<MaxWat then MaxCharge = MaxWat end
-	if MaxCharge<MaxAir then MaxCharge = MaxAir end
+	if MaxCharge>MaxWat then MaxCharge = MaxWat end
+	if MaxCharge>MaxAir then MaxCharge = MaxAir end
 	
 	if ( Res_needed < MaxCharge ) then
 		self:ConsumeResource("energy", Res_needed/10)
 		self:ConsumeResource("water", Res_needed/1)
 		self:ConsumeResource("oxygen", Res_needed/2)
 		
-		caller.suit.energy = MaxAmount
+		caller.suit.energy = SuitDat.maxenergy
 	elseif (energy > 0) then
 		caller.suit.energy = caller.suit.energy + math.floor(MaxCharge * Multiplier)
 		self:ConsumeResource("energy", energy)
@@ -76,10 +76,10 @@ function ENT:SetActive( value, caller )
 		self:ConsumeResource("oxygen", oxygen)
 	end
 	
-	local fuel_needed = math.ceil(((MaxAmount) - caller.suit.fuel) * Divider)
+	local fuel_needed = math.ceil(((SuitDat.maxfuel) - caller.suit.fuel) * Divider)
 	if ( fuel_needed < fuel ) then
 		self:ConsumeResource("hydrogen", fuel_needed)
-		caller.suit.fuel = MaxAmount
+		caller.suit.fuel = SuitDat.maxfuel
 	elseif (fuel > 0) then
 		caller.suit.fuel = caller.suit.fuel + math.floor(fuel * Multiplier)
 		self:ConsumeResource("hydrogen", fuel)

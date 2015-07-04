@@ -59,15 +59,6 @@ if(SERVER)then
 	function LDE:NotifyPlayer(Ply,Source,String,Color)
 		Ply:SendColorChat(Source,Color,String)
 	end
-		
-	function LDE:ChatAdvert()
-		local adcount = table.Count(LDE.Adverts)
-		local message = math.random(1,adcount)
-		LDE:NotifyPlayers("Advert",LDE.Adverts[message],{r=100,g=0,b=150})
-		--TellPlayers(LDE.Adverts[message])
-		timer.Simple(300,function() LDE:ChatAdvert() end)
-	end
-	--timer.Simple(180,function() LDE:ChatAdvert() end) --Disabled until further notice...
 	
 	function LDEFigureRole(ply)
 		local oldrole = ply:GetLDERole()
@@ -399,7 +390,6 @@ function SetExPoint(player, vehicle)
 		local Dist = EPP:Distance(VP)
 		if Dist <= 500 then
 			player:SetPos(vehicle.ExitPoint:GetPos() + vehicle.ExitPoint:GetUp() * 10)
-			player:SetSubSpace( vehicle:GetSubSpace() )
 			vehicle.ExitPoint.CDown = CurTime() + 0.5
 		end
 	end

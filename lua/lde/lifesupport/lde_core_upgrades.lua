@@ -15,23 +15,37 @@ local Data={name="Hull Repairer",class="lde_repair",In={"Refined Ore"},shootfunc
 LDE.LifeSupport.RegisterDevice(Data)
 
 --Shield Recharger
-local Func = function(self) if(self.Active==1)then
-	if(not self.LDE)then return end
-	local core = self.LDE.Core
-	if(not core or not core:IsValid())then self.LDE.Core = nil return end
-	local energy = self:GetResourceAmount("energy")
-	local needed = core.LDE.CoreMaxShield-core.LDE.CoreShield
-	if(core.LDE.CanRecharge==0)then return end
-	if(needed>=100)then energyuse=100 else energyuse=needed end
-	if(energy>=math.abs((energyuse*2)*(self:GetSizeMultiplier() or 1)) and energyuse>0) then
-		WireLib.TriggerOutput( core, "Shields", core.LDE.CoreShield)	
-		self:ConsumeResource("energy", math.abs((energyuse*2)*(self:GetSizeMultiplier() or 1)))
-		core.LDE.CoreShield = math.Clamp(core.LDE.CoreShield+math.abs(energyuse*(self:GetSizeMultiplier() or 1)),0,core.LDE.CoreMaxShield)
-		core:SetNWInt("LDEShield", core.LDE.CoreShield)
-		WireLib.TriggerOutput( core, "Shields", core.LDE.CoreShield or 0 )
-	end end end
+local Func = function(self) 
+	if(self.Active==1)then
+		if not self.LDE then return end
+		local core = self.LDE.Core
+		if not core or not IsValid(core) then 
+			self.LDE.Core = nil 
+			return 
+		end
+		
+		if core.LDE.CanRecharge==0 then return end
+		
+		local needed = core.LDE.CoreMaxShield-core.LDE.CoreShield
+		local rechargerate = math.abs(100*self:GetSizeMultiplier()*self:GetMultiplier())
+		local energycost = 1
+		
+		local recharge = 0
+		
+		if needed>=rechargerate then recharge=rechargerate else recharge=needed end
+
+		if self:GetResourceAmount("energy")>=math.abs(rechargerate*energycost) and needed>0 then
+			WireLib.TriggerOutput( core, "Shields", core.LDE.CoreShield)	
+			self:ConsumeResource("energy", rechargerate)
+			core.LDE.CoreShield = math.Clamp(core.LDE.CoreShield+rechargerate,0,core.LDE.CoreMaxShield)
+			core:SetNWInt("LDEShield", core.LDE.CoreShield)
+			WireLib.TriggerOutput( core, "Shields", core.LDE.CoreShield or 0 )
+		end 
+	end 
+end
+
 local Data={name="Shield Recharger",class="lde_recharge",In={"energy"},shootfunc=Func,InUse={0}}
 LDE.LifeSupport.RegisterDevice(Data)
 
-Environments.RegisterDevice("Ship Utilities", "Regenerators","Hull Repairer", "lde_repair", "models/gibs/airboat_broken_engine.mdl")
-Environments.RegisterDevice("Ship Utilities", "Regenerators","Shield Recharger", "lde_recharge", "models/slyfo_2/acc_sci_coolerator.mdl")
+Environments.RegisterDevice("Ship Utilities", "Hull Repairer"," Small Repairer", "lde_repair", "models/gibs/airboat_broken_engine.mdl")
+Environments.RegisterDevice("Ship Utilities", "Shield Rechargers","Small Charger", "lde_recharge", "models/slyfo_2/acc_sci_coolerator.mdl")

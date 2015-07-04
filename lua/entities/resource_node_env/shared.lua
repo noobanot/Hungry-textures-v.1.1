@@ -10,3 +10,6 @@ ENT.Instructions	= ""
 ENT.IsNode = true
 
 list.Set( "LSEntOverlayText" , "resource_node_env", {resnames = {}} )
+
+--Allow Duplicators to dupe this class.
+duplicator.Allow("resource_node_env")

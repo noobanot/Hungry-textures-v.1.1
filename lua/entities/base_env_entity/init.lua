@@ -17,8 +17,7 @@ function ENT:Initialize()
 	self.maxresources = {}
 	
 	--Failsafe against bad models check!
-	local Phys = self:GetPhysicsObject()  	
-	if not IsValid(Phys) then  	
+	if not util.IsValidProp( self:GetModel() ) then  	
 		self:Remove()
 		return 
 	end

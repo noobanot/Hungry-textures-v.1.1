@@ -7,7 +7,7 @@ local EnvX = EnvX --Gonna Need all the speed we can get.
 
 EnvX.DefaultSuitData = { --Default settings on the spacesuit used for spacebuild maps.
 	fuel=200, maxfuel = 4000,
-	energy=200, maxenergy = 4000,
+	energy=200, maxenergy = 4000*5,
 	temperature = 255, recover=0
 }
 
