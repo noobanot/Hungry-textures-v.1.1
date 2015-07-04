@@ -27,7 +27,7 @@ function PANEL:Paint()
 		color = Color( 125, 125, 125, 255 )
 	end
 	
-	if ( self.Player:Team() == TEAM_CONNECTING ) then
+	if IsValid( self.Player:Team() == TEAM_CONNECTING ) then
 		color = Color( 100, 100, 100, 155 )
 	elseif ( self.Player:IsValid() ) then
 		if ( team.GetName(self.Player:Team() ) == "Unassigned") then
@@ -101,7 +101,7 @@ function PANEL:UpdatePlayerData()
 	self.lblName:SetText( self.Player:Nick() )
 	self.lblTeam:SetText( team.GetName(self.Player:Team()) )
 	self.lblPing:SetText( self.Player:Ping() )
-	self.lblMoney:SetText( math.round(self.Player:GetLDEStat("Cash")))
+	self.lblMoney:SetText( math.floor(self.Player:GetLDEStat("Cash")))
 
 end
 

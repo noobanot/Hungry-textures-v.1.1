@@ -1,12 +1,4 @@
 
-CreateClientConVar("env_suit_color_r",255,true,true)
-CreateClientConVar("env_suit_color_g",255,true,true)
-CreateClientConVar("env_suit_color_b",255,true,true)
-
-CreateClientConVar("env_suit_model", "models/player/combine_super_soldier.mdl", true, true)
-
-Environments.EffectsCvar = CreateClientConVar("env_effects_enable","1",true,true)
-
 local function AddToolTab()
 	-- Add Tab
 	local logo;
@@ -14,8 +6,6 @@ local function AddToolTab()
 	spawnmenu.AddToolTab("Environments","Environments",logo)
 	-- Add Config Category
 	spawnmenu.AddToolCategory("Environments","Config"," Config");
-	-- Add the entry for config
-	spawnmenu.AddToolMenuOption("Environments","Config","EnvOptions","Settings","","",Environments.ConfigMenu,{});
 	-- Add the admin menu
 	spawnmenu.AddToolMenuOption("Environments","Config","Admin Tools","Admin Tools","","",Environments.AdminMenu,{});
 	-- Add the entry for Credits and Bugreporting!
@@ -50,24 +40,10 @@ hook.Add( "PopulateMenuBar", "EnvironmentsAddMenubar", function( menubar )
 	
     m:AddSpacer()
     
-    m:AddCVar( "Enable HUD", "env_hud_enabled", "1", "0" )
-    local option = m:AddCVar( "Use 3D HUD?", "env_hud_mode", "1", "0" )
-	m:AddCVar( "Draw Planet Effects", "env_effects_enable", "1", "0" )
-    m:AddCVar( "Enable Breathing Effects", "env_breathing_sound_enabled", "1", "0" )
-	
-	m:AddSpacer()
+    m:AddSpacer()
 	
 	m:AddOption("Reload HUD", function() RunConsoleCommand("env_reload_hud") end)
 end )
-
-SuitModels = {
-	["models/player/combine_super_soldier.mdl"] = {},
-	["models/SBEP Player Models/bluehevsuit.mdl"] = {},
-	["models/SBEP Player Models/orangehevsuit.mdl"] = {},
-	["models/SBEP Player Models/redhevsuit.mdl"] = {},
-	["models/Combine_Soldier_PrisonGuard.mdl"] = {},
-	["models/Combine_Soldier.mdl"] = {}
-}
 
 local function Bool2Num(b)
 	if b == true then
@@ -184,85 +160,6 @@ function Environments.AdminMenu(Panel)
 	else
 		Panel:Help("You are not an admin!")
 	end
-end
-
-function Environments.ConfigMenu(Panel)
-	Panel:ClearControls()
-	Environments.ConfigPanel = Panel
-	if(Environments.CurrentVersion > Environments.Version) then
-		local RED = Color(255,0,0,255)
-		Panel:Help("Your build of Environments is out of date"):SetTextColor(RED)
-		Panel:Help("LATEST BUILD: "..Environments.CurrentVersion):SetTextColor(RED)
-		Panel:Help("If you are getting this message on an internet server, tell the admin to update.")
-	elseif(Environments.CurrentVersion == 0) then
-		local ORANGE = Color(255,128,0,255)
-		Panel:Help("Couldn't determine latest BUILD. Make sure, you are connected to the Internet."):SetTextColor(ORANGE)
-	else
-		local GREEN = Color(0,255,0,255)
-		Panel:Help("Your Environments BUILD is up-to-date."):SetTextColor(GREEN)
-	end
-	Panel:Help("Current BUILD: "..Environments.Version)
-	
-	Panel:Help("Suit Color")
-	Panel:AddControl("Color", {
-		Label = "#suit_color",
-		Red = "env_suit_color_r",
-		Green = "env_suit_color_g",
-		Blue = "env_suit_color_b",
-		ShowAlpha = "0",
-		ShowHSV = "1",
-		ShowRGB = "1",
-		Multiplier = "255"
-	})
-	
-	Panel:Help("HUD Temperature Unit")
-	local options = {}
-	options["Fahrenheit"] = {env_hud_unit = "f"}
-	options["Kelvin"] = {env_hud_unit = "k"}
-	options["Celcius"] = {env_hud_unit = "c"}
-	Panel:AddControl("ComboBox", { Label = "Hud Temperature Unit", MenuButton = 0, Options = options})
-	
-	Panel:Help("Enable Planet Effects")
-	Panel:AddControl("CheckBox", {Label = "Enable Planet Effects?", Command = "env_effects_enable"} )
-	
-	Panel:Help("Enable HUD")
-	Panel:AddControl("CheckBox", {Label = "Enable HUD?", Command = "env_hud_enabled"} )
-	
-	Panel:Help("Use Cool HUD?")
-	local check = Panel:AddControl("CheckBox", {Label = "Use Cool HUD?", Command = "env_hud_mode"} )
-	
-	check.OnChange = function(self)
-		LoadHud()
-	end
-	
-	Panel:Help("Enable Breathing Sound")
-	Panel:AddControl("CheckBox", {Label = "Enable Breathing Sound?", Command = "env_breathing_sound_enabled"} )
-	
-	Panel:Help("Suit Model")
-	Panel:AddControl( "PropSelect", {
-		Label = "#Models",
-		ConVar = "env_suit_model",
-		Category = "Storages",
-		Models = SuitModels
-	})
-	
-	Panel:Help("HUD Adjustment")
-	Panel:NumSlider("HUD Y Scale", "env_hud_scale_x", 0, 3, 2) 
-	Panel:NumSlider("HUD Vertical Scale", "env_hud_scale_y", 0, 3, 2) 
-	Panel:NumSlider("HUD X Scale", "env_hud_scale_z", 0, 3, 2) 
-	
-	Panel:NumSlider("HUD Right Offset", "env_hud_offset_x", -10, 10, 2) 
-	Panel:NumSlider("HUD Forward Offset", "env_hud_offset_y", -70, 70, 2) 
-	Panel:NumSlider("HUD Up Offset", "env_hud_offset_z", -70, 70, 2)
-	
-	/*Panel:Button( "Open Help Page", "pp_superdof" )
-	-- The HELP Button
-	if(Environments.HasInternet) then
-		local VGUI = vgui.Create("SHelpButton",Panel);
-		VGUI:SetHelp("config/visual");
-		VGUI:SetTopic("Help:  Visual Settings");
-		Panel:AddPanel(VGUI);
-	end*/
 end
 
 /*function Environments.Credits(Panel)
