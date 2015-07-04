@@ -90,3 +90,5 @@ function ENT:SetActive( value, caller )
 	timer.Simple(3, temp) 
 end
 
+
+duplicator.RegisterEntityClass("suit_dispenser", Environments.DupeFix, "Data" )
