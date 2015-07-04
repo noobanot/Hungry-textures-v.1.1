@@ -249,7 +249,7 @@ function LDE:CoreDeathWeld(ent)
 				if(not Prop.Cluster)then
 					--print("Searching for nearby props!")
 					Prop.Cluster = Prop
-					Prop.NoLDEDamage = true
+					Prop.IsDead = true
 					Prop.Ents = {}
 					local PRad = Prop:BoundingRadius()
 					for key,found in pairs(ents.FindInSphere(Prop:GetPos(),PRad*2.2)) do
@@ -288,10 +288,10 @@ function LDE:ExplodeCore(ent)
 	if(not IsValid(ent))then return end
 	
 	--Redundant core death check here.
-	if(ent.NoLDEDamage)then return end
+	if(ent.IsDead)then return end
 	
 	--Tell the damage system it cant hurt this core anymore.
-	ent.NoLDEDamage = true
+	ent.IsDead = true
 	
 	--This is how many times we will repeat the weld search loop.
 	ent.ExplodeLoop = table.Count(ent.CoreLinked)/4
@@ -392,7 +392,6 @@ function LDE:BreakOff(ent)
 	
 	--print("Breaking off.")
 	
-	ent.NoLDEDamage=true
 	ent.IsDead = true
 	if(ent.LDEBreakOff)then
 		ent:LDEBreakOff()
