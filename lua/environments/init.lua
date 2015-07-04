@@ -178,7 +178,7 @@ function Environments.Create_Beam(ent, localpos, forward, mat, color)
 end
 
 if SERVER then
-	function Environments.RDPlayerUpdate(ply)--CRAPPY!!! FIX!
+	function Environments.RDPlayerUpdate(ply)--Recode this to use new netmessage system.
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
 			for name,tab in pairs(ent.resources) do
 				umsg.Start("Env_UpdateResAmt")
@@ -301,5 +301,23 @@ if SERVER then
 			util.Effect("Explosion", Effect, true, true)
 			ent:Remove()
 		end
+	end
+	
+	function Environments.DupeFix( pl, Data, ... )
+		Data.Class = scripted_ents.Get(Data.Class).ClassName
+		
+		local ent = ents.Create( Data.Class )
+		if not IsValid(ent) then return false end
+		
+		duplicator.DoGeneric( ent, Data )
+		ent:Spawn()
+		ent:Activate()
+		duplicator.DoGenericPhysics( ent, pl, Data ) -- Is deprecated, but is the only way to access duplicator.EntityPhysics.Load (its local)
+
+		ent:SetPlayer(pl)
+		
+		ent:CPPISetOwner(pl)
+		
+		return ent
 	end
 end
