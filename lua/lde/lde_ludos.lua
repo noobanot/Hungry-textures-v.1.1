@@ -6,7 +6,7 @@ Created by ludsoe.
 local low = string.lower
 
 --Create the Core.
-LudCore = {Names={"ludos","server","los","os"}}
+LudCore = {Names={"lud","ludos","server","los","os"}}
 local LudCore = LudCore
 
 function LudCore.Initialize()
