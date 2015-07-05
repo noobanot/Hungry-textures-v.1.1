@@ -8,6 +8,7 @@ if(CLIENT)then
 
 	function LDE.UI.SuperMenu.MenuOpen()
 		local Super = {}
+		if Super.Base and IsValid(Super.Base) then Super.Base:Remove() end
 		Super.Base = LDE.UI.CreateFrame({x=800,y=600},true,true,false,true)
 		Super.Base:Center()
 		Super.Base:SetTitle( "Environments X PDA V:"..EnvX.Version )
