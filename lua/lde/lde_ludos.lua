@@ -110,6 +110,7 @@ function LudCore.ProcessCommand(ply,cmd,teamchat)
 			return
 		end
 	end
+	LudCore.Response("I don't know what you want..")
 end
 EnvX.Utl:HookHook("PlayerSay","ludoscommandcheck",LudCore.ProcessCommand,1)
 
@@ -149,7 +150,7 @@ function LudCore.LoadFunctions()
 		end
 	end)
 
-	LudCore.RegisterCommand("PropCount",{{"how","count"},{"many","the"},{"props","entities","entitys"},{"are","in"},{"this","in"},{"this"}},function(ply,args)
+	LudCore.RegisterCommand("PropCount",{{"how","count"},{"many","the"},{"props","entities","entitys"},{"are","in"},{"this","in","that"},{"this","that"}},function(ply,args)
 		local looking = ply:GetEyeTrace()
 		if looking.Hit then
 			if looking.HitNonWorld then
