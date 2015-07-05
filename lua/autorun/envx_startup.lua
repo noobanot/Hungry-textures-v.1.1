@@ -6,7 +6,7 @@ local start = SysTime()
 EnvX = {}
 local EnvX = EnvX --MAH SPEED
 
-EnvX.Version = "InDev V:68"
+EnvX.Version = "InDev V:72"
 EnvX.Gamemode = "SandBox"
 EnvX.EnableMenu = true --Debug Menu
 EnvX.DebugMode = "Verbose" 

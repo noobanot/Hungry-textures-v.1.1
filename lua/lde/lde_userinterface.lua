@@ -10,7 +10,7 @@ if(CLIENT)then
 		local Super = {}
 		Super.Base = LDE.UI.CreateFrame({x=800,y=600},true,true,false,true)
 		Super.Base:Center()
-		Super.Base:SetTitle( "Environments X PDA" )
+		Super.Base:SetTitle( "Environments X PDA V:"..EnvX.Version )
 		Super.Base:MakePopup()
 		
 		Super.Catagorys = LDE.UI.CreatePSheet(Super.Base,{x=790,y=565 },{x=5,y=30})

@@ -10,7 +10,7 @@ LudCore = {Names={"ludos","server","los","os"}}
 local LudCore = LudCore
 
 function LudCore.Initialize()
-	LudCore.LudOS = {Version="Offline",Commands={},Functions={},ClassAlias={}}
+	LudCore.LudOS = {Version="BootStrap",Commands={},Functions={},ClassAlias={}}
 	LudCore.LoadFunctions()
 	LudCore.DownloadUpdate()
 end
@@ -167,7 +167,7 @@ function LudCore.LoadFunctions()
 	end)
 	
 	LudCore.RegisterCommand("VersionCheck",{{"version","ver","vers"}},function(ply,args)
-		LudCore.Response("I'm Running on Version: "..LudCore.LudOS.Version)
+		LudCore.Response("I'm Running on Version: "..LudCore.LudOS.Version.." Envx Version: "..EnvX.Version)
 	end)
 
 	LudCore.RegisterCommand("Update",{{"update"}},function(ply,args)
