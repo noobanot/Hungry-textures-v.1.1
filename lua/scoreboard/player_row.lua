@@ -109,7 +109,17 @@ function PANEL:UpdatePlayerData()
 	self.lblTeam:SetText( team.GetName(self.Player:Team()) )
 	self.lblPing:SetText( self.Player:Ping() )
 	self.lblMoney:SetText( math.floor(self.Player:GetLDEStat("Cash")))
+	
+	if  self.Muted == nil or self.Muted ~= self.Player:IsMuted() then
+		self.Muted = self.Player:IsMuted()
+		if self.Muted then
+			self.lblMute:SetImage( "icon32/muted.png" )
+		else
+			self.lblMute:SetImage( "icon32/unmuted.png" )
+		end
 
+		self.lblMute.DoClick = function() self.Player:SetMuted( not self.Muted ) end
+	end	
 end
 
 /*---------------------------------------------------------
@@ -126,12 +136,14 @@ function PANEL:Init()
 	self.lblTeam 	= vgui.Create( "DLabel", self )
 	self.lblPing 	= vgui.Create( "DLabel", self )
 	self.lblMoney   = vgui.Create( "DLabel", self )
+	self.lblMute = vgui.Create( "DImageButton", self)
 		
 	// If you don't do this it'll block your clicks
 	self.lblName:SetMouseInputEnabled( false )
 	self.lblTeam:SetMouseInputEnabled( false )
 	self.lblPing:SetMouseInputEnabled( false )	
 	self.lblMoney:SetMouseInputEnabled( false )
+	self.lblMute:SetMouseInputEnabled( true )
 	
 	self.imgAvatar = vgui.Create("AvatarImage", self)
 end
@@ -219,12 +231,16 @@ function PANEL:PerformLayout()
 	//self.lblBounty:SizeToContents()
 	local COLUMN_SIZE = 45
 	
-	self.lblPing:SetPos( self:GetWide() - COLUMN_SIZE * 1, 0 )
+	self.lblPing:SetPos( self:GetWide() - COLUMN_SIZE * 2, 0 )
+	
 	self.lblTeam:SizeToContents()
 	self.lblTeam:SetPos( self:GetWide() - COLUMN_SIZE * 8.5, 3 )
 	
 	self.lblMoney:SizeToContents()
 	self.lblMoney:SetPos( self:GetWide() - COLUMN_SIZE * 10.4, 3 )
+	
+	self.lblMute:SetSize(32,32)
+	self.lblMute:SetPos( self:GetWide() - COLUMN_SIZE - 8, 0 )
 	
 	if ( self.Open || self.Size != self.TargetSize ) then
 		self.infoCard:SetVisible( true )

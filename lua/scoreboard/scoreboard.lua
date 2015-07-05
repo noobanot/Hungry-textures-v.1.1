@@ -189,7 +189,7 @@ function PANEL:PerformLayout()
 	self.lblTeam:SizeToContents()
 	self.lblMoney:SizeToContents()
 	
-	self.lblPing:SetPos( self:GetWide() - 45 - self.lblPing:GetWide()/2, self.PlayerFrame.y - self.lblPing:GetTall() - 3  )
+	self.lblPing:SetPos( self:GetWide() - 45*2 - self.lblPing:GetWide()/2, self.PlayerFrame.y - self.lblPing:GetTall() - 3  )
 	self.lblTeam:SetPos( self:GetWide() - 45*8.2 - self.lblTeam:GetWide()/2, self.PlayerFrame.y - self.lblPing:GetTall() - 3  )
 	self.lblMoney:SetPos( self:GetWide() - 45*10.2 - self.lblTeam:GetWide()/2, self.PlayerFrame.y - self.lblPing:GetTall() - 3  )
 end
