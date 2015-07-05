@@ -46,12 +46,15 @@ local Data={name="Liquid Polylodarium Storage",class="lde_liqu_poly_storage",sto
 local Makeup = {name=Names,model=Models,Tool=Base.Tool,Type=Base.Type,class=Data.class}
 LDE.LifeSupport.CompileStorage(Data,Makeup)
 
---Liquid Polylodarium Storage
+--Antimatter Storage
+local Base = {Tool="Mining Storage",Type="AntiMatter"}
+
 local Names = {"AntiMatter Barrel"}
 local Models = {"models/Slyfo/barrel_unrefined.mdl"}
 local Data={name="AntiMatter Storage",class="lde_antimatter_storage",storage={"AntiMatter"},Rates={[5] = "AntiMatter"}}
 local Makeup = {name=Names,model=Models,Tool=Base.Tool,Type=Base.Type,class=Data.class}
 LDE.LifeSupport.CompileStorage(Data,Makeup)
+
 --[[
 --Electromium Storage
 local Base = {Tool="Mining Storage",Type="Electromium"}

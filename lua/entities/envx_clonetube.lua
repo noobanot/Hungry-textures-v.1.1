@@ -10,7 +10,8 @@ ENT.AdminSpawnable		= true
 ENT.NoEnvPanel			= true
 ENT.PointCost			= 3000
 
-list.Set( "LSEntOverlayText" , "envx_clonetube", {HasOOO = true ,resnames = {"energy","Carbon","water"}, genresnames={}} )
+--Make it consume resources to spawn.
+--list.Set( "LSEntOverlayText" , "envx_clonetube", {HasOOO = true ,resnames = {"energy","Carbon","water"}, genresnames={}} )
 
 if(SERVER)then
 	function ENT:Initialize()
@@ -33,7 +34,7 @@ if(SERVER)then
 				self:EmitSound( "fvox/vitalsigns_on.wav" )
 			end
 		else
-			activator:PrintMessage(4, "SpawnPoint Not valid. Link a core with 3000 points.")
+			activator:PrintMessage(4, "SpawnPoint Not valid. Link a core with "..self.PointCost.." points.")
 		end
 	end 
 
@@ -45,7 +46,7 @@ if(SERVER)then
 				local ed = EffectData()
 				ed:SetEntity(pl)
 				ed:SetScale(5)
-				util.Effect("PlayerSpawnEffect", ed, true, true)
+				util.Effect("playerclonespawn", ed, true, true)
 				pl:EmitSound( "fvox/medical_repaired.wav" )
 			end
 		end

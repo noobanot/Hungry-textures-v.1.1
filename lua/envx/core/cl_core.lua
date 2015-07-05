@@ -121,7 +121,9 @@ end
 --              Environments Usermessages             --
 --------------------------------------------------------
 local function LSUpdate(msg) --recieves life support update packet
-	Environments.suit = table.Merge(EnvX.DefaultSuitData,{fuel = net.ReadFloat(),energy=net.ReadFloat()})
+	local Dat = table.Copy(EnvX.DefaultSuitData)
+	table.Merge(Dat,{fuel = net.ReadFloat(),energy=net.ReadFloat()})
+	Environments.suit = Dat
 	Environments.suit.temperature = net.ReadFloat()
 	Environments.suit.o2per = net.ReadFloat()
 	Environments.suit.temp = net.ReadFloat()

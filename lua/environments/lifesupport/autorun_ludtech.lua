@@ -22,6 +22,7 @@ LoadFile(P.."lde_userinterface.lua",1)
 LoadFile(P.."sh_vguiease.lua",1)
 LoadFile(P.."lde_core.lua",1)
 LoadFile(P.."lde_unlocksystem.lua",1)
+LoadFile(P.."lde_mechadds.lua",2)
 LoadFile(P.."lde_weaponcore.lua",1)
 LoadFile(P.."lde_shipcore.lua",1)
 LoadFile(P.."lde_lifecore.lua",1)
@@ -35,6 +36,7 @@ LoadFile(P.."lde_effectcore.lua",1)
 LoadFile(P.."lde_damagecontrol.lua",2)
 LoadFile(P.."lde_sporeai.lua",2)
 LoadFile(P.."lde_envheat.lua",2)
+LoadFile(P.."lde_ludos.lua",1)
 
 if(SERVER)then
 

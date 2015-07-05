@@ -198,6 +198,8 @@ function ENT:DoNormalDraw( bDontDrawModel )
 					OverlayText = OverlayText..k..": "..v.."\n"
 				end
 			end
+			
+			OverlayText = OverlayText .. math.Round(self:GetNWInt("LDEMinTemp",0)).."/("..math.Round(self:GetNWInt("LDEEntTemp",0))..")/"..math.Round(self:GetNWInt("LDEMaxTemp",0)).."\n"
 			OverlayText = OverlayText .. "(" .. playername ..")"
 			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
 		else

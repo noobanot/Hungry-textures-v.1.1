@@ -103,6 +103,7 @@ local Think = function(self)
 			
 			if not LDE:IsImmune(v) and not LDE:IsInSafeZone(v) then
 				if(range<80)then self:Blackhole(v) end
+				
 				if v:IsPlayer() and v:Alive() then	
 					local pow= (self.Power*phys:GetMass()/range+1^2)
 					local force = (dir*Vector(-pow,-pow,-pow))*(self.Radius/range)
@@ -120,7 +121,7 @@ local Think = function(self)
 					--print("P: "..self.Power.." range: "..range.." radius: "..self.Radius.." D/R: "..range/self.Radius.." R/D: "..self.Radius/range)
 					
 					
-					LDE:DealDamage(v,self.Power*(self.Radius/range),self,self,false)
+					LDE:DealDamage(v,(self.Power/10)*(self.Radius/range),self,self,false)
 					
 					if(IsValid(phys)) then
 						local dir = (v:GetPos()-self:GetPos())

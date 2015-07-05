@@ -4,7 +4,7 @@ local NDat = Utl.NetMan
 
 if(SERVER)then
 	function LDE:CheckUnlocked(ply,ent)
-		print("Checking! "..tostring(ply).." "..tostring(ent))
+		--print("Checking! "..tostring(ply).." "..tostring(ent))
 		if ent == nil or !ent:IsValid() then print("Null Ent") return false end
 		local str = ent:GetClass()
 		local unlocked = ply:GetUnlocks()

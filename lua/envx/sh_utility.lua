@@ -2,7 +2,7 @@
 Shared Utility LUA -Holds all the utility functions for the mod.
 ----------------------------------------------------]]--
 
-local EnvX = EnvX --Localise the global table for speed.
+local EnvX = EnvX or {} --Localise the global table for speed.
 EnvX.Utl = {} --Make a Utility Table.
 local Utl = EnvX.Utl --Makes it easier to read the code.
 
@@ -79,6 +79,8 @@ function Utl:HookHook(Hook,Name,Func,Impo) --Makes the HookHook in the hook tabl
 		print("Error....")
 		PrintTable(Utl)
 	end]]
+	
+	if not HTable then return end --FUCK OFF ERROR
 	
 	if HTable[Hook][Name] then
 		Utl:Debug("Hooks","There already is a HookHook in "..Hook.." for "..Name.." overwriting!","Error")
@@ -163,7 +165,8 @@ if(SERVER)then
 	Utl:MakeHook("PlayerInitialSpawn")
 	Utl:MakeHook("OnRemove")
 	Utl:MakeHook("Shutdown")
-		
+	Utl:MakeHook("PlayerSay")
+			
 	function Utl:LoopValidPlayers(F,A1,A2,A3,A4,A5)
 		local players = player.GetAll()	
 		for _, ply in ipairs( players ) do
@@ -179,6 +182,7 @@ else
 	Utl:MakeHook("SpawnMenuOpen")
 	Utl:MakeHook("PopulateToolMenu")
 	Utl:MakeHook("HUDPaint")
+	Utl:MakeHook("OnPlayerChat")
 end
 
 --[[----------------------------------------------------

@@ -59,31 +59,32 @@ end
 
 if(SERVER)then
 	
-	function SporeThink(swarm,sporecount,num) --This allows all the spores to get a chance at thinking.
-		local number = math.Round(math.random(1,sporecount))
-		local spore = swarm[number]
-		if(not spore.BrainWait)then
-			spore.BrainWait = true
-			timer.Simple(0.3+(math.random(10,30)*0.1), function() if(IsValid(spore) and spore.Brain)then spore.BrainWait=false spore:Brain() end end)
-		else
-			if(num<5)then
-				SporeThink(swarm,sporecount,num+1)
+	
+	function SporeThink() --This allows all the spores to get a chance at thinking.
+		local I = 0
+		for key, spore in pairs( ents.FindByClass("lde_spore") ) do
+			if(not spore.BrainWait)then
+				spore.BrainWait = true
+				if(IsValid(spore) and spore.Brain)then 
+					spore.BrainWait=false 
+					spore:Brain() 
+				end 
+			end
+			
+			if I>=10 then
+				I=1
+				coroutine.yield()
+			else
+				I=I+1
 			end
 		end
+		
+		coroutine.yield()
+		SporeThink()
 	end
 	
-	function SporeMaster()
-		local swarm = ents.FindByClass("lde_spore")
-		local sporecount = table.Count(swarm) or 0
-		if(sporecount==0)then return end
-		for I=1, math.Round(sporecount*0.4) do
-			SporeThink(swarm,sporecount,0)
-		end
-		--LDE:Debug("Spore Main Ai Thread Ran.")
-	end
-
-	timer.Create("SporeAIThread",1.5,0, function() SporeMaster() end)
-
+	local SporeMaster = coroutine.create(SporeThink)
+	timer.Create("SporeAIThread",0.1,0, function() coroutine.resume(SporeMaster) end)
 end
 
 function SporeDebug(string)
@@ -92,7 +93,7 @@ end
 
 function LDE.SporeAI.Evolve(self)
 	if(not self.FullyEvolved or self.FullyEvolved==false)then
-		self.NextEvolve=CurTime()+(20*self.SporeStage)
+		self.NextEvolve=CurTime()+(10*self.SporeStage)
 		if(self.SporeStage<4)then
 			SporeDebug("Next Evolve in "..self.NextEvolve)
 			self.SporeStage=self.SporeStage+1
@@ -100,8 +101,8 @@ function LDE.SporeAI.Evolve(self)
 			self.LDEHealth=(200*self.SporeStage)
 			self.LDEMaxHealth=self.LDEHealth
 		elseif(self.SporeStage==4)then
-			local Nearby=LDE.SporeAI.GetNearby(self:GetPos())
-			if(self.CanFlower or Nearby==1)then
+			local Nearby,Flowers=LDE.SporeAI.GetNearby(self:GetPos())
+			if(self.CanFlower or Flowers<4)then
 				self.SporeStage=5
 				self.FullyEvolved=true			
 				self:SetModel(LDE.SporeAI.Evolutions.Models[self.SporeStage])--NewModel
@@ -117,13 +118,16 @@ function LDE.SporeAI.Evolve(self)
 end
 
 function LDE.SporeAI.GetNearby(pos)
-	local nearby = 0
+	local nearby,flowers = 0,0
 	for k,e in pairs(ents.FindInSphere(pos,1000)) do
 		if(e.IsSpore)then
 			nearby=nearby+1
+			if e.SporeStage==5 then
+				flowers=flowers+1
+			end
 		end
 	end
-	return nearby
+	return nearby,flowers
 end
 
 function LDE.SporeAI.Attach(self,ent)
@@ -134,6 +138,11 @@ function LDE.SporeAI.Attach(self,ent)
 		--constraint.Weld(self, ent, 0, 0, 0, true)
 		self:SetParent(ent)
 		self.NextEvolve=CurTime()+20
+		
+		local phys = self:GetPhysicsObject()
+		if (IsValid(phys)) then
+			phys:EnableMotion(false)
+		end
 	end
 end
 
@@ -156,12 +165,12 @@ function LDE.SporeAI.Stickto(self,ent)
 		self.CanFlower = true
 		--constraint.Weld(self, ent, 0, 0, 0, true)
 		self:SetParent(ent)
-		self.NextEvolve=CurTime()+20
+		self.NextEvolve=CurTime()+5
 	end
 end
 
 function ZoneCheck(self,Pos,Size)  
-    local XB, YB, ZB = Size * 0.5, Size * 0.5, Size * 0.5
+    local XB, YB, ZB = Size * 0.8, Size * 0.8, Size * 0.8
     local Results = {}
     local Clear = true
     for k,e in pairs(ents.FindInSphere(Pos,Size)) do
@@ -196,7 +205,7 @@ end
 function LDE.SporeAI.GenerateSpore(self)
 	SporeDebug("Reproducing")
 	local tr = LDE.SporeAI.SpreadTrace(self)
-	local SpreadDist = 70--70
+	local SpreadDist = 80--70
 	if tr.Hit and not tr.HitSky and not tr.HitWorld then
 		if not ZoneCheck(self,tr.HitPos,SpreadDist) then SporeDebug("Spores are too close!") return end
 		SporeDebug("First trace is success!")
@@ -251,8 +260,8 @@ function LDE.SporeAI.MakeSpore(Data)
 	ENT.Type = "anim"
 	ENT.Base = "base_gmodentity"
 	ENT.PrintName = Data.name
-	ENT.Spawnable			= false
-	ENT.AdminSpawnable		= false
+	ENT.Spawnable			= true
+	ENT.AdminOnly		= true
 
 	ENT.StartMe				= 1
 	ENT.Stype				= 0
@@ -276,6 +285,10 @@ function LDE.SporeAI.MakeSpore(Data)
 		
 		if(Data.Server)then
 			Data.Server(ENT)
+		end
+		
+		function ENT:ReadGenetics()
+			return self.Genetics
 		end
 		
 		function ENT:SpawnFunction( ply, tr )
@@ -316,11 +329,6 @@ function LDE.SporeAI.MakeSpore(Data)
 			end
 		end
 		
-		function ENT:OnTakeDamage(dmg)
-			--LDE.SporeAI.TakeDam(self,dmg)
-		--	LDE.SporeAI.TakeDam(self,dmg:GetDamage(),dmg:GetAttacker(),dmg:GetInflictor())
-		end	
-		
 		function ENT:OnLDEDamage(dmg,attacker,inflictor)
 			LDE.SporeAI.TakeDam(self,dmg,attacker,inflictor)
 		end	
@@ -334,12 +342,7 @@ function LDE.SporeAI.MakeSpore(Data)
 				end
 			else
 				if not activator.IsSpore and not activator:IsPlayer() then
-					local pos = self:GetPos()
-					if ((activator:GetVelocity()+self:GetVelocity()):Length() > 15000) then
-						self:Remove()
-					else
-						LDE.SporeAI.Stickto(self,activator)
-					end
+					LDE.SporeAI.Stickto(self,activator)
 				end 
 			end
 		end
@@ -349,9 +352,7 @@ function LDE.SporeAI.MakeSpore(Data)
 			if self.Attached then
 				if(self.SporeStage>=4)then
 					self.Genetics.Think(self,self.Attached)
-					if(self.SporeStage>=5)then
-						LDE.SporeAI.GenerateSpore(self)
-					end
+					LDE.SporeAI.GenerateSpore(self)
 				end
 				if(self.NextEvolve<CurTime())then
 					LDE.SporeAI.Evolve(self)
@@ -436,7 +437,11 @@ end
 LDE.SporeAI.MakeGeneSlice("Attach","Darwins Whore",Color(255,100,100,255),Gene)
 
 local Gene = function(self,Attached)
-	
+	if self.LDEHealth < self.LDEMaxHealth then
+		self.LDEHealth = self.LDEHealth+50
+	else
+		self.LDEHealth = self.LDEMaxHealth
+	end
 end
 LDE.SporeAI.MakeGeneSlice("Attach","Regenerative",Color(150,255,150,255),Gene)
 
@@ -490,7 +495,7 @@ local Gene = function(self,Activator)
 		Activator:GiveMutation("Sporefection",60,Debuff,false,true)
 	end
 end
-LDE.SporeAI.MakeGeneSlice("Touch","Infectius",Color(220,0,255,255),Gene)
+LDE.SporeAI.MakeGeneSlice("Touch","Infectious",Color(220,0,255,255),Gene)
 
 LDE.SporeAI.MakeGeneSlice("Touch","None",Color(0,0,0,255),function()end)
 LDE.SporeAI.MakeGeneSlice("Touch","None2",Color(0,0,0,255),function()end)

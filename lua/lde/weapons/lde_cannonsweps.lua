@@ -69,10 +69,10 @@ LDE.Weapons.CompileWeapon(Data,Makeup)
 -------------------------------------
 
 local Base = {Tool="Weapon Systems",Type="Plasma"}
-local FireCannon = Func
 local Client = function(self) return LDE.Weapons.ShowCharge(self,self.Data.Bullet) end --Clientside
 local ClientSetup = function(ENT) ENT.LDETools.Charge = Client end
-local Func = function(self,CanFire) --Charge function
+local FireCannon = Func
+local ChargeUp = function(self,CanFire) --Charge function
 	LDE.Weapons.ManageCharge(self,self.Data.Bullet) 
 	return true
 end 
@@ -80,14 +80,14 @@ end
 --Plasma Cannon
 local Fire = function(self) self.Data.FireCannon(self) end
 local Bullet = {ShrapCount=0,ShrapDamage=0,Spread=1,Radius=400,Damage=5000,Recoil=2000,Speed=60,Recoil=0,CoolDown=3,ChargeRate=10,MinCharge=50,MaxCharge=60,Single=true,ChargeShoot=Fire,BulletFunc=BulletFunc,FireSound="ambient/explosions/explode_1.wav"}
-local Data={name="Plasma Cannon",class="plasma_cannon_weapon",WireOut={"Charge"},In={"Plasma"},MountType="Medium",FireCannon=FireCannon,shootfunc=Func,ClientSetup=ClientSetup,Points=500,heat=100,firespeed=0.8,InUse={5},Bullet=Bullet,Shot=Shot}
+local Data={name="Plasma Cannon",class="plasma_cannon_weapon",WireOut={"Charge"},In={"Plasma"},MountType="Medium",FireCannon=FireCannon,shootfunc=ChargeUp,ClientSetup=ClientSetup,Points=500,heat=100,firespeed=0.8,InUse={5},Bullet=Bullet,Shot=Shot}
 local Makeup = {name={"Plasma Cannon"},model={"models/Spacebuild/cannon1_gen.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class,Unlock=true,UnlockCost=20000,UnlockType="Plasma Weapons"}
 LDE.Weapons.CompileWeapon(Data,Makeup)
 
 --Plasma Cannon mini
 local Fire = function(self) self.Data.FireCannon(self) end
 local Bullet = {ShrapCount=0,ShrapDamage=0,Spread=1,Radius=250,Damage=3400,Recoil=2000,Speed=65,Recoil=0,CoolDown=1,ChargeRate=10,MinCharge=20,MaxCharge=30,Single=true,ChargeShoot=Fire,BulletFunc=BulletFunc,FireSound="ambient/explosions/explode_1.wav"}
-local Data={name="Small Plasma Cannon",class="plasma_cannon_small_weapon",WireOut={"Charge","CanFire"},In={"Plasma"},MountType="Small",FireCannon=FireCannon,shootfunc=Func,ClientSetup=ClientSetup,Points=400,heat=100,firespeed=0.8,InUse={5},Bullet=Bullet,Shot=Shot}
+local Data={name="Small Plasma Cannon",class="plasma_cannon_small_weapon",WireOut={"Charge","CanFire"},In={"Plasma"},MountType="Small",FireCannon=FireCannon,shootfunc=ChargeUp,ClientSetup=ClientSetup,Points=400,heat=100,firespeed=0.8,InUse={5},Bullet=Bullet,Shot=Shot}
 local Makeup = {name={"Small Plasma Cannon"},model={"models/Slyfo_2/mini_turret_pulselaser.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class,Unlock=true,UnlockCost=10000,UnlockType="Plasma Weapons"}
 LDE.Weapons.CompileWeapon(Data,Makeup)
 

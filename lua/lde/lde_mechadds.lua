@@ -117,7 +117,7 @@ end
 local Multiplier = 11								--How often we run, was 6 previously, 11 should run about 6 times a second
 local ProjectileSkip = 1							--So we only run every 6 ticks
 LDE.Projectiles = LDE.Projectiles or {}	--Where our projectiles are stored
-local RemoveProj = {}							--Table of keys so we can cleanup our main table in a separate loop
+local RemoveProj = {}						--Table of keys so we can cleanup our main table in a separate loop
 
 --Projectile Function-----
 function LDE:FireProjectile(MyData)
@@ -149,14 +149,17 @@ function LDE:FireProjectile(MyData)
 		}
 	]]--
 	
+	PrintTable(MyData)
+	
 	local Data = table.Copy(MyData)
 	local MyReturn = {}
-	
+	MyReturn.Multi=false
+
 	if type(Data.ShootPos) ~= "Vector" or type(Data.Direction) ~= "Vector" or type(Data.ProjSpeed) ~= "number" or type(Data.Spread) ~= "number" then
 		print(type(Data.ShootPos)..type(Data.Direction)..type(Data.ProjSpeed)..type(Data.Spread))
 		return MyReturn
 	end
-	if type(Data.Model) ~= "string" or type(Data.Count) ~= "number" then
+	if type(Data.Model) ~= "string" then
 		print(type(Data.Model))
 		return MyReturn
 	end
@@ -174,6 +177,7 @@ function LDE:FireProjectile(MyData)
 	Data.TrailRes = Data.TrailRes or 1/(Data.TrailStartW+Data.TrailEndW)*0.5
 	Data.TrailTexture = Data.TrailTexture or "trails/laser.vmt"
 	Data.HomeDelay = Data.HomeDelay or 0.2
+	Data.OnHit = Data.OnHit or function() end
 	
 	for I=1, Data.Count do
 
@@ -183,16 +187,14 @@ function LDE:FireProjectile(MyData)
 		local spread = (Data.Spread / 100)*90
 		local cone = Angle(math.Rand(-spread,spread),math.Rand(-spread,spread),math.Rand(-spread,spread))
 		local dir = Vector(Data.Direction.X,Data.Direction.Y,Data.Direction.Z)
-		--BULLET DROP, WILL NEED GRAVITY CHECKING LATER
-		----------------------------------------------------------------
+
 		dir:Rotate(cone)
 		dir:Normalize()
 		BulletData.Dir = dir*Data.ProjSpeed*Multiplier
 		if IsValid(Data.Ignore) then BulletData.Ignore = Data.Ignore end
-		--print(Data.ProjSpeed)
 	
 		BulletData.Projectile = ents.Create("lde_bulletent")
-		--BulletData.Projectile:SetRenderMode( RENDERMODE_GLOW )
+
 		BulletData.Birth = CurTime()
 		BulletData.Projectile:SetPos( BulletData.Pos )
 		local angle = BulletData.Dir:Angle()
@@ -201,16 +203,13 @@ function LDE:FireProjectile(MyData)
 		local ID = BulletData.Projectile:EntIndex()
 	
 		local trail = util.SpriteTrail( BulletData.Projectile, 0,  Data.TrailColor, false, Data.TrailStartW, Data.TrailEndW, Data.TrailLifeTime, Data.TrailRes, Data.TrailTexture )
-		--util.SpriteTrail( Entity entity, Integer AttachmentID, Color color, Boolean additive, Float Start Width, Float End Width, Float LifeTime, Float TextureRes, String Texture )
-		--BulletData.Projectile:SetSolid( SOLID_NONE )
-		--BulletData.Projectile:SetMoveType( MOVETYPE_NONE )
-		--BulletData.Projectile:DrawShadow( false )
 
 		BulletData.SkipMult = Multiplier
-		BulletData.Skip = 1
+		BulletData.Skip = Multiplier
+		BulletData.Drag = Data.Drag
+		BulletData.Drop = Data.Drop
 		BulletData.Data = Data
-		
-		--table.insert(LDE.Projectiles,BulletData)
+
 		LDE.Projectiles[ID] = BulletData
 		
 		if I == 1 and Data.Count == 1 then
@@ -277,10 +276,14 @@ local function ProjectileThink()
 						end
 					end
 					
-					
-					--Add Support for spacebuild maps!
-					if type(BulletData.Drop) == "number" then BulletData.Dir=BulletData.Dir+Vector(0,0,-BulletData.Drop) end	--Add Drop to the next movement if applicable, will need Env checking
-					if type(BulletData.Drag) == "number" then BulletData.Dir=BulletData.Dir-(BulletData.Dir*BulletData.Drag) end
+					--if BulletData.Projectile:IsOnPlanet() then
+						if type(BulletData.Drop) == "number" then 	
+							BulletData.Dir=BulletData.Dir+Vector(0,0,-BulletData.Drop) 	--Add Drop to the next movement if applicable, will need Env checking
+						end
+						if type(BulletData.Drag) == "number" then 
+							BulletData.Dir=BulletData.Dir-(BulletData.Dir*BulletData.Drag) 
+						end
+					--end
 					
 					local tr = {}																											--Create a short trace along the flight path checking for hit and hitdata
 						tr.start = BulletData.Pos
@@ -298,14 +301,15 @@ local function ProjectileThink()
 						LDE.Projectiles[I] = BulletData
 					else																														--Hit something, execute the attached function,move Projectile, mark for cleanup
 						BulletData.Pos = HitPos
-						BulletData.Data.OnHit(Trace,BulletData.Data)
-				
+						local OnHit = BulletData.Data.OnHit
+						local Succ,Error = pcall(OnHit,Trace,BulletData.Data)
+						
+						if not Succ then
+							print("Error: "..Error)
+						end
+						
 						LDE.Projectiles[I] = BulletData
 						RemoveProj[I] = 1
-						--print("Hit!")
-						--if IsValid(BulletData.Projectile) then
-						--	BulletData.Projectile:Remove()
-						--end
 					end
 				
 					--local effectdata = EffectData()																				--Move the fake Projectile up
@@ -313,16 +317,9 @@ local function ProjectileThink()
 						local angle = BulletData.Dir:Angle()
 						BulletData.Projectile:SetPos(BulletData.Pos)
 						BulletData.Projectile:SetAngles(angle)
+					else
+						RemoveProj[I] = 1
 					end
-					--PrintTable(effectdata)
-				
-					--effectdata:SetAngles(angle)
-					--effectdata:SetScale(5000)
-					--effectdata:SetMagnitude(50)
-					--effectdata:SetStart(tr.start)
-					--effectdata:SetOrigin(BulletData.Pos)
-					
-					--util.Effect( "Tracer", effectdata)
 				end
 			end
 		end
@@ -348,16 +345,15 @@ local function env_zone_filesetup()
 	end
 
 	--Second, create the data files if they don't exist.
-	if not file.Exists(MapFileP) then
+	--print("MapFileP: "..tostring(MapFileP))
+	if not file.Exists(MapFileP,"data") then
 		print("MapFileP doesn't exist, creating file.")
-		local empty = ""
-		file.Write(MapFileP, empty)
+		file.Write(MapFileP, "data")
 		print("File created.")
 	end
-	if not file.Exists(MapFileS) then
+	if not file.Exists(MapFileS,"data") then
 		print("MapFileS doesn't exist, creating file.")
-		local empty = ""
-		file.Write(MapFileS, empty)
+		file.Write(MapFileS, "data")
 		print("File created.")
 	end
 end
