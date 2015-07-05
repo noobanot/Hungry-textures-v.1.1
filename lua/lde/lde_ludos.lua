@@ -150,7 +150,7 @@ function LudCore.LoadFunctions()
 		end
 	end)
 
-	LudCore.RegisterCommand("PropCount",{{"how","count"},{"many","the"},{"props","entities","entitys"},{"are","in"},{"this","in","that"},{"this","that"}},function(ply,args)
+	LudCore.RegisterCommand("PropCount",{{"how","count"},{"many","the"},{"props","entities","entitys"},{"is","are","in"},{"this","in","that"},{"this","that"}},function(ply,args)
 		local looking = ply:GetEyeTrace()
 		if looking.Hit then
 			if looking.HitNonWorld then
