@@ -124,10 +124,10 @@ function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
 		--overlaysettings
 		local node = self.node
-		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
-		local HasOOO = OverlaySettings.HasOOO
-		local resnames = OverlaySettings.resnames
-		local genresnames = OverlaySettings.genresnames
+		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] or {} --replace this
+		local HasOOO = OverlaySettings.HasOOO or false
+		local resnames = OverlaySettings.resnames or {}
+		local genresnames = OverlaySettings.genresnames or {}
 		--End overlaysettings
 		
 		if !bDontDrawModel then self:DrawModel() end
