@@ -12,7 +12,7 @@ local BoolNum = function(V) if V>0 then return true else return false end end --
 
 NDat.NetDTWrite = {S=net.WriteString,E=function(V) net.WriteFloat(V:EntIndex()) end,F=net.WriteFloat,V=net.WriteVector,A=net.WriteAngle,B=function(V) net.WriteFloat(NumBool(V)) end,T=function(T) net.WriteString(util.TableToJSON(T)) end}
 NDat.NetDTRead = {S=net.ReadString,E=function(V) return Entity(net.ReadFloat()) end,F=net.ReadFloat,V=net.ReadVector,A=net.ReadAngle,B=function() return BoolNum(net.ReadFloat()) end,T=function() return util.JSONToTable(net.ReadString()) or {} end}
-NDat.Types = {string="S",entity="E",number="F",vector="V",angle="A",boolean="B",table="T"}
+NDat.Types = {string="S",Entity="E",number="F",vector="V",angle="A",boolean="B",table="T"}
 
 --Actually sends the data out.
 function NDat.SendData(Data,Name,ply)
@@ -23,9 +23,13 @@ function NDat.SendData(Data,Name,ply)
 		for I, S in pairs( Data.Dat ) do --Loop all the variables.
 			local Type = NDat.Types[type(S)]
 			--print(type(S))
-			net.WriteString(I)--Get the variable name.
-			net.WriteString(Type)--Automagically grab the type.
-			NDat.NetDTWrite[Type](S)
+			if Type then
+				net.WriteString(I)--Get the variable name.
+				net.WriteString(Type)--Automagically grab the type.
+				NDat.NetDTWrite[Type](S)
+			else
+				print(type(S))
+			end
 		end
 	if SERVER then
 		net.Send(ply)
@@ -67,7 +71,7 @@ if(SERVER)then
 	--Loops the players and prepares to send their data.
 	function NDat.CyclePlayers()
 		for nick, pdat in pairs( NDat.Data ) do
-			local Max = 50
+			local Max = 200
 			for id, Data in pairs( pdat.Data ) do
 				if(Max<=0)then return end--We reached the maximum amount of data for this player.
 				Max=Max-Data.Val

@@ -226,7 +226,7 @@ function ENT:Extract_Energy()
 	end
 	
 	if (self:GetResourceAmount("water") < math.ceil(Coolant_Increment * self:GetSizeMultiplier())) then
-		Environments.DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetSizeMultiplier())))))
+		--Cause Damage to self
 		/*local Smoke = ents.Create("env_smoketrail")
 			Smoke:SetKeyValue("opacity", 1)
 			Smoke:SetKeyValue("spawnrate", 10)
@@ -310,20 +310,16 @@ function ENT:Extract_Energy()
 end
 
 function ENT:Leak() --leak cause this is like with storage, make be it could leak radation?
-	if (self:GetResourceAmount("energy") >= 100000) then
-		if (self.critical == 0) 
-			then self.critical = 1 
+	if self:GetResourceAmount("energy") >= 500*self:GetSizeMultiplier() then
+		if self.critical == 0 then
+			self.critical = 1 
 		end
 	else
-		if (self.critical == 1) then
+		if self.critical == 1 then
 			self:StopSound( "coast.siren_citizen" )
 			self.critical = 0
 		end
 	end
-	--chance to leak additional heavy water
-	//if (math.random(1, 10) <= 2) then
-		//self:ConsumeResource("heavy water", HW_Increment)
-	//end
 end
 
 function ENT:Think()

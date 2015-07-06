@@ -6,7 +6,6 @@ local MaxHealth,MinHealth = 1000000,100	-- Max Health Allowed
 
 local sounds = {Sound("tech/sga_impact_01.wav"),Sound("tech/sga_impact_02.wav"),Sound("tech/sga_impact_03.wav"),Sound("tech/sga_impact_04.wav")}
 for k,v in pairs(sounds) do util.PrecacheSound(v) end
-function Environments.DamageLS(ent, dam) end
 
 function DebugPrint(str)
 	if false then

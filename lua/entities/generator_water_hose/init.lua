@@ -454,7 +454,6 @@ function ENT:Pump_Water(waterlevel)
 		if ( self.overdrive == 1 ) then
 			winc = winc * 3
 			einc = einc * 2
-			Environments.DamageLS(self, math.random(2, 3))
 		end
 		winc = math.ceil(winc * self:GetSizeMultiplier())
 		self:ConsumeResource("energy", einc)

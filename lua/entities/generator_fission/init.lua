@@ -226,8 +226,8 @@ function ENT:Extract_Energy()
 	end
 	
 	if (self:GetResourceAmount("water") < math.ceil(Coolant_Increment * self:GetSizeMultiplier())) then
-		Environments.DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetSizeMultiplier())))))
-		/*local Smoke = ents.Create("env_smoketrail")
+			--Cause Damage to self
+			/*local Smoke = ents.Create("env_smoketrail")
 			Smoke:SetKeyValue("opacity", 1)
 			Smoke:SetKeyValue("spawnrate", 10)
 			Smoke:SetKeyValue("lifetime", 2)

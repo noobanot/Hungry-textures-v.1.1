@@ -138,9 +138,6 @@ function ENT:Proc_Water()
 	local oinc = Increment + (self.overdrive*Increment)
 	oinc = (math.Round(oinc * self:GetSizeMultiplier())) * self:GetMultiplier()
 	if (oxygen >= oinc and hydrogen >= hinc) then
-		if ( self.overdrive == 1 ) then
-			Environments.DamageLS(self, math.random(2, 3))
-		end
 		self:ConsumeResource("oxygen", oinc)
 		self:ConsumeResource("hydrogen", hinc)
 		

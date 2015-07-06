@@ -114,24 +114,42 @@ if Wire_UpdateRenderBounds then
 	end
 end
 
-local function RecieveAmts(msg) --errors when ent isnt valid :/
-	local entid = msg:ReadShort()
-	local res = msg:ReadString()
-	if tonumber(res) then res = tonumber(res) end
-	
-	local net = Environments.GetNetTable(entid)
-	local index = Environments.Resources2[res] or res
-	net.resources_last[index] = net.resources[index]
-	net.resources[index] = msg:ReadLong()
-	net.last_update[index] = CurTime()
-	//Environments.GetNetTable(entid).resources[Environments.Resources2[res] or res] = msg:ReadLong()
-end
-usermessage.Hook("Env_UpdateResAmt", RecieveAmts)
+EnvX.Utl:HookNet("EnvX_NodeSync",function(Data)
+	local net = Environments.GetNetTable(Data.Node)
 
-local function RecieveMax(msg)	
-	Environments.GetNetTable(msg:ReadShort()).maxresources[msg:ReadString()] = msg:ReadLong()
-end
-usermessage.Hook("Env_UpdateMaxRes", RecieveMax)
+	local Resources = Data.Resources
+	for index, res in pairs(Resources) do
+		net.resources_last[index] = net.resources[index]
+		net.resources[index] = res.value
+		net.last_update[index] = CurTime()
+	end
+	
+	local ResourceMaxs = Data.ResourceMaxs
+	for index, res in pairs(ResourceMaxs) do
+		net.maxresources[index]=res
+	end
+end)
+
+EnvX.Utl:HookNet("EnvX_NodeSyncStorage",function(Data)
+	local net = Environments.GetNetTable(Data.Node)
+	
+	local ResourceMaxs = Data.ResourceMaxs
+	for index, res in pairs(ResourceMaxs) do
+		net.maxresources[res.name]=res.value
+	end
+end)
+
+EnvX.Utl:HookNet("EnvX_NodeSyncResource",function(Data)
+	local net = Environments.GetNetTable(Data.Node)
+	
+	local Resources = Data.Resources
+	for i, res in pairs(Resources) do
+		local index = Environments.Resources2[res.name] or res.name
+		net.resources_last[index] = net.resources[index]
+		net.resources[index] = res.value
+		net.last_update[index] = CurTime()
+	end
+end)
 
 local function RecieveNode(msg)
 	local entId = msg:ReadShort()
@@ -149,4 +167,3 @@ local function RecieveNode(msg)
 	end
 end
 usermessage.Hook("Env_SetNodeOnEnt", RecieveNode)
-print("hey")

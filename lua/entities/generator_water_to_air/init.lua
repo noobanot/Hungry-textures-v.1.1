@@ -149,13 +149,6 @@ function ENT:Proc_Water()
 	winc = (math.Round(winc * self:GetSizeMultiplier())) * self:GetMultiplier()
 
 	if (energy >= einc and water >= winc) then
-		if ( self.overdrive == 1 ) then
-			Environments.DamageLS(self, math.random(2,3))
-			//self:SetHealth( self:Health( ) - math.random(2, 3))
-			//if self:Health() <= 0 then
-				//self:Remove()
-			//end
-		end
 		self:ConsumeResource("energy", einc)
 		self:ConsumeResource("water", winc)
 		

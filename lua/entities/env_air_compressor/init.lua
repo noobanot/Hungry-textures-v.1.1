@@ -154,7 +154,6 @@ function ENT:Pump_Air()
 		local ainc = math.ceil((Pressure_Increment + (self.overdrive * Pressure_Increment)) * mul * self:GetSizeMultiplier())
 		if ( self.overdrive == 1 ) then
 			ainc = ainc * 2
-			Environments.DamageLS(self, math.random(2, 3))
 		end
 		self:ConsumeResource("energy", einc)
 		if ainc > 0 then

@@ -36,7 +36,7 @@ LoadFile(P.."lde_effectcore.lua",1)
 LoadFile(P.."lde_damagecontrol.lua",2)
 LoadFile(P.."lde_sporeai.lua",2)
 LoadFile(P.."lde_envheat.lua",2)
-LoadFile(P.."lde_ludos.lua",1)
+LoadFile(P.."lde_ludos.lua",2)
 
 if(SERVER)then
 

@@ -5,9 +5,12 @@ AddCSLuaFile( "shared.lua" )
 include('shared.lua')
 
 ENT.NoSpaceAfterEndTouch = true
-
 ENT.IsNode = true
 
+local EnvX = EnvX --Localise the global table for speed.
+local Utl = EnvX.Utl --Makes it easier to read the code.
+local NDat = Utl.NetMan --Ease link to the netdata table.
+	
 
 function ENT:Initialize()
 	//self.BaseClass.Initialize(self) --use this in all ents
@@ -32,6 +35,7 @@ function ENT:Link(ent, delay)
 	
 	self.connected[ent:EntIndex()] = ent
 	if ent.maxresources then
+		local Sync = {}
 		for name,max in pairs(ent.maxresources) do
 			local curmax = self.maxresources[name]
 			if curmax then
@@ -39,23 +43,18 @@ function ENT:Link(ent, delay)
 			else
 				self.maxresources[name] = max
 			end
-			if delay then
-				timer.Simple(0.1, function()
-					umsg.Start("Env_UpdateMaxRes")
-						umsg.Short(self:EntIndex())
-						umsg.String(name)
-						umsg.Long(self.maxresources[name])
-					umsg.End()
-				end)
-			else
-				umsg.Start("Env_UpdateMaxRes")
-					umsg.Short(self:EntIndex())
-					umsg.String(name)
-					umsg.Long(self.maxresources[name])
-				umsg.End()
-			end
+			Sync[name]={name=name,value=self.maxresources[name]}
+		end
+
+		if delay then
+			timer.Simple(0.1, function()
+				NDat.AddDataAll({Name="EnvX_NodeSyncStorage",Val=1,Dat={Node=self:EntIndex(),ResourceMaxs=Sync}})
+			end)
+		else
+			NDat.AddDataAll({Name="EnvX_NodeSyncStorage",Val=1,Dat={Node=self:EntIndex(),ResourceMaxs=Sync}})
 		end
 	end
+	
 	if ent.resources then
 		for name,amt in pairs(ent.resources) do
 			local curmax = self.maxresources[name]
@@ -79,6 +78,7 @@ function ENT:Unlink(ent)
 	if ent then
 		self.connected[ent:EntIndex()] = nil
 		if ent.maxresources then
+			local Sync = {}
 			for name,max in pairs(ent.maxresources) do
 				local curmax = self.maxresources[name]
 				if curmax then
@@ -86,14 +86,10 @@ function ENT:Unlink(ent)
 					if self.resources[name] then
 						self.resources[name].haschanged = true
 					end
-					umsg.Start("Env_UpdateMaxRes")
-						umsg.Short(self:EntIndex())
-						umsg.String(name)
-						umsg.Long(self.maxresources[name])
-					umsg.End()
+					Sync[name]={name=name,value=self.maxresources[name]}
 				end
-				
 			end
+			NDat.AddDataAll({Name="EnvX_NodeSyncStorage",Val=1,Dat={Node=self:EntIndex(),ResourceMaxs=Sync}})
 		end
 	end
 end
@@ -127,38 +123,30 @@ end
 
 function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 	if res1 then
+		local Sync = {}
 		for k,name in pairs(res1) do
-			local v = self.resources[name]
+			local v = self.resources[name]	
 			if v and v.haschanged then
-				umsg.Start("Env_UpdateResAmt")
-					//umsg.Entity(self)
-					umsg.Short(self:EntIndex())
-					local old = name
-					name = Environments.Resources[name] or name
-						--print("Sending "..old.." as "..name)
-					umsg.String(name)
-					umsg.Long(v.value)
-				umsg.End()
+				Sync[name] = {name=Environments.Resources[name] or name,value=v.value}	
 				v.haschanged = false
 			end
 		end
+		if table.Count(Sync)>0 then
+			NDat.AddData({Name="EnvX_NodeSyncResource",Val=1,Dat={Node=self:EntIndex(),Resources=Sync}},ply)
+		end
 	end
 	
-	if !res2 then return end
+	if not res2 then return end
+	local Sync = {}
 	for k,name in pairs(res2) do
 		local v = self.resources[name]
 		if v and v.haschanged then
-			umsg.Start("Env_UpdateResAmt")
-				//umsg.Entity(self)
-				umsg.Short(self:EntIndex())
-				local old = name
-				name = Environments.Resources[name] or name
-					--print("Sending "..old.." as "..name)
-				umsg.String(name)
-				umsg.Long(v.value)
-			umsg.End()
+			Sync[name] = {name=Environments.Resources[name] or name,value=v.value}	
 			v.haschanged = false
 		end
+	end
+	if table.Count(Sync)>0 then
+		NDat.AddData({Name="EnvX_NodeSyncResource",Val=1,Dat={Node=self:EntIndex(),Resources=Sync}},ply)
 	end
 end
 

@@ -310,18 +310,11 @@ if Wire_UpdateRenderBounds then
 	end
 end
 
-local function UpdateStorage(msg)
-	local ent = msg:ReadEntity()
-	local res = msg:ReadString()
-	if(not ent or not ent:IsValid())then return end
-	if not ent.resources then
-		ent.resources = {}
-	end
-	if not ent.maxresources then
-		ent.maxresources = {}
-	end
-	ent.resources[res] = msg:ReadLong() //this errors if ent isnt valid
-	ent.maxresources[res] = msg:ReadLong()
-end
-usermessage.Hook("EnvStorageUpdate", UpdateStorage)
-
+EnvX.Utl:HookNet("EnvX_SyncStorage",function(Data)
+	local ent = Data.Ent
+	
+	if not ent or not IsValid(ent) then return end
+	
+	ent.resources = Data.Resources
+	ent.maxresources = Data.ResourceMaxs
+end)

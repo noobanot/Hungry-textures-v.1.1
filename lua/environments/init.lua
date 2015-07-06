@@ -16,6 +16,9 @@ local type = type
 local tonumber = tonumber
 local pairs = pairs
 
+local EnvX = EnvX --Localise the global table for speed.
+local Utl = EnvX.Utl --Makes it easier to read the code.
+local NDat = Utl.NetMan --Ease link to the netdata table.
 	
 /*local function e2hook(ent)
 	if ent and ent:IsValid() then
@@ -43,8 +46,8 @@ if SERVER then
 	local function CheckRD() --make not call for update all the time
 		for k,ply in pairs(player.GetAll()) do
 			local ent = ply:GetEyeTrace().Entity
-			if ent and ent:IsValid() then
-				if ent.node and ent.node:IsValid() then --its a RD entity, send the message!
+			if ent and IsValid(ent) then
+				if ent.node and IsValid(ent.node) then --its a RD entity, send the message!
 					--list.Set( "LSEntOverlayText" , class, {HasOOO = true, resnames = In, genresnames = Out} )
 					local dat = list.Get("LSEntOverlayText")[ent:GetClass()] --get the resources
 					if dat then
@@ -52,20 +55,9 @@ if SERVER then
 					else --no list data? SG? CAP?
 					
 					end
-				elseif ent.maxresources and !ent.IsNode then
-					if !ent.client_updated then
-						for res,amt in pairs(ent.maxresources) do
-							umsg.Start("EnvStorageUpdate")
-								umsg.Entity(ent)
-								umsg.String(res)
-								if ent.resources then
-									umsg.Long(ent.resources[res] or 0)
-								else
-									umsg.Long(0)
-								end
-								umsg.Long(amt)
-							umsg.End()
-						end
+				elseif ent.maxresources and not ent.IsNode then
+					if not ent.client_updated then
+						NDat.AddData({Name="EnvX_SyncStorage",Val=5,Dat={Ent=ent,Resources=ent.resources,ResourceMaxs=ent.maxresources}},ply)
 						ent.client_updated = true
 					end
 				end
@@ -91,7 +83,6 @@ local function SaveGravPlating( Player, Entity, Data )
 	end
 	duplicator.StoreEntityModifier( Entity, "gravplating", Data )
 end
-//duplicator.RegisterEntityModifier( "gravplating", SaveGravPlating )
 
 //need to add dupe support
 local function RegisterVehicle(ply, ent)
@@ -102,11 +93,6 @@ hook.Add( "PlayerSpawnedVehicle", "ENV_vehicle_spawn", RegisterVehicle )
 function Environments.BuildDupeInfo( ent ) --need to add duping for cables
 	local info = {}
 	if ent.IsNode then
-		--local nettable = ent.connected
-		--local info = {}
-		--info.resources = table.Copy(ent.maxresources)
-
-		--duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 		return
 	elseif ent:GetClass() == "env_pump" then
 		local info = {}
@@ -180,22 +166,7 @@ end
 if SERVER then
 	function Environments.RDPlayerUpdate(ply)--Recode this to use new netmessage system.
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
-			for name,tab in pairs(ent.resources) do
-				umsg.Start("Env_UpdateResAmt")
-					//umsg.Entity(ent)
-					umsg.Short(ent:EntIndex())
-					name = Environments.Resources[name] or name
-					umsg.String(name)
-					umsg.Long(tab.value)
-				umsg.End()
-			end
-			for name,amount in pairs(ent.maxresources) do
-				umsg.Start("Env_UpdateMaxRes")
-					umsg.Short(ent:EntIndex())
-					umsg.String(name)
-					umsg.Long(amount)
-				umsg.End()
-			end
+			NDat.AddData({Name="EnvX_NodeSync",Val=5,Dat={Node=ent:EntIndex(),Resources=ent.resources,ResourceMaxs=ent.maxresources}},ply)
 		end
 		for k,v in pairs(ents.GetAll()) do
 			if v and v.node and v.node:IsValid() then
@@ -207,47 +178,6 @@ if SERVER then
 		end
 	end
 	hook.Add("PlayerInitialSpawn", "EnvRDPlayerUpdate", Environments.RDPlayerUpdate)
-	
-	function Environments.DamageLS(ent, dam) 
-		if !ent or !ent:IsValid() or !dam then return end
-		if ent:GetMaxHealth() == 0 then return end
-		dam = math.floor(dam / 2)
-		if (ent:Health() > 0) then
-			local HP = ent:Health() - dam
-			ent:SetHealth( HP )
-			if ent:Health() <= (ent:GetMaxHealth() / 2) then
-				if ent.Damage then
-					ent:Damage()
-				end
-			end
-			
-			if ent:Health() <= 0 then
-				ent:SetColor(Color(50, 50, 50, 255))
-				if ent.Destruct then
-					ent:Destruct()
-				else
-					Environments.LSDestruct( ent, true )
-				end
-				return
-			end
-			
-			local health = ent:Health()
-			local max = ent:GetMaxHealth()
-			if health <= max/7 then
-				ent:SetColor(Color(75,75,75,255))
-			elseif health <= max/6 then
-				ent:SetColor(Color(100,100,100,255))
-			elseif health <= max/5 then
-				ent:SetColor(Color(125,125,125,255))
-			elseif health <= max/4 then
-				ent:SetColor(Color(150,150,150,255))
-			elseif health <= max/3 then
-				ent:SetColor(Color(175,175,175,255))
-			elseif health <= max/2 then
-				ent:SetColor(Color(200,200,200,255))
-			end
-		end
-	end
 	
 	function Environments.ZapMe(pos, magnitude)
 		if not (pos and magnitude) then return end

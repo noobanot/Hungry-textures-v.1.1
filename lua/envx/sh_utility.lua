@@ -81,6 +81,10 @@ function Utl:HookHook(Hook,Name,Func,Impo) --Makes the HookHook in the hook tabl
 	end]]
 	
 	if not HTable then return end --FUCK OFF ERROR
+	if not HTable[Hook] then
+		Utl:Debug("Hooks","HookHook "..Hook.." is missing, "..Name.." wants it!","Error")
+		return
+	end
 	
 	if HTable[Hook][Name] then
 		Utl:Debug("Hooks","There already is a HookHook in "..Hook.." for "..Name.." overwriting!","Error")

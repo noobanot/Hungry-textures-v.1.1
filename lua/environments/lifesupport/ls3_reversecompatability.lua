@@ -131,7 +131,7 @@ local Func = function(self)
 	local inc = Energy_Increment
 	
 	if (self:GetResourceAmount("water") < math.ceil(Coolant_Increment * self:GetSizeMultiplier())) then
-		Environments.DamageLS(self, math.Round(15 - (15 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetSizeMultiplier())))))
+		--Cause damage on self.
 		--only supply 5-25% of the normal amount
 		if (inc > 0) then inc = math.ceil(inc/math.random(12 - math.ceil(8 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetSizeMultiplier()))),20)) end
 	else

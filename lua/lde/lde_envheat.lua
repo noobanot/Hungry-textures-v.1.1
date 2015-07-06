@@ -11,7 +11,6 @@ function ApplyTemperatureEffect(Ent)
 	--Msg(" Acting ")
 	if(Ent.LDE.Temperature>toocold and not Ent.LDE.IsFroze)then
 		--Msg("not Frozen")
-		//Environments.DamageLS(Ent,200)
 		if(Ent.LDE.Temperature>=toohot and not Ent:IsOnFire() and waterlevel==0) then
 			Ent:Ignite(1000,100)
 		elseif(Ent.LDE.Temperature<toohot or waterlevel>0) then

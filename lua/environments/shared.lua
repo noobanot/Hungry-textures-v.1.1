@@ -353,16 +353,6 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 		end
 	end
 
-	function ENT:UpdateStorage(res)
-		local amt = self.resources[res]
-		umsg.Start("EnvStorageUpdate")
-			umsg.Entity(self)
-			umsg.String(res)
-			umsg.Long(amt)
-			umsg.Long(self.maxresources[res])
-		umsg.End()
-	end
-
 	function ENT:GetResourceAmount(resource)
 		if self.node then
 			if self.node.resources[resource] then
