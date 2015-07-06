@@ -122,7 +122,7 @@ hook.Add("Think","EnvironmentsX MainLoop",function()
 				if(TR>0)then if(TR>1)then T.R=TR-1 else Remove=true end end --Repeat check.
 				xpcall(function()
 					if(T.F)then
-						T.F()
+						T.F(T.E)
 					else
 						Utl:Debug("ThinkLoop",T.N.." has no function!","Error")
 					end
@@ -134,14 +134,14 @@ hook.Add("Think","EnvironmentsX MainLoop",function()
 end)
 
 --Function for easily adding into the main think loop.
-function Utl:SetupThinkHook(Name,Delay,Repeat,Function)
+function Utl:SetupThinkHook(Name,Delay,Repeat,Function,Extra)
 	--[[
 		Name: Name of the function.
 		Delay: The time it waits before being ran. (Resets after each run.)
 		Repeat: How many times the function repeats before being removed.
 		Function: The function thats called.
 	]]
-	Thinks[Name]={N=Name,S=CurTime(),D=Delay,R=Repeat,F=Function}
+	Thinks[Name]={N=Name,S=CurTime(),D=Delay,R=Repeat,F=Function,E=Extra}
 end
 
 function Utl:RemoveThinkHook(Name)
