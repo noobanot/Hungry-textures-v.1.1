@@ -5,7 +5,7 @@ ENT.Base 			= "base_env_entity"
 ENT.PrintName		= "Matter Transporter"
 ENT.Author			= "Ludsoe"
 
-list.Set( "LSEntOverlayText" , "envx_clonetube", {HasOOO = true ,resnames = {"energy"}, genresnames={}} )
+list.Set( "LSEntOverlayText" , "wep_transporter", {HasOOO = true ,resnames = {"energy"}, genresnames={}} )
 
 if(SERVER)then
 	function ENT:Initialize()
