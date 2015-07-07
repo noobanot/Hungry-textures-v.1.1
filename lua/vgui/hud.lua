@@ -41,10 +41,21 @@ function LoadHud()
 		local a = Vector(ScrW()-120,ScrH(100),0)
 		
 		if Mode then
-			draw.NoTexture()
+			
 			draw.RoundedBox(16,20,a.y-153,268,124, Color(50,50,50,alpha))
+			surface.SetTexture( texGradient )
+			surface.SetDrawColor( 255, 255, 255, 15 )
+			surface.DrawTexturedRect( 20, a.y-153, 268, 124 )
+			
+			draw.NoTexture()
 			draw.RoundedBox(16,24,a.y-147,260,112,Color(0,0,0,alpha))
 			draw.NoTexture()
+
+			/*
+			surface.SetMaterial( Material( "icon16/box.png", "noclamp" ) )
+			surface.SetDrawColor( color_white )
+			surface.DrawTexturedRectUV( 0, 0, w, h, 0, 0, w / texW, h / texH )
+			*/
 			
 			surface.SetDrawColor(0,0,0,alpha)
 			
