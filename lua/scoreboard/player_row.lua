@@ -18,6 +18,7 @@ surface.CreateFont("ScoreboardPlayerNameBig", {
 local texGradient = surface.GetTextureID( "gui/center_gradient" )
 
 local Utl = EnvX.Utl
+local NDat = Utl.NetMan
 
 local PANEL = {}
 
@@ -25,13 +26,25 @@ local SID = {}
 SID.PIRATE = {}
 SID.CADM = {}
 SID.CSUADM = {}
-
+/*
 EnvX.Utl:HookNet("EnvX_ScoreboardData",function(Data) 
 	for k,v in pairs(Data) do
 		SID = v
 	end
 end)
+*/
+concommand.Add("envx_scoredev", function(ply,cmd,args)--TEMP
+	NDat.AddData({Name="RequestScoreboardData",Val=1,Dat={args}})
+end)
 
+NDat.AddData({Name="RequestScoreboardData",Val=1,Dat={}})
+
+EnvX.Utl:HookNet("ReplyScoreboardData",function(Data) 
+	print("Pong")
+	for k,v in pairs(Data) do
+		SID = v
+	end
+end)
 /*---------------------------------------------------------
    Name: Paint
 ---------------------------------------------------------*/
