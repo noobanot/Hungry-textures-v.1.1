@@ -230,7 +230,7 @@ function PANEL:UpdateScoreboard( force )
 	if ( !force or not me:IsVisible() ) then return end
 
 	for k, v in pairs( self.PlayerRows ) do
-	
+
 		if ( !k:IsValid() ) then
 		
 			v:Remove()
