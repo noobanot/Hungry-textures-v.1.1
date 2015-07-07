@@ -49,3 +49,88 @@ LDE.LifeSupport.RegisterDevice(Data)
 
 Environments.RegisterDevice("Ship Utilities", "Hull Repairer"," Small Repairer", "lde_repair", "models/gibs/airboat_broken_engine.mdl")
 Environments.RegisterDevice("Ship Utilities", "Shield Rechargers","Small Charger", "lde_recharge", "models/slyfo_2/acc_sci_coolerator.mdl")
+
+--Heater
+local Cool_Rate = 400
+local Func = function(self)
+	local entcore = self.LDE.Core
+	if not entcore or not IsValid(entcore) then	
+		self:TurnOff()
+	else
+		self:TurnOn()
+	end
+	
+	if(self.Active==1)then
+		local core = self.LDE.Core
+		local water = self:GetResourceAmount("energy")
+		local rate = Cool_Rate*self:GetSizeMultiplier()
+		if(core.LDE.CoreTemp<rate)then wateruse=rate else wateruse=0 end
+		if(water>=math.abs(wateruse) and wateruse<0) then
+			WireLib.TriggerOutput( core, "Temperature", core.LDE.CoreTemp)	
+			self:ConsumeResource("energy", math.abs(wateruse))
+			core.LDE.CoreTemp=core.LDE.CoreTemp+math.abs(wateruse)
+		end
+	end 
+end
+
+local Data={name="Core Temperature Heater",class="lde_heater",In={"energy"},shootfunc=Func,InUse={0}}
+LDE.LifeSupport.RegisterDevice(Data)
+
+Environments.RegisterDevice("Ship Utilities", "Heat Management","Basic Heater", "lde_heater", "models/gibs/airboat_broken_engine.mdl")
+
+--Radiator
+local Water_Increment = 8 --40 before  --randomize for weather
+local Cool_Rate = 40
+
+local Func = function(self)
+	self.LDE=self.LDE or {}
+	
+	local node = self.node
+	local core = self.LDE.Core
+	
+	local water = self:GetResourceAmount("water")
+	local Rate = Cool_Rate*self:GetSizeMultiplier()
+		
+	if not core or not IsValid(core) then
+		if node and IsValid(node) then
+			self:TurnOn()
+			for k,v in pairs(node.connected) do
+				if v and v:IsValid() then
+					if(not v.LDE)then return end --Wot.... why isnt there a lde
+					v.LDE.Temperature = v.LDE.Temperature or 0
+					if(v.LDE.Temperature>0)then
+						if(v.LDE.Temperature<Rate) then
+							Rate=v.LDE.Temperature
+						end
+						if(water>=Rate and Rate>0) then
+							self:ConsumeResource("water", Rate)
+							self:SupplyResource("steam",math.Round(Rate/2.5))
+							LDE.HeatSim.SetTemperature(v,-Rate)
+						end
+					end
+				end
+			end
+		else
+			self:TurnOff()
+		end
+	else
+		local Rate = Rate*core.Data.CoolBonus
+		if(core.LDE.CoreTemp<Rate) then Rate=core.LDE.CoreTemp end
+		if(water>=Rate and Rate>0) then
+			self:TurnOn()
+			WireLib.TriggerOutput( core, "Temperature", core.LDE.CoreTemp or 0 )	
+			self:ConsumeResource("water", Rate)
+			self:SupplyResource("steam",math.Round(Rate/2.5))
+			core.LDE.CoreTemp=core.LDE.CoreTemp-Rate
+		else
+			self:TurnOff()
+		end
+	end
+end
+
+local Data={name="Core Temperature Heater",class="lde_radiator",In={"energy"},shootfunc=Func,InUse={0}}
+LDE.LifeSupport.RegisterDevice(Data)
+
+Environments.RegisterDevice("Ship Utilities", "Heat Management","Basic Radiator", "lde_radiator", "models/props_c17/furnitureradiator001a.mdl")
+Environments.RegisterDevice("Ship Utilities", "Heat Management","Cyclic Radiator", "lde_radiator", "models/Slyfo/sat_rfg.mdl")
+Environments.RegisterDevice("Ship Utilities", "Heat Management","Singularity Radiator", "lde_radiator", "models/Slyfo/crate_reactor.mdl")

@@ -200,7 +200,6 @@ function LDE.Weapons.RegisterWeapon(Data,Models)
 			end
 			
 			self.Active = 0
-			self.Mult = 1
 			self.CanFire=1
 			self.Charge=0
 			self.LastTime=CurTime()	

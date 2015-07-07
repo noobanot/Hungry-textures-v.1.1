@@ -195,7 +195,7 @@ end
 
 function ENT:Extract_Energy()
 	local inc = Energy_Increment
-
+	
 	if (self.critical == 1) then
 		local ang = self:GetAngles()
 		local pos = (self:GetPos() + (ang:Up() * self:BoundingRadius()))
@@ -225,28 +225,10 @@ function ENT:Extract_Energy()
 		end
 	end
 	
-	if (self:GetResourceAmount("water") < math.ceil(Coolant_Increment * self:GetSizeMultiplier())) then
-		--Cause Damage to self
-		/*local Smoke = ents.Create("env_smoketrail")
-			Smoke:SetKeyValue("opacity", 1)
-			Smoke:SetKeyValue("spawnrate", 10)
-			Smoke:SetKeyValue("lifetime", 2)
-			Smoke:SetKeyValue("startcolor", "180 180 180")
-			Smoke:SetKeyValue("endcolor", "255 255 255")
-			Smoke:SetKeyValue("minspeed", 15)
-			Smoke:SetKeyValue("maxspeed", 30)
-			Smoke:SetKeyValue("startsize", (self.Entity:BoundingRadius() / 2))
-			Smoke:SetKeyValue("endsize", self.Entity:BoundingRadius())
-			Smoke:SetKeyValue("spawnradius", 10)
-			Smoke:SetKeyValue("emittime", 300)
-			Smoke:SetKeyValue("firesprite", "sprites/firetrail.spr")
-			Smoke:SetKeyValue("smokesprite", "sprites/whitepuff.spr")
-			Smoke:SetPos(self.Entity:GetPos())
-			Smoke:SetParent(self.Entity)
-			Smoke:Spawn()
-			Smoke:Activate()
-			Smoke:Fire("kill","", 1)*/
-
+	
+	local HeatAmount = 10 * self:GetSizeMultiplier()
+	local required_water = math.ceil(Coolant_Increment * self:GetSizeMultiplier())
+	if self:GetResourceAmount("water") < required_water then
 		if (self.critical == 0) then
 			if self.time > 3 then 
 				self:EmitSound( "common/warning.wav" )
@@ -267,46 +249,20 @@ function ENT:Extract_Energy()
 		--only supply 5-25% of the normal amount
 		if (inc > 0) then inc = math.ceil(inc/math.random(12 - math.ceil(8 * ( self:GetResourceAmount("water")/math.ceil(Coolant_Increment * self:GetSizeMultiplier()))),20)) end
 	else
-		local consumed = self:ConsumeResource("water", math.ceil(Coolant_Increment * self:GetSizeMultiplier()))
+		local consumed = self:ConsumeResource("water", required_water)
 		--self:SupplyResource("steam", math.ceil(consumed * 0.92))
 		self:SupplyResource("water", math.ceil(consumed * 0.08))
+		HeatAmount=HeatAmount/2 --Properly Cooled fusion reactors generate less excess heat.
 	end
-
-	--heavy water check (water adds stability)
-	/*if (self:GetResourceAmount("heavy water") <= 0) then
-		if (inc > 0) then 
-			--instability varying the output from 20-80% of normal
-			local hwmult = math.random(20,80)/100
-			inc = math.ceil(inc * hwmult)
-		end
-	else
-		self.hwcount = self.hwcount + 1
-		if (self.hwcount >= 5) then
-			self:ConsumeResource("heavy water", math.ceil(HW_Increment * self:GetSizeMultiplier()))
-			self.hwcount = 0
-		end
-	end*/
-
+	
+	LDE.HeatSim.ApplyHeat(self,HeatAmount)
+	
 	--the money shot!
 	if (inc > 0) then 
 		inc = math.ceil(inc * self:GetSizeMultiplier())
 		self:SupplyResource("energy", inc)
 	end
 	if WireLib then WireLib.TriggerOutput(self, "Output", inc) end
-
-	--[[   	     Base: 2000
-
-	       w/Critical: 0-1000
-
-	       wo/Coolant: 100-500
-
-	       wo/Heavy W: 500-2100
-
-   	         --- Worst case---
-
-	       w/Critical: 0-1000
-	       wo/Coolant: 50-250
-	       wo/Heavy W: 2.5-275 ]]--
 end
 
 function ENT:Leak() --leak cause this is like with storage, make be it could leak radation?

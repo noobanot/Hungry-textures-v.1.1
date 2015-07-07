@@ -19,28 +19,6 @@ local pairs = pairs
 local EnvX = EnvX --Localise the global table for speed.
 local Utl = EnvX.Utl --Makes it easier to read the code.
 local NDat = Utl.NetMan --Ease link to the netdata table.
-	
-/*local function e2hook(ent)
-	if ent and ent:IsValid() then
-		if ent:GetClass() == "sent_anim" then
-			if ent.Execute then
-				RD_Register(ent)
-				
-				ent.override_ops = 50
-				ent.oldExecute = ent.Execute or function() end
-				ent.Execute = function(self)
-					if self:GetResourceAmount("energy") >= self.override_ops then
-						self:ConsumeResource("energy", self.override_ops)
-						self.oldExecute(self)//execute
-						print("counter: ",self.context.prfcount, "prf: ", self.context.prf, "prfbench: ", self.context.prfbench)
-						self.override_ops = self.context.prfcount or 0
-					end
-				end
-			end
-		end
-	end
-end
-hook.Add("OnEntityCreated", "E2OVERRIDES", e2hook)*/
 
 if SERVER then
 	local function CheckRD() --make not call for update all the time
@@ -165,16 +143,21 @@ end
 
 if SERVER then
 	function Environments.RDPlayerUpdate(ply)--Recode this to use new netmessage system.
+		local Nodes = {}
+		
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
+			Nodes[ent:EntIndex()]={} --Create Empty Table for this node in our sync data.
 			NDat.AddData({Name="EnvX_NodeSync",Val=5,Dat={Node=ent:EntIndex(),Resources=ent.resources,ResourceMaxs=ent.maxresources}},ply)
 		end
+		
 		for k,v in pairs(ents.GetAll()) do
-			if v and v.node and v.node:IsValid() then
-				umsg.Start("Env_SetNodeOnEnt")
-					umsg.Short(v:EntIndex())
-					umsg.Short(v.node:EntIndex())
-				umsg.End()
+			if v and v.node and IsValid(v.node) then
+				table.insert(Nodes[v.node:EntIndex()],v:EntIndex())
 			end
+		end
+		
+		if table.Count(Nodes)>0 then
+			NDat.AddData({Name="EnvX_SetEntNode",Val=5,Dat={Nodes=Nodes}},ply)
 		end
 	end
 	hook.Add("PlayerInitialSpawn", "EnvRDPlayerUpdate", Environments.RDPlayerUpdate)

@@ -145,20 +145,14 @@ scripted_ents.Register = function(t, name, reload, myarg)
 						
 						if delay then
 							timer.Simple(0.1, function()
-								umsg.Start("Env_SetNodeOnEnt")
-									--umsg.Entity(self)
-									--umsg.Entity(ent)
-									umsg.Short(self:EntIndex())
-									umsg.Short(ent:EntIndex())
-								umsg.End()
+								local Nodes = {}
+								Nodes[ent:EntIndex()]={self:EntIndex()}
+								NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 							end)
 						else
-							umsg.Start("Env_SetNodeOnEnt")
-								--umsg.Entity(self)
-								--umsg.Entity(ent)
-								umsg.Short(self:EntIndex())
-								umsg.Short(ent:EntIndex())
-							umsg.End()
+							local Nodes = {}
+							Nodes[ent:EntIndex()]={self:EntIndex()}
+							NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 						end
 						--self:SetNWEntity("node", ent)
 					end
@@ -167,10 +161,9 @@ scripted_ents.Register = function(t, name, reload, myarg)
 					if self.node then
 						self.node:Unlink(self)
 						self.node = nil
-						umsg.Start("Env_SetNodeOnEnt")
-							umsg.Short(self:EntIndex())
-							umsg.Short(0)
-						umsg.End()
+						local Nodes = {}
+						Nodes[0]={self:EntIndex()}
+						NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 					end
 				end
 				ENT.SupplyResource = function(self,resource, amount)
@@ -309,16 +302,14 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 
 			if delay then
 				timer.Simple(0.1, function()
-					umsg.Start("Env_SetNodeOnEnt")
-						umsg.Short(self:EntIndex())
-						umsg.Short(ent:EntIndex())
-					umsg.End()
+					local Nodes = {}
+					Nodes[ent:EntIndex()]={self:EntIndex()}
+					NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 				end)
 			else
-				umsg.Start("Env_SetNodeOnEnt")
-					umsg.Short(self:EntIndex())
-					umsg.Short(ent:EntIndex())
-				umsg.End()
+				local Nodes = {}
+				Nodes[ent:EntIndex()]={self:EntIndex()}
+				NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 			end
 		end
 	end
@@ -346,10 +337,9 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 			self.node = nil
 			self.client_updated = false
 
-			umsg.Start("Env_SetNodeOnEnt")
-				umsg.Short(self:EntIndex())
-				umsg.Short(0)
-			umsg.End()
+			local Nodes = {}
+			Nodes[0]={self:EntIndex()}
+			NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 		end
 	end
 

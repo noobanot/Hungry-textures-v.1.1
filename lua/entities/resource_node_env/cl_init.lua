@@ -151,19 +151,19 @@ EnvX.Utl:HookNet("EnvX_NodeSyncResource",function(Data)
 	end
 end)
 
-local function RecieveNode(msg)
-	local entId = msg:ReadShort()
-	local nodeId = msg:ReadShort()
-	local node = Entity(nodeId)
-	local ent = Entity(entId)
-	if ent:IsValid() then
-		if nodeId == 0 then
-			node = NULL
+EnvX.Utl:HookNet("EnvX_SetEntNode",function(Data)
+	for nodeId, nodelinks in pairs(Data.Nodes) do
+		local node = Entity(nodeId)
+		for _, entId in pairs(nodelinks) do
+			local ent = Entity(entId)
+			if IsValid(ent) then
+				local node = Entity(nodeId)
+				if nodeId == 0 then node = NULL end
+				ent.node = node
+			else
+				local tab = Environments.GetEntTable(entId)
+				tab.network = nodeId	
+			end			
 		end
-		ent.node = node
-	else --yay backup, ent isnt in PVS yet, not visible to user
-		local tab = Environments.GetEntTable(entId)
-		tab.network = nodeId
 	end
-end
-usermessage.Hook("Env_SetNodeOnEnt", RecieveNode)
+end)

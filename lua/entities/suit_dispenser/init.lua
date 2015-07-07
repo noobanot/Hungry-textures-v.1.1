@@ -47,7 +47,7 @@ local function quiet_steam(ent)
 end
 
 local SuitDat = EnvX.DefaultSuitData
-local Multiplier = 1.5
+local Multiplier = 3.5
 local Divider = 1/Multiplier
 
 function ENT:SetActive( value, caller )
@@ -56,6 +56,8 @@ function ENT:SetActive( value, caller )
 	local energy,water,oxygen,fuel = self:GetResourceAmount("energy"),self:GetResourceAmount("water"),self:GetResourceAmount("oxygen"),self:GetResourceAmount("hydrogen")
 	
 	local Res_needed = math.ceil((SuitDat.maxenergy - caller.suit.energy) * Divider)
+	
+	print(Res_needed)
 	
 	local MaxEng,MaxWat,MaxAir = math.floor(energy/10),math.floor(water/1),math.floor(oxygen/2)
 	

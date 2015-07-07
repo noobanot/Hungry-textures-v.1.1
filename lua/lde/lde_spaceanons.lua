@@ -28,7 +28,9 @@ local function MiningRegistration()
 end
 hook.Add("InitPostEntity","envMiningRegister",MiningRegistration)
 
+local MaxPools = 3
 function LDE.Anons.GetPlanetScores()
+	print("Getting Planet Scores!")
 	for pid, planet in pairs(environments) do
 
 		local pscore = 10 -- base planet score for resource rarity allowed
@@ -42,19 +44,21 @@ function LDE.Anons.GetPlanetScores()
 		if (planet.temperature or 0) > 310 then pscore = pscore + 8 else pscore = pscore - 1 end
 		if pscore < 1 then pscore = 1 end
 		
-		print(planet.name.." Score: "..pscore)
+		print(planet.name.." Radius: "..planet.radius.." Score: "..pscore.." MaxOres: "..math.Round(MaxPools*(planet.radius/500)))
 		LDE.Anons.PlanetScore[planet]=pscore
 	end
+	print("Done Getting Planet Scores!")
 end
 
-local MaxPools = 4
 function LDE.Anons:ManageUndergroundMinables()
 	for pid, planet in pairs(environments) do
 		LDE.Anons.ResourcePools[planet.name] = LDE.Anons.ResourcePools[planet.name] or {}
 		
 		--print("Checking Planet: "..planet.name)
 		
-		if table.Count(LDE.Anons.ResourcePools[planet.name])<MaxPools then
+		local PlanetMax = math.Round(MaxPools*(planet.radius/500))
+		
+		if table.Count(LDE.Anons.ResourcePools[planet.name])<PlanetMax then
 			local center = planet:GetPos() -- Get the center of it
 			local radius = planet.radius -- get it's radius/size
 			
@@ -74,6 +78,8 @@ function LDE.Anons:ManageUndergroundMinables()
 				if (traceres.HitTexture == "**displacement**") then -- oh good found a spot
 					respos = traceres.HitPos
 					break
+				--else
+					--print(planet.name.." "..tostring(traceres.HitTexture))
 				end
 				-- try try again.
 				tries = tries - 1
@@ -100,21 +106,27 @@ function LDE.Anons:ManageUndergroundMinables()
 				if Res~="" then
 					-- don't spawn on top of each other!!!
 					proximity = ents.FindByClass("resource_pool")
+					local CanSpawn = true
 					for k,v in pairs(proximity) do
 						local rad,dist = v.radius, respos:Distance(v:GetPos())
-						if (dist <= rad * 6) or (dist <= Size * 6)  then return end 
+						if (dist <= rad * 6) or (dist <= Size * 6)  then
+							--print("ToClose! "..dist.." "..planet.name)
+							CanSpawn = false 
+						end 
 					end
-					print("spawning resource pool "..Res.." on planet: "..tostring(planet.name))
+					--print("spawning resource pool "..Res.." on planet: "..tostring(planet.name))
 					-- create a resource pool.
-					pool = ents.Create("resource_pool")
-					pool:SetPoolSize(Size)
-					pool:SetDepth(Depth)
-					pool:SetPoolVolume()
-					pool:SetResource(Res)
-					pool:CalcResource()
-					pool.planetname = planet.name
-					pool:SetPos(respos)
-					pool:Spawn()
+					if CanSpawn then
+						pool = ents.Create("resource_pool")
+						pool:SetPoolSize(Size)
+						pool:SetDepth(Depth)
+						pool:SetPoolVolume()
+						pool:SetResource(Res)
+						pool:CalcResource()
+						pool.planetname = planet.name
+						pool:SetPos(respos)
+						pool:Spawn()
+					end
 					
 					LDE.Anons.ResourcePools[planet.name][pool] = pool
 				end
@@ -422,7 +434,9 @@ if(SERVER)then
 	function AnonThink()
 		--print("Space Anons Thinking")
 		LDE.Anons:MonitorAnomalyCounts()
-		LDE.Anons:ManageUndergroundMinables()
+		--for I=1,4 do
+			LDE.Anons:ManageUndergroundMinables()
+		--end
 	end
 	timer.Create("AnonThink", 5,0, AnonThink)--5
 	

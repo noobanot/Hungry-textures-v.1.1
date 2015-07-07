@@ -166,7 +166,6 @@ if(SERVER)then
 	Utl:MakeHook("PlayerSpawn")
 	Utl:MakeHook("PlayerDisconnected")
 	Utl:MakeHook("PlayerConnect")
-	Utl:MakeHook("PlayerInitialSpawn")
 	Utl:MakeHook("OnRemove")
 	Utl:MakeHook("Shutdown")
 	Utl:MakeHook("PlayerSay")

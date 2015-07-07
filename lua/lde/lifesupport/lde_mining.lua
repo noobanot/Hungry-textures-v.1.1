@@ -68,46 +68,7 @@ LDE.LifeSupport.CompileDevice(Data,Makeup)
 
 
 -------------I will decide if i want to keep this or not later.---------------------
---Spore Harvester
 --[[
-local Func = function(self) if(self.Active==1)then
-if(LDE.LifeSupport.HasNeeded(self,self.Data.In))then LDE.LifeSupport.UseResources(self,self.Data.In)
-if(LDE.LifeSupport.DrillEnt(self,"lde_spore"))then rand = math.random(1,3) self:SupplyResource("Liquid Polylodarium",(1+rand)*self.Mult)
-Owner=self:CPPIGetOwner()
-Owner:GiveLDEStat("Mined", (4+rand*self.Mult))
-end end end end
-local Data={name="Spore Laser",class="lde_spore_harvester",In={"energy"},Out={"Liquid Polylodarium"},shootfunc=Func,InUse={300},OutMake={0}}
-local Makeup = {name={"Spore Laser"},model={"models/mandrac/laser2.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class}
-LDE.LifeSupport.CompileDevice(Data,Makeup)
-
-//Drills
-
-local Base = {Tool="Mining Devices",Type="Mining Drills"}
-
---Poly Drill
-local Func = function(self) if(self.Active==1)then
-if(LDE.LifeSupport.HasNeeded(self,self.Data.In))then LDE.LifeSupport.UseResources(self,self.Data.In)
-if(LDE.LifeSupport.DrillWorld(self))then rand = math.random(0,3) --self:SupplyResource("Raw Ore",(2+rand)*self.Mult) No more mining ore with drills. >:(
-if self.environment:GetTemperature(self) > 300 then self:SupplyResource("Crystalised Polylodarium",(1+rand)*self.Mult)
-Owner=self:CPPIGetOwner()
-Owner:GiveLDEStat("Mined", (4+rand*self.Mult))
-end end end end end
-local Data={name="Polylodarium Drill",class="lde_ore_drill",In={"energy"},Out={"Crystalised Polylodarium"},shootfunc=Func,InUse={600},OutMake={0}}
-local Makeup = {name={"Rover Drill","Compact Drill","Stand Alone Drill"},model={"models/Slyfo/rover_drillbase.mdl","models/Slyfo/drillbase_basic.mdl","models/Slyfo/drillplatform.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class}
-LDE.LifeSupport.CompileDevice(Data,Makeup)
-
-//Lasers
-local Base = {Tool="Mining Devices",Type="Mining Lasers"}
-
---Ore Harvester
-local Func = function(self) if(self.Active==1)then
-if(LDE.LifeSupport.HasNeeded(self,self.Data.In))then LDE.LifeSupport.UseResources(self,self.Data.In)
-self:SupplyResource("Raw Ore",(LDE.LifeSupport.DrillEnt(self,"space_asteroid",(math.random(5,10)+10)*self:GetSizeMultiplier())))
-end end end
-local Data={name="Ore Laser",class="lde_ore_harvester",In={"energy"},Out={"Raw Ore"},shootfunc=Func,InUse={300},OutMake={0}}
-local Makeup = {name={"Basic Laser"},model={"models/mandrac/laser5.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class}
-LDE.LifeSupport.CompileDevice(Data,Makeup)
-
 //Electromium
 local Base = {Tool="Mining Devices",Type="Electromium"}
 

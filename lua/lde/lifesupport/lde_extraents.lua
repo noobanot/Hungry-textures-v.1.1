@@ -65,7 +65,6 @@ function LDE.LifeSupport.RegisterSDevice(Data)
 	ENT.PrintName = Data.name
 	ENT.Data = Data
 	ENT.CanRun=1
-	ENT.Mult = 1
 	
 	if(Data.Sounds)then
 		for I,b in pairs(Data.Sounds) do

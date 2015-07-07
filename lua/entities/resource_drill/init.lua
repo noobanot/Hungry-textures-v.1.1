@@ -315,6 +315,7 @@ function ENT:Extract()
 		self:Lockdown(1)
 		self.dt.Phase = 2 
 	end 
+
 	-- Drill Phase
 	if self.dt.Phase == 2 then
 		self.dt.Shaftspeed = 8

@@ -164,6 +164,8 @@ function ENT:Proc_Water()
 			self.environment:Convert(-1, 0, leftO2)
 			self.environment:Convert(-1, 3, leftH)
 		end
+		
+		LDE.HeatSim.ApplyHeat(self,5 * self:GetSizeMultiplier())
 	else
 		self:TurnOff()
 	end

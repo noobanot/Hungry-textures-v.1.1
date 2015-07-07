@@ -6,6 +6,10 @@ include('shared.lua')
 
 ENT.IsLS = true
 
+local EnvX = EnvX --Localise the global table for speed.
+local Utl = EnvX.Utl --Makes it easier to read the code.
+local NDat = Utl.NetMan --Ease link to the netdata table.
+
 function ENT:Initialize()
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
@@ -105,18 +109,16 @@ function ENT:Link(ent, delay)
 		self.node = ent
 		
 		if delay then
-			local func = function() 
-				umsg.Start("Env_SetNodeOnEnt")
-					umsg.Short(self:EntIndex())
-					umsg.Short(ent:EntIndex())
-				umsg.End()
+			local func = function()
+				local Nodes = {}
+				Nodes[ent:EntIndex()]={self:EntIndex()}
+				NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 			end
 			timer.Simple(0.1, func)
 		else
-			umsg.Start("Env_SetNodeOnEnt")
-				umsg.Short(self:EntIndex())
-				umsg.Short(ent:EntIndex())
-			umsg.End()
+			local Nodes = {}
+			Nodes[ent:EntIndex()]={self:EntIndex()}
+			NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 		end
 	end
 end
@@ -125,10 +127,9 @@ function ENT:Unlink()
 	if self.node then
 		self.node:Unlink(self)
 		self.node = nil
-		umsg.Start("Env_SetNodeOnEnt")
-			umsg.Short(self:EntIndex())
-			umsg.Short(0)
-		umsg.End()
+		local Nodes = {}
+		Nodes[0]={self:EntIndex()}
+		NDat.AddDataAll({Name="EnvX_SetEntNode",Val=1,Dat={Nodes=Nodes}})
 	end
 end
 

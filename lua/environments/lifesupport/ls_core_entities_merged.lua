@@ -197,14 +197,6 @@ Environments.RegisterDevice("Storages", "Resource Cache", "Mandrac Levy Cache", 
 --Environments.RegisterDevice("Storages", "Admin Cache", "Admin Cache", "environments_admincache", "models/sbep_community/d12siesmiccharge.mdl")
 
 //Ship Utilities
---Radiators
-Environments.RegisterDevice("Ship Utilities", "Heat Management","Basic Radiator", "lde_radiator", "models/props_c17/furnitureradiator001a.mdl")
-Environments.RegisterDevice("Ship Utilities", "Heat Management","Cyclic Radiator", "lde_radiator", "models/Slyfo/sat_rfg.mdl")
-Environments.RegisterDevice("Ship Utilities", "Heat Management","Singularity Radiator", "lde_radiator", "models/Slyfo/crate_reactor.mdl")
-
---Heater
-Environments.RegisterDevice("Ship Utilities", "Heat Management","Basic Heater", "lde_heater", "models/gibs/airboat_broken_engine.mdl")
-
 --Extra
 Environments.RegisterDevice("Ship Utilities", "Extra","Vehicle Exit Point", "EPoint", "models/jaanus/wiretool/wiretool_range.mdl")
 Environments.RegisterDevice("Ship Utilities", "Extra","Matter Transporter", "wep_transporter", "models/SBEP_community/d12shieldemitter.mdl")

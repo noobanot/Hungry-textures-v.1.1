@@ -161,7 +161,6 @@ function LDE.LifeSupport.RegisterDevice(Data)
 	ENT.PrintName = Data.name
 	ENT.Data = Data
 	ENT.CanRun=1
-	ENT.Mult = 1
 	
 	if(Data.RunSound)then
 		util.PrecacheSound(Data.RunSound)
@@ -258,7 +257,6 @@ function LDE.LifeSupport.RegisterDevice(Data)
 		function ENT:Think()
 			if(CurTime()>=self.LastTime+1)then
 				self.LastTime=CurTime()
-				self.Mult = self:GetSizeMultiplier() or 1
 				self:Generate()
 			end
 			self:NextThink(CurTime() + 1)
