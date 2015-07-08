@@ -32,6 +32,7 @@ function LDE.Weapons.SpaceCraft.CreateWing(self,Body,Model,Pos,Angles)
 		phys:EnableCollisions(false)
 		phys:SetMass( 1 )
 	end
+	Wing.NoGrav = true
 	
 	return Wing
 end
@@ -61,11 +62,13 @@ function LDE.Weapons.SpaceCraft.MakeSpaceC(Data)
 			local phys = self:GetPhysicsObject()
 			if (phys:IsValid()) then
 				phys:Wake()
-				phys:EnableGravity(true)
-				phys:EnableDrag(true)
+				phys:EnableGravity(false)
+				phys:EnableDrag(false)
 				phys:EnableCollisions(false)
 				phys:SetMass(1)
 			end
+			self.NoGrav = false
+			
 			self:SetKeyValue("rendercolor", "255 255 255")
 			self.PhysObj = self:GetPhysicsObject()
 			self.LDE = {CoreHealth=10000,CoreMaxHealth=10000,CoreShield=15000,CoreMaxShield=15000,CanRecharge=1,Flashing=1,CoreTemp=0,CoreMaxTemp=1,Core=self}
@@ -112,10 +115,8 @@ function LDE.Weapons.SpaceCraft.MakeSpaceC(Data)
 			local Weld = constraint.Weld(self,Body)
 			
 			local phys = Body:GetPhysicsObject()
-			if (phys:IsValid()) then
+			if IsValid(phys)  then
 				phys:Wake()
-				phys:EnableGravity(true)
-				phys:EnableDrag(true)
 				phys:EnableCollisions(true)
 				phys:SetMass( 1000 )
 			end
@@ -140,14 +141,14 @@ function LDE.Weapons.SpaceCraft.MakeSpaceC(Data)
 		
 		function ENT:RechargeCell(Amount)
 			Amount=math.abs(Amount or 0)
-			if(Amount>0)then
+			if Amount>0 then
 				self.LDE.PowerCell = math.Clamp(self.LDE.PowerCell+Amount,0,self.LDE.PowerCellMax)
 			end
 		end
 		
 		function ENT:DrainCell(Amount)
 			Amount=math.abs(Amount or 0)
-			if(Amount>0)then
+			if Amount>0 then
 				local Power = self.LDE.PowerCell
 				if(Power>Amount)then
 					self.LDE.PowerCell = Power-Amount
@@ -195,26 +196,26 @@ function LDE.Weapons.SpaceCraft.MakeSpaceC(Data)
 			--self.Entity:SetColor( 0, 0, 255, 255)
 			local Phys = self.Body:GetPhysicsObject()
 
-			if self.Body and self.Body:IsValid() then
+			if self.Body and IsValid(self.Body) then
 			
 				self.Body.LDE.Core = self --Tell the props who is protecting them
 				self.LDE.Core = self
 				
 				self.CPL = self.Body:GetPassenger(1)
-				if self.CPL and self.CPL:IsValid() then
-					if(self.IsDead)then
+				if self.CPL and IsValid(self.CPL) then
+					if self.IsDead then
 						self.CPL:Kill()
 						self.CPLsuitcheck = true
 						return
 					end
-					if(type(self.CPL.suit) == "table") then
+					if type(self.CPL.suit) == "table" then
 						if(self.CPLsuitcheck)then
 							self.CPLsuit = table.Copy(self.CPL.suit)
 							self.CPLsuitcheck = false
 						else
-							if(self.CPL.suit.air ~= self.CPLsuit.air) then self.CPL.suit.air = self.CPLsuit.air end
-							if(self.CPL.suit.energy ~= self.CPLsuit.energy) then self.CPL.suit.energy = self.CPLsuit.energy end
-							if(self.CPL.suit.coolant ~= self.CPLsuit.coolant) then self.CPL.suit.coolant = self.CPLsuit.coolant end
+							if self.CPL.suit.air ~= self.CPLsuit.air then self.CPL.suit.air = self.CPLsuit.air end
+							if self.CPL.suit.energy ~= self.CPLsuit.energy then self.CPL.suit.energy = self.CPLsuit.energy end
+							if self.CPL.suit.coolant ~= self.CPLsuit.coolant then self.CPL.suit.coolant = self.CPLsuit.coolant end
 						end
 					end
 					self.LDE.AMul = 1
@@ -257,18 +258,14 @@ function LDE.Weapons.SpaceCraft.MakeSpaceC(Data)
 			
 			if Phys:IsValid() then
 				if self.Active then
-					if Phys and Phys:IsValid() then
-						Phys:EnableGravity(false)
-					end
+					self.Body.NoGrav = false
 					Phys:SetVelocity(Phys:GetVelocity() * .96)
 					if self.Data.EngineCheck(self) then
 						Phys:ApplyForceCenter(self.Body:GetRight() * (self.LDE.Move.Thrust * Phys:GetMass()) )
 						Phys:AddAngleVelocity((Phys:GetAngleVelocity() * -0.1) + Vector(RAng.p,RAng.y,RAng.r))
 					end
 				else
-					if Phys and Phys:IsValid() then
-						Phys:EnableGravity(true)
-					end
+					self.Body.NoGrav = false
 				end
 			end
 			
@@ -367,7 +364,7 @@ local FlyThink = function(self)
 end
 
 local enginecheck = function(self)
-	if(self.RWingE and self.RWingE:IsValid() and self.LWingE and self.LWingE:IsValid())then
+	if self.RWingE and IsValid(self.RWingE) and self.LWingE and IsValid(self.LWingE) then
 		return true
 	else
 		return false

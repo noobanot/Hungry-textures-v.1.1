@@ -461,6 +461,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			ent:Spawn()
 			ent:Activate()
 			--ent:GetPhysicsObject():Wake()
+			ent:CPPISetOwner(ply) -- Just adding this here
 			
 			if info.skin then
 				ent:SetSkin(info.skin)

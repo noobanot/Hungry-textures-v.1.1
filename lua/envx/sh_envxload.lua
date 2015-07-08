@@ -9,6 +9,7 @@ Environments.CurrentVersion = 0 --for update checking
 Environments.FileVersion = 8
 Environments.Debug = true
 
+LoadFile(P.."partlist.lua",1)
 LoadFile(P.."resources.lua",1)
 LoadFile(P.."variables.lua",1)
 LoadFile(P.."core/sh_funcs.lua",1)
