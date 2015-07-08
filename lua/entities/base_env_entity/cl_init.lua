@@ -23,25 +23,8 @@ OOO[0] = "Off"
 OOO[1] = "On"
 OOO[2] = "Overdrive"
 
-local ResourceUnits = {}
-ResourceUnits["energy"] = " kJ"
-ResourceUnits["water"] = " L"
-ResourceUnits["oxygen"] = " L"
-ResourceUnits["hydrogen"] = " L"
-ResourceUnits["nitrogen"] = " L"
-ResourceUnits["carbon dioxide"] = " L"
-ResourceUnits["steam"] = " L"
-
-local ResourceNames = {}
-ResourceNames["energy"] = "Energy"
-ResourceNames["water"] = "Water"
-ResourceNames["oxygen"] = "Oxygen"
-ResourceNames["hydrogen"] = "Hydrogen"
-ResourceNames["nitrogen"] = "Nitrogen"
-ResourceNames["carbon dioxide"] = "CO2"
-ResourceNames["steam"] = "Steam"
-
 function ENT:Initialize()
+	/*
 	local info = nil
 	if Environments.GetScreenInfo then
 		info = Environments.GetScreenInfo(self:GetModel())
@@ -51,6 +34,7 @@ function ENT:Initialize()
 		self.ScreenAngles = info.Angle
 		self.ScreenPos = info.Offset
 	end
+	*/
 	local tab = Environments.GetEntTable(self:EntIndex())
 	self.maxresources = tab.maxresources
 	self.resources = tab.resources
@@ -70,41 +54,6 @@ function ENT:Draw( bDontDrawModel )
 	end
 	
 	self:DoNormalDraw()
-	
-	if tobool(GetConVarNumber("env_draw_cables")) then
-		local node = self.node
-		if node and node:IsValid() and self:GetNWVector("CablePos") != Vector(0,0,0) then
-			if self:GetPos() != self.LastPos or node:GetPos() != node.LastPos then
-				local fwd = self:LocalToWorld(self:GetNWVector("CableForward", Vector(0,1,0)))
-				fwd:Normalize()
-				Environments.DrawCable(self, self:LocalToWorld(self:GetNWVector("CablePos", Vector(0,0,0))), fwd, node:GetPos(), node:GetAngles():Forward())
-				node.LastPos = node:GetPos()
-				self.LastPos = self:GetPos()
-			end
-			
-			if self.mesh then
-				if !self.material or self.Rcolor != self:GetNWVector("CableColor", Vector(255,255,255)) then 
-					self.Rcolor = self:GetNWVector("CableColor", Vector(255,255,255))
-					local colorstr = "{"..self.Rcolor.x.." "..self.Rcolor.y.." "..self.Rcolor.z.."}"
-					local params = {
-						["$basetexture"] = "models/debug/debugwhite",
-						["$vertexcolor"] = 1,
-						["$model"] = 1,
-						["$color"] = colorstr,
-					}
-					self.material = CreateMaterial("3DCableMaterial"..math.random(1,2578846),"VertexLitGeneric",params);
-				end
-				
-				//render.SuppressEngineLighting(true)
-					render.SetMaterial( self.material )
-					//render.MaterialOverride( self.material )
-					
-						self.mesh:Draw()
-					//render.MaterialOverride( 0 )
-				//render.SuppressEngineLighting(false)
-			end
-		end
-	end
 
 	if Wire_Render then
 		Wire_Render(self)
@@ -136,8 +85,12 @@ function ENT:DoNormalDraw( bDontDrawModel )
 		if playername == "" then
 			playername = "World"
 		end
-
-		if not self.ScreenMode then
+		
+		local Data = EnvX.Resources.Data
+		local RNames = EnvX.Resources.Names
+		local IDs = EnvX.Resources.Ids
+		
+		--if not self.ScreenMode then
 			local OverlayText = ""
 			OverlayText = OverlayText ..self.PrintName.."\n"
 			if !node or !node:IsValid() then
@@ -156,7 +109,11 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			local resources = self.resources
 			if resnames and table.Count(resnames) > 0 then
 				for _, k in pairs(resnames) do
-					if node and node:IsValid() then
+					local ID = IDs[k] or k
+					local MD = Data[ID] or {}
+					local ND = RNames[ID] or k
+					
+					if node and IsValid(node) then
 						if node.resources_last[k] and node.resources[k] then
 							local diff = CurTime() - node.last_update[k]
 							if diff > 1 then
@@ -164,12 +121,12 @@ function ENT:DoNormalDraw( bDontDrawModel )
 							end
 							
 							local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							OverlayText = OverlayText ..ND..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or "") .."\n"
 						else
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							OverlayText = OverlayText ..ND..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or "") .."\n"
 						end
 					else
-						OverlayText = OverlayText ..(ResourceNames[k] or k)..": 0/".. (self.maxresources[k] or 0) .."\n"
+						OverlayText = OverlayText ..ND..": 0/".. (self.maxresources[k] or 0) .."\n"
 					end
 				end
 			end
@@ -184,12 +141,12 @@ function ENT:DoNormalDraw( bDontDrawModel )
 							end
 							
 							local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							OverlayText = OverlayText ..(RNames[k] or k)..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. ((Data[k] or {}).MUnit or "") .."\n"
 						else
-							OverlayText = OverlayText ..(ResourceNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (ResourceUnits[k] or "") .."\n"
+							OverlayText = OverlayText ..(RNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. ((Data[k] or {}).MUnit or "") .."\n"
 						end
 					else
-						OverlayText = OverlayText ..(ResourceNames[k] or k)..": 0/0\n"
+						OverlayText = OverlayText ..(RNames[k] or k)..": 0/0\n"
 					end
 				end
 			end
@@ -202,7 +159,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			OverlayText = OverlayText .. math.Round(self:GetNWInt("LDEMinTemp",0)).."/("..math.Round(self:GetNWInt("LDEEntTemp",0))..")/"..math.Round(self:GetNWInt("LDEMaxTemp",0)).."\n"
 			OverlayText = OverlayText .. "(" .. playername ..")"
 			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
-		else
+		/*else
 			local rot = Vector(0,0,90)
 			local TempY = 0
 			local maxvector = self:OBBMaxs()
@@ -301,9 +258,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				end end)
 				if error then print(error) end
 			cam.End3D2D()
-		end
+		end*/
 	else
-		if ( !bDontDrawModel ) then self:DrawModel() end
+		if not bDontDrawModel then self:DrawModel() end
 	end
 end
 

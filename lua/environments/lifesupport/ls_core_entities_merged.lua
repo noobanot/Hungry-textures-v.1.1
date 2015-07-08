@@ -1,5 +1,5 @@
 //Core Environments LS Entities/Devices
-
+ 
 --Register the storage types.
 Environments.RegisterLSStorage("Steam Storage", "env_steam_storage", {[3600] = "steam"}, 4084, 300, 50)
 Environments.RegisterLSStorage("Water Storage", "env_water_storage", {[3600] = "water"}, 4084, 400, 500)
@@ -34,8 +34,6 @@ Environments.RegisterDevice("Generators", "Fusion Generator", "Rotary Reactor", 
 --Environments.RegisterDevice("Generators", "Fission Generator", "Basic Fission Reactor", "generator_fission", "models/SBEP_community/d12siesmiccharge.mdl")
 
 --WaterPumps
---Environments.RegisterDevice("Generators", "Water Pump", "Small Water Pump", "generator_water", "models/sbep_community/d12shieldemitter.mdl")
---Environments.RegisterDevice("Generators", "Water Pump", "Large Water Pump", "generator_water", "models/sbep_community/d12siesmiccharge.mdl")
 Environments.RegisterDevice("Generators", "Water Pump", "Small Water Pump", "generator_water", "models/maxofs2d/thruster_propeller.mdl")
 Environments.RegisterDevice("Generators", "Water Pump", "Large Water Pump", "generator_water", "models/maxofs2d/hover_propeller.mdl")
 
@@ -74,7 +72,7 @@ Environments.RegisterDevice("Generators", "Microwave Emitter", "Large Reciever",
 Environments.RegisterDevice("Generators", "Microwave Emitter", "Massive Reciever", "reciever_microwave", "models/props_spytech/satellite_dish001.mdl")
 
 --SpaceGas Collectors
-Environments.RegisterDevice("Generators", "Space Gas Collectors", "Gas Collector", "generator_space_gas", "models/spacebuild/medbridge2_missile_launcher.mdl")
+--Environments.RegisterDevice("Generators", "Space Gas Collectors", "Gas Collector", "generator_space_gas", "models/spacebuild/medbridge2_missile_launcher.mdl")
 
 //Life Support Tool
 --Suit Dispener
@@ -124,9 +122,6 @@ Environments.RegisterDevice("Storages", "Water Storage", "Water Shipping Tank", 
 Environments.RegisterDevice("Storages", "Water Storage", "Small Water Tank", "env_water_storage", "models/slyfo/crate_watersmall.mdl")
 
 --Energy
-Environments.RegisterDevice("Storages", "Energy Storage", "Large Battery", "env_energy_storage", "models/props_phx/life_support/battery_large.mdl")
-Environments.RegisterDevice("Storages", "Energy Storage", "Medium Battery", "env_energy_storage", "models/props_phx/life_support/battery_medium.mdl")
-Environments.RegisterDevice("Storages", "Energy Storage", "Small Battery", "env_energy_storage", "models/props_phx/life_support/battery_small.mdl")
 Environments.RegisterDevice("Storages", "Energy Storage", "Substation Capacitor", "env_energy_storage", "models/props_c17/substation_stripebox01a.mdl")
 Environments.RegisterDevice("Storages", "Energy Storage", "Substation Backup Battery", "env_energy_storage", "models/props_c17/substation_transformer01a.mdl")
 Environments.RegisterDevice("Storages", "Energy Storage", "Large Capacitor", "env_energy_storage", "models/mandrac/energy_cell/large_cell.mdl")
@@ -135,12 +130,6 @@ Environments.RegisterDevice("Storages", "Energy Storage", "Small Capacitor", "en
 
 --Oxygen 
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Storage", "env_oxygen_storage", "models/props_wasteland/coolingtank02.mdl")
-Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Canister", "env_oxygen_storage", "models/props_phx/life_support/canister_large.mdl")
-Environments.RegisterDevice("Storages", "Oxygen Storage", "Medium Oxygen Canister", "env_oxygen_storage", "models/props_phx/life_support/canister_medium.mdl")
-Environments.RegisterDevice("Storages", "Oxygen Storage", "Small Oxygen Canister", "env_oxygen_storage", "models/props_phx/life_support/canister_small.mdl")
-Environments.RegisterDevice("Storages", "Oxygen Storage", "Small Oxygen Tank", "env_oxygen_storage", "models/props_phx/life_support/tank_small.mdl")
-Environments.RegisterDevice("Storages", "Oxygen Storage", "Medium Oxygen Tank", "env_oxygen_storage", "models/props_phx/life_support/tank_medium.mdl")
-Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Oxygen Tank", "env_oxygen_storage", "models/props_phx/life_support/tank_large.mdl")
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Oxygen Shipping Tank", "env_oxygen_storage", "models/slyfo/crate_resource_large.mdl")
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Large Compressed Oxygen Crate", "env_oxygen_storage", "models/mandrac/oxygen_tank/oxygen_tank_large.mdl")
 Environments.RegisterDevice("Storages", "Oxygen Storage", "Medium Compressed Oxygen Crate", "env_oxygen_storage", "models/mandrac/oxygen_tank/oxygen_tank_medium.mdl")
@@ -148,32 +137,14 @@ Environments.RegisterDevice("Storages", "Oxygen Storage", "Small Compressed Oxyg
 
 --Nitrogen 
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Storage", "env_nitrogen_storage", "models/props_wasteland/coolingtank02.mdl")
-Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_large.mdl", 1)
-Environments.RegisterDevice("Storages", "Nitrogen Storage", "Medium Nitrogen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_medium.mdl", 1)
-Environments.RegisterDevice("Storages", "Nitrogen Storage", "Small Nitrogen Canister", "env_nitrogen_storage", "models/props_phx/life_support/canister_small.mdl", 1)
-Environments.RegisterDevice("Storages", "Nitrogen Storage", "Small Nitrogen Tank", "env_nitrogen_storage", "models/props_phx/life_support/tank_small.mdl", 1)
-Environments.RegisterDevice("Storages", "Nitrogen Storage", "Medium Nitrogen Tank", "env_nitrogen_storage", "models/props_phx/life_support/tank_medium.mdl", 1)
-Environments.RegisterDevice("Storages", "Nitrogen Storage", "Large Nitrogen Tank", "env_nitrogen_storage", "models/props_phx/life_support/tank_large.mdl", 1)
 Environments.RegisterDevice("Storages", "Nitrogen Storage", "Nitrogen Shipping Tank", "env_nitrogen_storage", "models/slyfo/crate_resource_large.mdl")
 
 --Hydrogen 
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Storage", "env_hydrogen_storage", "models/props_wasteland/coolingtank02.mdl")
-Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_large.mdl", 2)
-Environments.RegisterDevice("Storages", "Hydrogen Storage", "Medium Hydrogen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_medium.mdl", 2)
-Environments.RegisterDevice("Storages", "Hydrogen Storage", "Small Hydrogen Canister", "env_hydrogen_storage", "models/props_phx/life_support/canister_small.mdl", 2)
-Environments.RegisterDevice("Storages", "Hydrogen Storage", "Small Hydrogen Tank", "env_hydrogen_storage", "models/props_phx/life_support/tank_small.mdl", 2)
-Environments.RegisterDevice("Storages", "Hydrogen Storage", "Medium Hydrogen Tank", "env_hydrogen_storage", "models/props_phx/life_support/tank_medium.mdl", 2)
-Environments.RegisterDevice("Storages", "Hydrogen Storage", "Large Hydrogen Tank", "env_hydrogen_storage", "models/props_phx/life_support/tank_large.mdl", 2)
 Environments.RegisterDevice("Storages", "Hydrogen Storage", "Hydrogen Shipping Tank", "env_hydrogen_storage", "models/slyfo/crate_resource_large.mdl")
 
 --Co2
 Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Storage", "env_co2_storage", "models/props_wasteland/coolingtank02.mdl")
-Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Canister", "env_co2_storage", "models/props_phx/life_support/canister_large.mdl", 3)
-Environments.RegisterDevice("Storages", "CO2 Storage", "Medium CO2 Canister", "env_co2_storage", "models/props_phx/life_support/canister_medium.mdl", 3)
-Environments.RegisterDevice("Storages", "CO2 Storage", "Small CO2 Canister", "env_co2_storage", "models/props_phx/life_support/canister_small.mdl", 3)
-Environments.RegisterDevice("Storages", "CO2 Storage", "Small CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_small.mdl", 3)
-Environments.RegisterDevice("Storages", "CO2 Storage", "Medium CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_medium.mdl", 3)
-Environments.RegisterDevice("Storages", "CO2 Storage", "Large CO2 Tank", "env_co2_storage", "models/props_phx/life_support/tank_large.mdl", 3)
 
 --Resource Cache
 Environments.RegisterDevice("Storages", "Resource Cache","Modular Unit X-01","env_cache_storage","models/Spacebuild/milcock4_multipod1.mdl")
@@ -193,8 +164,6 @@ Environments.RegisterDevice("Storages", "Resource Cache", "Mandrac Medium Cache"
 Environments.RegisterDevice("Storages", "Resource Cache", "Mandrac Small Cache", "env_cache_storage", "models/mandrac/resource_cache/medium_cache.mdl")
 Environments.RegisterDevice("Storages", "Resource Cache", "Mandrac Tiny Cache", "env_cache_storage", "models/mandrac/resource_cache/small_cache.mdl")
 Environments.RegisterDevice("Storages", "Resource Cache", "Mandrac Levy Cache", "env_cache_storage", "models/mandrac/nitrogen_tank/nitro_large.mdl")
---Admin Cache
---Environments.RegisterDevice("Storages", "Admin Cache", "Admin Cache", "environments_admincache", "models/sbep_community/d12siesmiccharge.mdl")
 
 //Ship Utilities
 --Extra

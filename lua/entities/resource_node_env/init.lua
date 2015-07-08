@@ -127,7 +127,7 @@ function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 		for k,name in pairs(res1) do
 			local v = self.resources[name]	
 			if v and v.haschanged then
-				Sync[name] = {name=Environments.Resources[name] or name,value=v.value}	
+				Sync[name] = {name=EnvX.Resources.Ids[name] or name,value=v.value}	
 				v.haschanged = false
 			end
 		end
@@ -141,7 +141,7 @@ function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 	for k,name in pairs(res2) do
 		local v = self.resources[name]
 		if v and v.haschanged then
-			Sync[name] = {name=Environments.Resources[name] or name,value=v.value}	
+			Sync[name] = {name=EnvX.Resources.Ids[name] or name,value=v.value}	
 			v.haschanged = false
 		end
 	end

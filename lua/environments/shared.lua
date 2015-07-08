@@ -384,20 +384,3 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 		end
 	end
 end
-
-
-Environments.Resources = {} --string to short
-Environments.Resources2 = {} --short to string
-function Environments.RegisterResource(name)
-	Environments.Resources[name] = table.Count(Environments.Resources) + 1
-	Environments.Resources2[table.Count(Environments.Resources)] = name
-end	
-
-//Adding Main Resources For Optimization
-Environments.RegisterResource("oxygen")
-Environments.RegisterResource("water")
-Environments.RegisterResource("energy")
-Environments.RegisterResource("nitrogen")
-Environments.RegisterResource("hydrogen")
-Environments.RegisterResource("steam")
-Environments.RegisterResource("carbon dioxide")

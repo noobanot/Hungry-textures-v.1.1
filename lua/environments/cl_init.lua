@@ -22,26 +22,6 @@ hook.Add( "PopulateMenuBar", "EnvironmentsLifeSupportAddMenubar", function( menu
 	
 	m:AddCVar( "Draw 3D Cables?", "env_draw_cables", "1", "0" )
 end)
-	
-
-local models = {}
-function Environments.GetScreenInfo(model)
-	local info = {}
-	for k,v in pairs(models) do
-		if k == model then
-			return v
-		end
-	end
-end
-
-function Environments.RegisterModelScreenData(model, offset, angle, height, width)
-	models[model] = {}
-	models[model].Offset = offset
-	models[model].Angle = angle
-	models[model].X = width
-	models[model].Y = height
-end
-Environments.RegisterModelScreenData("models/punisher239/punisher239_reactor_small.mdl", Vector(-110,0,50), Angle(0,30,270), 0, 0)
 
 if CLIENT then
 	local resolution = 0.1

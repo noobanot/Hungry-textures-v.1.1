@@ -13,21 +13,6 @@ LDE.Anons.Resources["Crystalised Polylodarium"] = { name = "Crystalised Polyloda
 LDE.Anons.RefinedResoruces["Refined Ore"]= { name = "Refined Ore", unit = " kg" }
 LDE.Anons.RefinedResoruces["Liquid Polylodarium"]= { name = "Liquid Polylodarium", unit = " L" }
 
-local function MiningRegistration() 
-	local function RegisterMiningResources(tbl)
-		if not Environments.RegisterResource or not LDE.Anons.Resources or not tbl then return end -- uhm yeah.
-			for k,v in pairs(tbl) do
-			--Environments.RegisterResourceInfo(k,v.name,v.unit) -- register the resource info
-			Environments.RegisterResource(k) -- register the Resource Name
-		end
-	end
-
-
-	RegisterMiningResources(LDE.Anons.Resources)
-	RegisterMiningResources(LDE.Anons.RefinedResoruces)
-end
-hook.Add("InitPostEntity","envMiningRegister",MiningRegistration)
-
 local MaxPools = 3
 function LDE.Anons.GetPlanetScores()
 	print("Getting Planet Scores!")

@@ -1,23 +1,6 @@
 include('shared.lua')
 
 ENT.RenderGroup = RENDERGROUP_BOTH
-
-local ResourceUnits = {}
-ResourceUnits["energy"] = " Joules"
-ResourceUnits["water"] = " L"
-ResourceUnits["oxygen"] = " L"
-ResourceUnits["hydrogen"] = " L"
-ResourceUnits["nitrogen"] = " L"
-ResourceUnits["carbon dioxide"] = " L"
-
-local ResourceNames = {}
-ResourceNames["energy"] = "Energy"
-ResourceNames["water"] = "Water"
-ResourceNames["oxygen"] = "Oxygen"
-ResourceNames["hydrogen"] = "Hydrogen"
-ResourceNames["nitrogen"] = "Nitrogen"
-ResourceNames["carbon dioxide"] = "CO2"
-
 //surface.CreateFont( "arial", 60, 600, true, false, "ConflictText" )
 //surface.CreateFont( "arial", 40, 600, true, false, "Flavour" )
 
@@ -65,7 +48,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 		-- 0 = no overlay!
 		-- 1 = default overlaytext
 		-- 2 = new overlaytext
-
+		local Data = EnvX.Resources.Data
+		local RNames = EnvX.Resources.Names
+		
 		if not mode or mode != 2 then
 			local OverlayText = ""
 				OverlayText = OverlayText ..self.PrintName.."\n"
@@ -80,9 +65,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				if ( table.Count(resources) > 0 ) then
 					for k, v in pairs(resources) do
 						if node then
-							OverlayText = OverlayText ..ResourceNames[k]..": ".. node:GetNWInt(k, 0) .."/".. 0 .."\n" .. ResourceUnits[k]
+							OverlayText = OverlayText ..RNames[k]..": ".. node:GetNWInt(k, 0) .."/".. 0 .."\n" .. ((Data[k] or {}).MUnit or "")
 						else
-							OverlayText = OverlayText ..ResourceNames[k]..": ".. 0 .."/".. 0 .."\n"
+							OverlayText = OverlayText ..RNames[k]..": ".. 0 .."/".. 0 .."\n"
 						end
 					end
 				else
@@ -92,9 +77,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				if resnames and table.Count(resnames) > 0 then
 					for _, k in pairs(resnames) do
 						if node then
-							OverlayText = OverlayText ..ResourceNames[k]..": ".. node:GetNWInt(k, 0) .."/".. node:GetNWInt("max"..k, 0) .. ResourceUnits[k] .."\n"
+							OverlayText = OverlayText ..RNames[k]..": ".. node:GetNWInt(k, 0) .."/".. node:GetNWInt("max"..k, 0) .. ((Data[k] or {}).MUnit or "") .."\n"
 						else
-							OverlayText = OverlayText ..ResourceNames[k]..": ".. 0 .."/".. self.maxresources[k] .."\n"
+							OverlayText = OverlayText ..RNames[k]..": ".. 0 .."/".. self.maxresources[k] .."\n"
 						end
 					end
 				end
@@ -144,7 +129,7 @@ EnvX.Utl:HookNet("EnvX_NodeSyncResource",function(Data)
 	
 	local Resources = Data.Resources
 	for i, res in pairs(Resources) do
-		local index = Environments.Resources2[res.name] or res.name
+		local index = EnvX.Resources.Names[res.name] or res.name
 		net.resources_last[index] = net.resources[index]
 		net.resources[index] = res.value
 		net.last_update[index] = CurTime()
