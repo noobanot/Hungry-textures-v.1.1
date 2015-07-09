@@ -70,9 +70,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 								end
 								
 								local amt = math.Round(Net.resources_last[k] + (Net.resources[k] - Net.resources_last[k])*diff)
-								table.insert(Return,{Type="Percentage",Text=ND..": ".. amt .."/".. Net.maxresources[k] .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. amt .."/".. (Net.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
 							else
-								table.insert(Return,{Type="Percentage",Text=ND..": ".. (Net.resources[k] or 0) .."/".. Net.maxresources[k] .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. (Net.resources[k] or 0) .."/".. (Net.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
 							end
 						else
 							table.insert(Return,{Type="Percentage",Text=ND..": ".. 0 .."/".. 0 .. (MD.MUnit or ""),Value=0})
