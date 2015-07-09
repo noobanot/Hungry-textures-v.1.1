@@ -165,6 +165,20 @@ function LudCore.LoadFunctions()
 			LudCore.Response("You're not looking at anything!")
 		end
 	end)
+
+	LudCore.RegisterCommand("RemoveProps",{{"cleanup","remove","destroy"},"(varg)",{"props","stuff","entitys","entities","things","junk"}},function(ply,args)
+		if args[1] == "my" then
+			LudCore.Response("Cleaning up your things!")
+			
+			for i, ent in ipairs( ents.GetAll() ) do
+				if ent and IsValid(ent) then
+					if ent:CPPIGetOwner() == ply then
+						ent:Remove()
+					end
+				end
+			end
+		end	
+	end)
 	
 	LudCore.RegisterCommand("VersionCheck",{{"version","ver","vers"}},function(ply,args)
 		LudCore.Response("I'm Running on Version: "..LudCore.LudOS.Version.." Envx Version: "..EnvX.Version)
