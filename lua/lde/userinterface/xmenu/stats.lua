@@ -11,9 +11,11 @@ if(SERVER)then
 	end)
 
 else
+	local MC = EnvX.MenuCore
+
 	LDE.ServerLists = {}
 	
-	LDE.OfficalStatus = "Authenticating..."
+	LDE.OfficalStatus = "Click to Check Server Offical Status"
 	LDE.StatusColor = Color(255,0,0,255)
 	
 	local function OnSelect(B,N)
@@ -34,29 +36,29 @@ else
 	end
 	
 	hook.Add("LDEFillCatagorys","Stats", function()
-		local SuperMenu = LDE.UI.SuperMenu.Menu.Catagorys
+		local PDA = MC.PDA.Menu.Catagorys
 		
 		--Player Stats
 		
-		local base = vgui.Create( "DPanel", SuperMenu )
+		local base = vgui.Create( "DPanel", PDA )
 		base:SizeToContents()
 		base.Paint = function() end
-		SuperMenu:AddSheet( "Stats", base, "icon16/chart_bar.png", false, false, "View your stats." ) 
+		PDA:AddSheet( "Stats", base, "icon16/chart_bar.png", false, false, "View your stats." ) 
 		base.Players = {}
 		
-		local PL = LDE.UI.CreateList(base,{x=160,y=525},{x=0,y=0},false,function(V) OnSelect(base,V) end)
+		local PL = MC.CreateList(base,{x=160,y=525},{x=0,y=0},false,function(V) OnSelect(base,V) end)
 		PL:AddColumn("Player") -- Add column
 		for k,v in pairs(player.GetAll()) do base.Players[v:Name()]=v PL:AddLine(v:Name()) end
 		
 		base.PL = PL
 		
-		local PI = LDE.UI.CreateList(base,{x=250,y=140},{x=170,y=0},false,function() end)
+		local PI = MC.CreateList(base,{x=250,y=140},{x=170,y=0},false,function() end)
 		PI:AddColumn("Item") -- Add column
 		PI:AddColumn("Value") -- Add colum		
 		
 		base.PI = PI
 		
-		local SL = LDE.UI.CreateList(base,{x=250,y=375},{x=170,y=150},false,function() end)
+		local SL = MC.CreateList(base,{x=250,y=375},{x=170,y=150},false,function() end)
 		SL:AddColumn("Item") -- Add column
 		SL:AddColumn("Amount") -- Add column
 		
@@ -65,15 +67,16 @@ else
 		OnSelect(base,LocalPlayer():Name())
 		
 		--Server Stats
-		
-		local Office = LDE.MenuCore.CreateButton(base,{x=340,y=40},{x=430,y=0},"Awaiting Server Identification",function() end)
+		local Office = MC.CreateButton(base,{x=340,y=40},{x=430,y=0},LDE.OfficalStatus,function() 
+			NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
+		end)
 		Office.Think = function(self)
 			self:SetText(LDE.OfficalStatus)
 			self:SetColor(LDE.StatusColor)
 		end
 		
 		--Add connect dialogue on selection.
-		local ServerListOffical = LDE.UI.CreateList(base,{x=340,y=230},{x=430,y=50},false,function() end)
+		local ServerListOffical = MC.CreateList(base,{x=340,y=230},{x=430,y=50},false,function() end)
 		ServerListOffical:AddColumn("Official Servers") -- Add column
 		ServerListOffical:AddColumn("IP") -- Add column	
 		ServerListOffical:AddColumn("Port") -- Add column	
@@ -90,7 +93,7 @@ else
 		LDE.ServerListOffical = ServerListOffical
 		
 		--Add connect dialogue on selection.
-		local ServerListCommunity = LDE.UI.CreateList(base,{x=340,y=235},{x=430,y=290},false,function() end)
+		local ServerListCommunity = MC.CreateList(base,{x=340,y=235},{x=430,y=290},false,function() end)
 		ServerListCommunity:AddColumn("Community Servers") -- Add column
 		ServerListCommunity:AddColumn("IP") -- Add column
 		ServerListCommunity:AddColumn("Port") -- Add column	
@@ -105,9 +108,6 @@ else
 		
 		ServerListCommunity:PopulateList()
 		LDE.ServerListCommunity = ServerListCommunity
-		
-		
-		NDat.AddData({Name="RequestOfficalStatus",Val=1,Dat={}})
 	end)
 	
 	Utl:HookNet("ReplyOfficalStatus",function(Data)

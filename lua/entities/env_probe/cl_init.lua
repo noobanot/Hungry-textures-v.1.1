@@ -8,157 +8,93 @@ OOO[2] = "Overdrive"
 
 function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self.Entity and EyePos():Distance( self.Entity:GetPos() ) < 256) then
-		local trace = LocalPlayer():GetEyeTrace()
-		if ( !bDontDrawModel ) then self:DrawModel() end
-		local playername = self:GetPlayerName()
-		if playername == "" then
-			playername = "World"
-		end
-		-- 0 = no overlay!
-		-- 1 = default overlaytext
-		-- 2 = new overlaytext
+		local Data = EnvX.Resources.Data
+		local RNames = EnvX.Resources.Names
+		local IDs = EnvX.Resources.Ids
 		
-		if not mode or mode != 2 then
-			local OverlayText = ""
-				OverlayText = OverlayText ..self.PrintName.."\n"
-			if not self:GetNWEntity("node") then
-				OverlayText = OverlayText .. "Not connected to a network\n"
-			else
-				OverlayText = OverlayText .. "Network " .. self:GetNWEntity("node"):EntIndex() .."\n"
+		EnvX.MenuCore.RenderWorldTip(self,function(ent)
+			--print(tostring(self.node))
+			local node = self.node
+			local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
+			local resnames = OverlaySettings.resnames
+			local HasOOO = OverlaySettings.HasOOO or false
+			local genresnames = OverlaySettings.genresnames or {}
+			
+			local playername = self:GetPlayerName()
+			if playername == "" then
+				playername = "World"
 			end
-			OverlayText = OverlayText .. "Owner: " .. playername .."\n"
-			local runmode = "UnKnown"
-			if self:GetOOO() >= 0 and self:GetOOO() <= 2 then
-				runmode = OOO[self:GetOOO()]
-			end
-			OverlayText = OverlayText .. "Mode: " .. runmode .."\n"
+		
+			local Return = {}
+			table.insert(Return,{Type="Label",Value=self.PrintName})
+			table.insert(Return,{Type="Label",Value="Network: "..self:EntIndex()})
+			
 			if self:GetOOO() == 1 then
-				OverlayText = OverlayText .. "Environment Info:\n"
-				OverlayText = OverlayText .. "Name:"..tostring(self:GetNetworkedString(8)).."\n"
-				OverlayText = OverlayText .. "O2 Level: " .. string.format("%g",self:GetNetworkedInt( 1 )).."%".."\n"
-				OverlayText = OverlayText .. "CO2 Level: " .. string.format("%g",self:GetNetworkedInt( 2 )).."%".."\n"
-				OverlayText = OverlayText .. "Nitrogen Level: " .. string.format("%g",self:GetNetworkedInt( 3 )).."%".."\n"
-				OverlayText = OverlayText .. "Hydrogen Level: " .. string.format("%g",self:GetNetworkedInt( 4 )).."%".."\n"
-				OverlayText = OverlayText .. "Pressure: " .. tostring(self:GetNetworkedInt( 5 )).."\n"
-				OverlayText = OverlayText .. "Temperature: " .. tostring(self:GetNetworkedInt( 6 )).."\n"
-				OverlayText = OverlayText .. "Gravity: " .. tostring(self:GetNetworkedInt( 7 )).."\n"
+				table.insert(Return,{Type="Label",Value=""})
+				
+				table.insert(Return,{Type="Label",Value="Environment Info:"})
+				table.insert(Return,{Type="Label",Value="Name:"..tostring(self:GetNetworkedString(8))})
+				table.insert(Return,{Type="Label",Value="O2 Level: " .. string.format("%g",self:GetNetworkedInt( 1 )).."%"})
+				table.insert(Return,{Type="Label",Value="CO2 Level: " .. string.format("%g",self:GetNetworkedInt( 2 )).."%"})
+				table.insert(Return,{Type="Label",Value="Nitrogen Level: " .. string.format("%g",self:GetNetworkedInt( 3 )).."%"})
+				table.insert(Return,{Type="Label",Value="Hydrogen Level: " .. string.format("%g",self:GetNetworkedInt( 4 )).."%"})
+				table.insert(Return,{Type="Label",Value="Pressure: " .. tostring(self:GetNetworkedInt( 5 ))})
+				table.insert(Return,{Type="Label",Value="Temperature: " .. tostring(self:GetNetworkedInt( 6 ))})
+				table.insert(Return,{Type="Label",Value="Gravity: " .. tostring(self:GetNetworkedInt( 7 ))})
 			end
-			AddWorldTip( self.Entity:EntIndex(), OverlayText, 0.5, self.Entity:GetPos(), self.Entity  )
-		else
-			local rot = Vector(0,0,90)
-			local TempY = 0
 			
-			--local pos = self.Entity:GetPos() + (self.Entity:GetForward() ) + (self.Entity:GetUp() * 40 ) + (self.Entity:GetRight())
-			local pos = self.Entity:GetPos() + (self.Entity:GetUp() * (self:BoundingRadius( ) + 10))
-			local angle =  (LocalPlayer():GetPos() - trace.HitPos):Angle()
-			angle.r = angle.r  + 90
-			angle.y = angle.y + 90
-			angle.p = 0
-			
-			local textStartPos = -375
-			
-			cam.Start3D2D(pos,angle,0.03)
-			
-					surface.SetDrawColor(0,0,0,125)
-					surface.DrawRect( textStartPos, 0, 1250, 500 )
-					
-					surface.SetDrawColor(155,155,155,255)
-					surface.DrawRect( textStartPos, 0, -5, 500 )
-					surface.DrawRect( textStartPos, 0, 1250, -5 )
-					surface.DrawRect( textStartPos, 500, 1250, -5 )
-					surface.DrawRect( textStartPos+1250, 0, 5, 500 )
-					
-					TempY = TempY + 10
-					surface.SetFont("ConflictText")
-					surface.SetTextColor(255,255,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText(self.PrintName)
-					TempY = TempY + 70
-					
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Owner: "..playername)
-					TempY = TempY + 70
-	
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					if nettable.network == 0 then
-						surface.DrawText("Not connected to a network")
-					else
-						surface.DrawText("Network " .. nettable.network)
-					end
-					TempY = TempY + 70
-					
-					if HasOOO then
-						local runmode = "UnKnown"
-						if self:GetOOO() >= 0 and self:GetOOO() <= 2 then
-							runmode = OOO[self:GetOOO()]
+			if resnames and table.Count(resnames) > 0 then
+				table.insert(Return,{Type="Label",Value=""})
+				
+				if not node or not IsValid(node) then
+					if self.resources and table.Count(self.resources) > 0 then
+						for k, v in pairs(self.resources) do
+							local ID = IDs[k] or k
+							table.insert(Return,{Type="Percentage",Text=(RNames[ID] or k)..": ".. v .."/".. self.maxresources[k] .. ((Data[ID] or {}).MUnit or ""),Value=math.Round(v)/math.Round(self.maxresources[k])})
 						end
-						surface.SetFont("Flavour")
-						surface.SetTextColor(155,155,255,255)
-						surface.SetTextPos(textStartPos+15,TempY)
-						surface.DrawText("Mode: "..runmode)
-						TempY = TempY + 70
+					else
+						table.insert(Return,{Type="Label",Value="No Resources Connected"})
 					end
-					
-					-- Print the used resources
-					local stringUsage = ""
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					stringUsage = stringUsage.."["..CAF.GetAddon("Resource Distribution").GetProperResourceName("energy")..": "..CAF.GetAddon("Resource Distribution").GetResourceAmount(self, "energy").."/"..CAF.GetAddon("Resource Distribution").GetNetworkCapacity(self, "energy").."] "
-					surface.DrawText("Resources: "..stringUsage)
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Name: " .. tostring(self:GetNetworkedString( 8 )))
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("O2 Level: " .. string.format("%g",self:GetNetworkedInt( 1 )).."%")
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("CO2 Level: " .. string.format("%g",self:GetNetworkedInt( 2 )).."%")
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Nitrogen Level: " .. string.format("%g",self:GetNetworkedInt( 3 )).."%")
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Hydrogen Level: " .. string.format("%g",self:GetNetworkedInt( 4 )).."%")
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("'Empty' air Level: " .. string.format("%g",self:GetNetworkedInt( 9 )).."%")
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Pressure: " .. tostring(self:GetNetworkedInt( 5 )))
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Temperature: " .. tostring(self:GetNetworkedInt( 6 )))
-					TempY = TempY + 70
-					surface.SetFont("Flavour")
-					surface.SetTextColor(155,155,255,255)
-					surface.SetTextPos(textStartPos+15,TempY)
-					surface.DrawText("Gravity: " .. tostring(self:GetNetworkedInt( 7 )))
-					TempY = TempY + 70
-			--Stop rendering
-			cam.End3D2D()
-		end
+				else
+					local Net = Environments.GetNetTable(node:EntIndex())
+					for _, k in pairs(resnames) do
+						local ID = IDs[k] or k
+						local MD = Data[ID] or {}
+						local ND = RNames[ID] or k
+						
+						if Net then
+							if Net.resources_last[k] and Net.resources[k] then
+								local diff = CurTime() - Net.last_update[k]
+								if diff > 1 then
+									diff = 1
+								end
+								
+								local amt = math.Round(Net.resources_last[k] + (Net.resources[k] - Net.resources_last[k])*diff)
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. amt .."/".. Net.maxresources[k] .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
+							else
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. (Net.resources[k] or 0) .."/".. Net.maxresources[k] .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
+							end
+						else
+							table.insert(Return,{Type="Percentage",Text=ND..": ".. 0 .."/".. 0 .. (MD.MUnit or ""),Value=0})
+						end	
+					end
+				end
+			end
+			
+			if self.ExtraOverlayData then
+				table.insert(Return,{Type="Label",Value=""})
+				for k,v in pairs(self.ExtraOverlayData) do
+					table.insert(Return,{Type="Label",Value=k..": "..v})
+				end
+			end
+			
+			table.insert(Return,{Type="Label",Value=""})
+			table.insert(Return,{Type="Label",Value="(" .. playername ..")"})
+			
+			return Return
+		end)
 	else
-		if ( !bDontDrawModel ) then self:DrawModel() end
+		
 	end
+	if not bDontDrawModel then self:DrawModel() end
 end

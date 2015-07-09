@@ -142,7 +142,7 @@ function Environments.Create_Beam(ent, localpos, forward, mat, color)
 end
 
 if SERVER then
-	function Environments.RDPlayerUpdate(ply)--Recode this to use new netmessage system.
+	function Environments.RDPlayerUpdate(ply)
 		local Nodes = {}
 		
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do

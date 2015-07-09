@@ -11,8 +11,9 @@ if(SERVER)then
 	hook.Add( "PlayerSay", "chatCommand", OpenMotdThing );
 
 else
-		
-	function LDE.UI.MOTD()
+	local MC = EnvX.MenuCore
+	
+	function MC.MOTD()
 		local window = vgui.Create( "DFrame" )
 		if ScrW() > 640 then -- Make it larger if we can.
 			window:SetSize( ScrW()*0.9, ScrH()*0.9 )
@@ -38,7 +39,7 @@ else
 	end
 	
     net.Receive( "PlyOpenLDEMotd", function( len )
-		LDE.UI.MOTD()
+		MC.MOTD()
     end )
 	
 end		

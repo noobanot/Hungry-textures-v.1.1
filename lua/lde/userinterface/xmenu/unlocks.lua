@@ -2,14 +2,15 @@ if(SERVER)then
 
 
 else
+	local MC = EnvX.MenuCore
 		
 	function UnlockTab()
-		local SuperMenu = LDE.UI.SuperMenu.Menu.Catagorys
+		local PDA = MC.PDA.Menu.Catagorys
 
-		local base = vgui.Create( "DPanel", SuperMenu )
+		local base = vgui.Create( "DPanel", PDA )
 		base:SizeToContents()
 		base.Paint = function() end
-		SuperMenu:AddSheet( "Unlocks", base, "icon16/cart.png", false, false, "Unlock new things!" ) 
+		PDA:AddSheet( "Unlocks", base, "icon16/cart.png", false, false, "Unlock new things!" ) 
 		
 		--Unlocks List.
 		local ListContainer = vgui.Create( "DPanel", base )
@@ -59,7 +60,7 @@ else
 		
 		ListContainer:RefreshList()
 		
-		local UnlockStats = LDE.UI.CreateList(base,{x=200,y=270},{x=305,y=255},false,function() end)
+		local UnlockStats = MC.CreateList(base,{x=200,y=270},{x=305,y=255},false,function() end)
 		--Unlock Stats
 		UnlockStats:AddColumn("Stat") -- Add column
 		UnlockStats:AddColumn("Value") -- Add colum		
@@ -94,16 +95,16 @@ else
 			self.UnlockButton.Selected = data
 		end
 		
-		local Text = LDE.UI.CreateText(StatContainer,{x=5,y=160},"Selected: (Select Something!)",Color(0,0,0,255))
+		local Text = MC.CreateText(StatContainer,{x=5,y=160},"Selected: (Select Something!)",Color(0,0,0,255))
 		StatContainer.SelectedLabel = Text
 		
-		local Text = LDE.UI.CreateText(StatContainer,{x=5,y=10},"Cash: 0",Color(0,0,0,255))
+		local Text = MC.CreateText(StatContainer,{x=5,y=10},"Cash: 0",Color(0,0,0,255))
 		StatContainer.CashLabel = Text
 		Text.Think = function(self) 
 			self:SetText("Cash: "..LocalPlayer():GetLDEStat("Cash"))
 		end
 		
-		local Butt = LDE.UI.CreateButton(StatContainer,{x=200,y=60},{x=0,y=190},"Unlock: (Select Something)",function() end)
+		local Butt = MC.CreateButton(StatContainer,{x=200,y=60},{x=0,y=190},"Unlock: (Select Something)",function() end)
 		StatContainer.UnlockButton = Butt
 		
 		Butt.DoClick = function(self)

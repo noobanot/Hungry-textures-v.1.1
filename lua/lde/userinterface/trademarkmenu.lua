@@ -62,6 +62,8 @@ if(SERVER)then
 	concommand.Add("buystuff", buystuff)
 
 else
+	local MC = EnvX.MenuCore
+
 	local function Smallifynumber(Number)
 		Number=tonumber(Number)
 		if(Number>1000000)then return math.floor(Number/1000000).."M"
@@ -80,12 +82,12 @@ else
 		local TradeList = LDE.Cash.Resources
 		local curselected = {}	
 
-		local MarketMenu = LDE.UI.CreateFrame({x=700,y=400},true,true,false,true)
+		local MarketMenu = MC.CreateFrame({x=700,y=400},true,true,false,true)
 		MarketMenu:Center()
 		MarketMenu:SetTitle( "Trade Market" )
 		MarketMenu:MakePopup()
 
-		local schematicBox = LDE.UI.CreateList(MarketMenu,{x=150,y=350},{x=10,y=35},false)
+		local schematicBox = MC.CreateList(MarketMenu,{x=150,y=350},{x=10,y=35},false)
 		schematicBox:SetParent(MarketMenu)
 		schematicBox:AddColumn("Resources") -- Add column
 		
@@ -145,11 +147,11 @@ else
 		CreateClientConVar( "tradeamount", "0",false,false)
 
 		
-		local Slide = LDE.UI.CreateSlider(MarketMenu,{x=520,y=205},{Min=0,Max=10000,Dec=0},170)
+		local Slide = MC.CreateSlider(MarketMenu,{x=520,y=205},{Min=0,Max=10000,Dec=0},170)
 		Slide:SetText( "Amount" )
 		Slide:SetConVar( "tradeamount" )
 		
-		local change = LDE.UI.CreateButton(MarketMenu,{x=180,y=40},{x=520,y=165})
+		local change = MC.CreateButton(MarketMenu,{x=180,y=40},{x=520,y=165})
 		change.DoClick = function() end
 		change.Paint = function() 
 			local cost = cost or 0
@@ -160,7 +162,7 @@ else
 			end
 		end
 		
-		local confirm = LDE.UI.CreateButton(MarketMenu,{x=180,y=40},{x=520,y=280})
+		local confirm = MC.CreateButton(MarketMenu,{x=180,y=40},{x=520,y=280})
 		confirm:SetText( "Mode: "..Mode.." Confirm" )
 		confirm.DoClick = function ()
 			if schematicBox:GetSelected() and schematicBox:GetSelected()[1] then
@@ -170,14 +172,14 @@ else
 			end
 		end
 				
-		local buyButton = LDE.UI.CreateButton(MarketMenu,{x=90,y=30},{x=520,y=245})
+		local buyButton = MC.CreateButton(MarketMenu,{x=90,y=30},{x=520,y=245})
 		buyButton:SetText( "Buy" )
 		buyButton.DoClick = function ()
 			Mode = "Buy"
 			confirm:SetText( "Mode: "..Mode.." Confirm" )
 		end
 				
-		local sellButton = LDE.UI.CreateButton(MarketMenu,{x=90,y=30},{x=610,y=245})
+		local sellButton = MC.CreateButton(MarketMenu,{x=90,y=30},{x=610,y=245})
 		sellButton:SetText( "Sell" )
 		sellButton.DoClick = function ()
 			if(not curselected.E)then
@@ -186,7 +188,7 @@ else
 			end
 		end
 				
-		local cancelButton = LDE.UI.CreateButton(MarketMenu,{x=180,y=60},{x=520,y=325})
+		local cancelButton = MC.CreateButton(MarketMenu,{x=180,y=60},{x=520,y=325})
 		cancelButton:SetText( "Cancel" )
 		cancelButton.DoClick = function ()
 			MarketMenu:Remove()
@@ -195,6 +197,18 @@ else
 	end
 	 
 	vgui.Register( "MarketMenu", VGUI )
+
+	function envMarketTrigger(um)
+		if MC.CheckOpenFrame(false) then return end
+
+		local Window = vgui.Create( "MarketMenu")
+		Window:SetMouseInputEnabled( true )
+		Window:SetVisible( true )
+		
+		entID = um:ReadString()
+		e = um:ReadEntity()	
+	end
+	usermessage.Hook("envmarketTrigger", envMarketTrigger)
 
 	function marketupdate(um)
 		amount = um:ReadString()

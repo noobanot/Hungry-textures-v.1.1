@@ -186,6 +186,8 @@ if(SERVER)then
 	end
 	
 else
+	local MC = EnvX.MenuCore
+	
 	--[[----------------------------------------------------
 	ClientSide Chat Handling.
 	----------------------------------------------------]]--
@@ -215,7 +217,7 @@ else
 			net.WriteString( HasModelPacks() )
 			net.WriteString( Name )
 			net.SendToServer()
-			--LDE.UI.MissingModelsPanel(Missing)--Open up the missing models panel.
+			--MC.MissingModelsPanel(Missing)--Open up the missing models panel.
 		else
 			if(HasModelPacks()=="True")then
 				net.Start( "PlyRequestModel" )

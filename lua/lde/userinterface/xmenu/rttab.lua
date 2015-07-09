@@ -2,18 +2,19 @@ if(SERVER)then
 
 
 else
-
+	local MC = EnvX.MenuCore
+	
 	function ECDTab()
-		local SuperMenu = LDE.UI.SuperMenu.Menu.Catagorys
+		local PDA = MC.PDA.Menu.Catagorys
 
-		local base = vgui.Create( "DPanel", SuperMenu )
+		local base = vgui.Create( "DPanel", PDA )
 		base:SizeToContents()
 		base.Paint = function() end
-		SuperMenu:AddSheet( "Transfer", base, "icon16/group_go.png", false, false, "Transfer Resources" ) 
+		PDA:AddSheet( "Transfer", base, "icon16/group_go.png", false, false, "Transfer Resources" ) 
 		
 		CreateClientConVar( "cashtransfer_amount", "200",false,false)
 
-		local cashamount = LDE.UI.CreateSlider(base,{x=0,y=0},{Min=0,Max=2000000,Dec=0},1000)
+		local cashamount = MC.CreateSlider(base,{x=0,y=0},{Min=0,Max=2000000,Dec=0},1000)
 		cashamount:SetText( "Amount of Taus \n That get sent." )
 		cashamount:SetValue( 0 )
 		cashamount:SetConVar( "cashtransfer_amount" )

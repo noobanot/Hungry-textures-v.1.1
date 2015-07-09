@@ -32,64 +32,60 @@ end
 
 function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
-		--overlaysettings
-		local node = self
-		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()]
-		local HasOOO = OverlaySettings.HasOOO
-		local num = OverlaySettings.num or 0
-		local resnames = OverlaySettings.resnames
-		--End overlaysettings
-		local trace = LocalPlayer():GetEyeTrace()
-		if ( !bDontDrawModel ) then self:DrawModel() end
-		local playername = self:GetPlayerName()
-		if playername == "" then
-			playername = "World"
-		end
-		-- 0 = no overlay!
-		-- 1 = default overlaytext
-		-- 2 = new overlaytext
 		local Data = EnvX.Resources.Data
 		local RNames = EnvX.Resources.Names
+		local IDs = EnvX.Resources.Ids
 		
-		if not mode or mode != 2 then
-			local OverlayText = ""
-				OverlayText = OverlayText ..self.PrintName.."\n"
-			if not node:IsValid() then
-				OverlayText = OverlayText .. "Not connected to a network\n"
-			else
-				OverlayText = OverlayText .. "Network " .. tostring(node:EntIndex()) .."\n"
+		EnvX.MenuCore.RenderWorldTip(self,function(ent)
+			--print(tostring(self.node))
+			local node = self.node
+			local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
+			local resnames = OverlaySettings.resnames
+			local HasOOO = OverlaySettings.HasOOO or false
+			local genresnames = OverlaySettings.genresnames or {}
+			
+			local playername = self:GetPlayerName()
+			if playername == "" then
+				playername = "World"
 			end
-			OverlayText = OverlayText.."\n"
-			local resources = self.resources
-			if num == -1 then
-				if ( table.Count(resources) > 0 ) then
-					for k, v in pairs(resources) do
-						if node then
-							OverlayText = OverlayText ..RNames[k]..": ".. node:GetNWInt(k, 0) .."/".. 0 .."\n" .. ((Data[k] or {}).MUnit or "")
-						else
-							OverlayText = OverlayText ..RNames[k]..": ".. 0 .."/".. 0 .."\n"
-						end
-					end
-				else
-					OverlayText = OverlayText .. "No Resources Connected\n"
+		
+			local Return = {}
+			table.insert(Return,{Type="Label",Value=self.PrintName})
+			table.insert(Return,{Type="Label",Value="Network: "..self:EntIndex()})
+			
+			if HasOOO then
+				local runmode = "UnKnown"
+				if self:GetOOO() >= 0 and self:GetOOO() <= 2 then
+					runmode = OOO[self:GetOOO()]
+				end
+				table.insert(Return,{Type="Label",Value="Mode: "..runmode})
+			end
+			
+			table.insert(Return,{Type="Label",Value=""})
+			if self.resources and table.Count(self.resources) > 0 then
+				for k, v in pairs(self.resources) do
+					local ID = IDs[k] or k
+					table.insert(Return,{Type="Percentage",Text=(RNames[ID] or k)..": ".. v .."/".. self.maxresources[k] .. ((Data[ID] or {}).MUnit or ""),Value=math.Round(v)/math.Round(self.maxresources[k])})
 				end
 			else
-				if resnames and table.Count(resnames) > 0 then
-					for _, k in pairs(resnames) do
-						if node then
-							OverlayText = OverlayText ..RNames[k]..": ".. node:GetNWInt(k, 0) .."/".. node:GetNWInt("max"..k, 0) .. ((Data[k] or {}).MUnit or "") .."\n"
-						else
-							OverlayText = OverlayText ..RNames[k]..": ".. 0 .."/".. self.maxresources[k] .."\n"
-						end
-					end
+				table.insert(Return,{Type="Label",Value="No Resources Connected"})
+			end
+			
+			
+			if self.ExtraOverlayData then
+				table.insert(Return,{Type="Label",Value=""})
+				for k,v in pairs(self.ExtraOverlayData) do
+					table.insert(Return,{Type="Label",Value=k..": "..v})
 				end
 			end
-			OverlayText = OverlayText .. "(" .. playername ..")"
-			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
-		end
-	else
-		if !bDontDrawModel then self:DrawModel() end
+			
+			table.insert(Return,{Type="Label",Value=""})
+			table.insert(Return,{Type="Label",Value="(" .. playername ..")"})
+			
+			return Return
+		end)
 	end
+	if not bDontDrawModel then self:DrawModel() end
 end
 
 if Wire_UpdateRenderBounds then
@@ -111,7 +107,7 @@ EnvX.Utl:HookNet("EnvX_NodeSync",function(Data)
 	
 	local ResourceMaxs = Data.ResourceMaxs
 	for index, res in pairs(ResourceMaxs) do
-		net.maxresources[index]=res
+		net.maxresources[index]=res.value
 	end
 end)
 
@@ -126,10 +122,10 @@ end)
 
 EnvX.Utl:HookNet("EnvX_NodeSyncResource",function(Data)
 	local net = Environments.GetNetTable(Data.Node)
-	
+		
 	local Resources = Data.Resources
 	for i, res in pairs(Resources) do
-		local index = EnvX.Resources.Names[res.name] or res.name
+		local index = i
 		net.resources_last[index] = net.resources[index]
 		net.resources[index] = res.value
 		net.last_update[index] = CurTime()

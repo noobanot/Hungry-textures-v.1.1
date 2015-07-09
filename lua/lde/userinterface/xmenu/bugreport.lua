@@ -2,16 +2,17 @@ if(SERVER)then
 
 
 else
-
+	local MC = EnvX.MenuCore
+	
 	function BugReport()
-		local SuperMenu = LDE.UI.SuperMenu.Menu.Catagorys
+		local PDA = MC.PDA.Menu.Catagorys
 
-		local base = vgui.Create( "DPanel", SuperMenu )
+		local base = vgui.Create( "DPanel", PDA )
 		base:SizeToContents()
 		base.Paint = function() end
-		SuperMenu:AddSheet( "Report A Bug", base, "icon16/bug_edit.png", false, false, "Report a Bug!" ) 
+		PDA:AddSheet( "Report A Bug", base, "icon16/bug_edit.png", false, false, "Report a Bug!" ) 
 		
-		LDE.UI.LoadWebpage(base,{x=770,y=530},"https://github.com/ludsoe/Environments-X/issues")
+		MC.LoadWebpage(base,{x=770,y=530},"https://github.com/ludsoe/Environments-X/issues")
 		
 	end
 

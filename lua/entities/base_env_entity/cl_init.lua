@@ -71,49 +71,86 @@ end
 
 function ENT:DoNormalDraw( bDontDrawModel )
 	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
-		--overlaysettings
-		local node = self.node
-		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] or {} --replace this
-		local HasOOO = OverlaySettings.HasOOO or false
-		local resnames = OverlaySettings.resnames or {}
-		local genresnames = OverlaySettings.genresnames or {}
-		--End overlaysettings
-		
-		if !bDontDrawModel then self:DrawModel() end
-		
-		local playername = self:GetPlayerName()
-		if playername == "" then
-			playername = "World"
-		end
-		
 		local Data = EnvX.Resources.Data
 		local RNames = EnvX.Resources.Names
 		local IDs = EnvX.Resources.Ids
 		
-		--if not self.ScreenMode then
-			local OverlayText = ""
-			OverlayText = OverlayText ..self.PrintName.."\n"
-			if !node or !node:IsValid() then
-				OverlayText = OverlayText .. "Not Connected\n"
-			else
-				OverlayText = OverlayText .. "Network " .. tostring(node:EntIndex()) .."\n"
+		EnvX.MenuCore.RenderWorldTip(self,function(ent)
+			--print(tostring(self.node))
+			local node = self.node
+			local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
+			local resnames = OverlaySettings.resnames
+			local HasOOO = OverlaySettings.HasOOO or false
+			local genresnames = OverlaySettings.genresnames or {}
+			
+			local playername = self:GetPlayerName()
+			if playername == "" then
+				playername = "World"
 			end
+		
+			local NetWorkStatus = "Not Connected"
+			if node and IsValid(node) then NetWorkStatus = tostring(node:EntIndex()) end
+			local Return = {}
+			table.insert(Return,{Type="Label",Value=self.PrintName})
+			table.insert(Return,{Type="Label",Value="Network: "..NetWorkStatus})
+			
 			if HasOOO then
 				local runmode = "UnKnown"
 				if self:GetOOO() >= 0 and self:GetOOO() <= 2 then
 					runmode = OOO[self:GetOOO()]
 				end
-				OverlayText = OverlayText .. "Mode: " .. runmode .."\n"
+				table.insert(Return,{Type="Label",Value="Mode: "..runmode})
 			end
-			OverlayText = OverlayText.."\n"
-			local resources = self.resources
+			
 			if resnames and table.Count(resnames) > 0 then
-				for _, k in pairs(resnames) do
+				table.insert(Return,{Type="Label",Value=""})
+				
+				if not node or not IsValid(node) then
+					if self.resources and table.Count(self.resources) > 0 then
+						for k, v in pairs(self.resources) do
+							local ID = IDs[k] or k
+							table.insert(Return,{Type="Percentage",Text=(RNames[ID] or k)..": ".. v .."/".. self.maxresources[k] .. ((Data[ID] or {}).MUnit or ""),Value=math.Round(v)/math.Round(self.maxresources[k])})
+						end
+					else
+						table.insert(Return,{Type="Label",Value="No Resources Connected"})
+					end
+				else
+					local Net = Environments.GetNetTable(node:EntIndex())
+					for _, k in pairs(resnames) do
+						local ID = IDs[k] or k
+						local MD = Data[ID] or {}
+						local ND = RNames[ID] or k
+						
+						if Net then
+							if Net.resources_last[k] and Net.resources[k] then
+								local diff = CurTime() - Net.last_update[k]
+								if diff > 1 then
+									diff = 1
+								end
+								
+								local amt = math.Round(Net.resources_last[k] + (Net.resources[k] - Net.resources_last[k])*diff)
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. amt .."/".. Net.maxresources[k] .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
+							else
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. (Net.resources[k] or 0) .."/".. Net.maxresources[k] .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
+							end
+						else
+							table.insert(Return,{Type="Percentage",Text=ND..": ".. 0 .."/".. 0 .. (MD.MUnit or ""),Value=0})
+						end	
+					end
+				end
+			end
+		
+			if genresnames and table.Count(genresnames) > 0 then
+				table.insert(Return,{Type="Label",Value=""})
+				table.insert(Return,{Type="Label",Value="Generates:"})
+				table.insert(Return,{Type="Label",Value=""})
+				for _, k in pairs(genresnames) do
 					local ID = IDs[k] or k
 					local MD = Data[ID] or {}
 					local ND = RNames[ID] or k
 					
 					if node and IsValid(node) then
+						local Net = Environments.GetNetTable(node:EntIndex())
 						if node.resources_last[k] and node.resources[k] then
 							local diff = CurTime() - node.last_update[k]
 							if diff > 1 then
@@ -121,44 +158,30 @@ function ENT:DoNormalDraw( bDontDrawModel )
 							end
 							
 							local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
-							OverlayText = OverlayText ..ND..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or "") .."\n"
+							table.insert(Return,{Type="Percentage",Text=ND..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
 						else
-							OverlayText = OverlayText ..ND..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or "") .."\n"
+							table.insert(Return,{Type="Percentage",Text=ND..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
 						end
 					else
-						OverlayText = OverlayText ..ND..": 0/".. (self.maxresources[k] or 0) .."\n"
+						table.insert(Return,{Type="Percentage",Text=ND..": ".. 0 .."/".. 0 .. (MD.MUnit or ""),Value=0})
 					end
 				end
-			end
-			if genresnames and table.Count(genresnames) > 0 then
-				OverlayText = OverlayText.."\nGenerates:\n"
-				for _, k in pairs(genresnames) do
-					if node and node:IsValid() then
-						if node.resources_last[k] and node.resources[k] then
-							local diff = CurTime() - node.last_update[k]
-							if diff > 1 then
-								diff = 1
-							end
-							
-							local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
-							OverlayText = OverlayText ..(RNames[k] or k)..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. ((Data[k] or {}).MUnit or "") .."\n"
-						else
-							OverlayText = OverlayText ..(RNames[k] or k)..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. ((Data[k] or {}).MUnit or "") .."\n"
-						end
-					else
-						OverlayText = OverlayText ..(RNames[k] or k)..": 0/0\n"
-					end
-				end
-			end
+			end	
+			
 			if self.ExtraOverlayData then
+				table.insert(Return,{Type="Label",Value=""})
 				for k,v in pairs(self.ExtraOverlayData) do
-					OverlayText = OverlayText..k..": "..v.."\n"
+					table.insert(Return,{Type="Label",Value=k..": "..v})
 				end
 			end
 			
-			OverlayText = OverlayText .. math.Round(self:GetNWInt("LDEMinTemp",0)).."/("..math.Round(self:GetNWInt("LDEEntTemp",0))..")/"..math.Round(self:GetNWInt("LDEMaxTemp",0)).."\n"
-			OverlayText = OverlayText .. "(" .. playername ..")"
-			AddWorldTip( self:EntIndex(), OverlayText, 0.5, self:GetPos(), self  )
+			table.insert(Return,{Type="Label",Value=""})
+			table.insert(Return,{Type="Label",Value="(" .. playername ..")"})
+			
+			return Return
+		end)
+					
+		--OverlayText = OverlayText .. math.Round(self:GetNWInt("LDEMinTemp",0)).."/("..math.Round(self:GetNWInt("LDEEntTemp",0))..")/"..math.Round(self:GetNWInt("LDEMaxTemp",0)).."\n"
 		/*else
 			local rot = Vector(0,0,90)
 			local TempY = 0
@@ -259,9 +282,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				if error then print(error) end
 			cam.End3D2D()
 		end*/
-	else
-		if not bDontDrawModel then self:DrawModel() end
 	end
+	
+	if not bDontDrawModel then self:DrawModel() end
 end
 
 function GetMousePos(vWorldPos,vPos,vScale,aRot)

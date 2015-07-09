@@ -19,17 +19,21 @@ if(SERVER)then
 	concommand.Add("builditem", builditem)
 	   
 else
+	local MC = EnvX.MenuCore
+	
 	local VGUI = {}
 	function VGUI:Init()
 		
 		local BuildList = LDE.Factorys.BuildList
 		
-		local FactoryMenu = LDE.UI.CreateFrame({x=700,y=400},true,true,false,true)
+		local FactoryMenu = MC.CreateFrame({x=700,y=400},true,true,false,true)
 		FactoryMenu:Center()
-		FactoryMenu:SetTitle( "Item Materialiser" )
+		FactoryMenu:SetTitle( "" )
 		FactoryMenu:MakePopup()
 		
-		local schematicBox = LDE.UI.CreateList(FactoryMenu,{x=150,y=350},{x=10,y=35},false)
+		MC.CreateText(FactoryMenu,{x=20,y=10},"Item Materializer")
+		
+		local schematicBox = MC.CreateList(FactoryMenu,{x=150,y=350},{x=10,y=35},false)
 		schematicBox:SetParent(FactoryMenu)
 		schematicBox:AddColumn("Schematics") -- Add column
 		
@@ -39,7 +43,7 @@ else
 			schematicBox:AddLine(v.name)
 		end
 		------------------
-		local ModelDisplay = LDE.UI.DisplayModel(FactoryMenu,180,{x=520,y=0},"models/Slyfo/swordreconlauncher.mdl",80)
+		local ModelDisplay = MC.DisplayModel(FactoryMenu,180,{x=520,y=0},"models/Slyfo/swordreconlauncher.mdl",80)
 		
 		local infoBox = vgui.Create( "DPanel", DermaFrame ) 
 		infoBox:SetPos( 170, 35 )
@@ -96,13 +100,13 @@ else
 			end						
 		end
 		
-		local cancelButton = LDE.UI.CreateButton(FactoryMenu,{x=180,y=60},{x=520,y=325})
+		local cancelButton = MC.CreateButton(FactoryMenu,{x=180,y=60},{x=520,y=325})
 		cancelButton:SetText( "Cancel" )
 		cancelButton.DoClick = function ()
 			FactoryMenu:Remove()
 		end
 		
-		local okButton = LDE.UI.CreateButton(FactoryMenu,{x=180,y=40},{x=520,y=285})
+		local okButton = MC.CreateButton(FactoryMenu,{x=180,y=40},{x=520,y=285})
 		okButton:SetText( "Fabricate" )
 		okButton.DoClick = function ()
 			if schematicBox:GetSelected() and schematicBox:GetSelected()[1] then
@@ -116,6 +120,9 @@ else
 	vgui.Register( "FactoryMenu", VGUI )
 	
 	function envFactoryTrigger(um)
+	
+		if MC.CheckOpenFrame(false) then return end
+		
 		local Window = vgui.Create( "FactoryMenu")
 		Window:SetMouseInputEnabled( true )
 		Window:SetVisible( true )

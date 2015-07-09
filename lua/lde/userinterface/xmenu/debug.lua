@@ -36,6 +36,8 @@ if(SERVER)then
 		end
 	end)
 else
+	local MC = EnvX.MenuCore
+
 	local RecievedLogs = 0
 	local Logs = {}
 	local Super = {}
@@ -76,21 +78,21 @@ else
 	--The actual panel generation....
 	hook.Add("LDEFillCatagorys","Debug", function()
 		if not LocalPlayer():IsAdmin() then print("Not a admin!") return end
-		Super = LDE.UI.SuperMenu.Menu.Catagorys
-		
-		local base = vgui.Create( "DPanel", Super )
+		local PDA = MC.PDA.Menu.Catagorys
+
+		local base = vgui.Create( "DPanel", PDA )
 		base:SizeToContents()
 		base.Paint = function() end
-		Super:AddSheet( "Logging", base, "icon16/application_view_list.png", false, false, "Check the Debug Logs!" ) 
+		PDA:AddSheet( "Logging", base, "icon16/application_view_list.png", false, false, "Check the Debug Logs!" ) 
 		
-		local menupage = LDE.MenuCore.CreateList(base,{x=150,y=520},{x=5,y=5},false,SelectType)
+		local menupage = MC.CreateList(base,{x=150,y=520},{x=5,y=5},false,SelectType)
 		menupage:AddColumn("LogType") -- Add column
-		Super.LogTypes = menupage
+		PDA.LogTypes = menupage
 		
-		local menupage = LDE.MenuCore.CreateList(base,{x=600,y=520},{x=160,y=5},false,function() end)
+		local menupage = MC.CreateList(base,{x=600,y=520},{x=160,y=5},false,function() end)
 		menupage:AddColumn("Time") -- Add column
 		menupage:AddColumn("Logs") -- Add column
-		Super.LogDisplay = menupage
+		PDA.LogDisplay = menupage
 				
 		net.Start('Jupiter_Debug_MSG')
 			net.WriteString("Types")

@@ -2,8 +2,9 @@ if(SERVER)then
 
 
 else
-		
-	function LDE.UI.MissingModelsPanel(Missing)
+
+	local MC = EnvX.MenuCore
+	function MC.MissingModelsPanel(Missing)
 	
 		if(LDE.MissPanel and LDE.MissPanel:IsValid())then return end
 		local OpenTime = CurTime()+15

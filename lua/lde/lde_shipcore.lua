@@ -470,7 +470,6 @@ function LDE.CoreSys.RegisterCore(Data)
 	else --Lets do client side shit! :D
 		function ENT:Draw()      
 			self:DrawDisplayTip()
-			--self:RenderShield()
 			self:DrawModel()
 		end
  
@@ -478,33 +477,28 @@ function LDE.CoreSys.RegisterCore(Data)
 
 		surface.CreateFont("GModWorldtip", {font = "coolvetica", size = 24, weight = 500})
 			
-		function ENT:DrawDisplayTip()
-			if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
+		function ENT:DrawDisplayTip()		
 			
-				local temp = self:GetNWString("LDECoreType")
-				local text = "Type: "..temp.."\n"
-				
-				temp = self:GetNWString("LDECoreClass")
-				text = text.."Class: "..temp.."\n"
-				
-				temp = self:GetNWInt("LDEHealth")
-				temp2 = self:GetNWInt("LDEMaxHealth")
-				text = text.."Health: "..math.Round(temp).." / "..math.Round(temp2).."\n"
-				
-				temp = self:GetNWInt("LDEShield")
-				temp2 = self:GetNWInt("LDEMaxShield")
-				text = text.."Shields: "..math.Round(temp).." / "..math.Round(temp2).."\n"
-				
-				temp = self:GetNWInt("LDETemp")
-				temp2 = self:GetNWInt("LDEMaxTemp")
-				temp3 = self:GetNWInt("LDEMinTemp")
-				text = text.."Heat: "..math.Round(temp3).." / ("..math.Round(temp)..") / "..math.Round(temp2).."\n"
-				
-				temp = self:GetNWInt("CorePoints")
-				temp2 = self:GetNWInt("MaxCorePoints")
-				text = text.."Processor: "..math.Round(temp).." / "..math.Round(temp2).."\n"
-				
-				AddWorldTip( self:EntIndex(), text, 0.5, self:GetPos(), self  )
+			if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
+				EnvX.MenuCore.RenderWorldTip(self,function(self)
+					return {
+						{Type="Label",Value="Type: "..self:GetNWString("LDECoreType")},
+						{Type="Label",Value="Class: "..self:GetNWString("LDECoreClass")},
+						{Type="Percentage",
+							Value=math.Round(self:GetNWInt("LDEHealth"))/math.Round(self:GetNWInt("LDEMaxHealth")),
+							Text="Health: "..math.Round(self:GetNWInt("LDEHealth")).." / "..math.Round(self:GetNWInt("LDEMaxHealth"))
+						},
+						{Type="Percentage",
+							Value=math.Round(self:GetNWInt("LDEShield"))/math.Round(self:GetNWInt("LDEMaxShield")),
+							Text="Shields: "..math.Round(self:GetNWInt("LDEShield")).." / "..math.Round(self:GetNWInt("LDEMaxShield"))
+						},
+						{Type="Percentage",
+							Value=math.Round(self:GetNWInt("CorePoints"))/math.Round(self:GetNWInt("MaxCorePoints")),
+							Text="Processor: "..math.Round(self:GetNWInt("CorePoints")).." / "..math.Round(self:GetNWInt("MaxCorePoints"))
+						},					
+						{Type="Label",Value="Heat: "..math.Round(self:GetNWInt("LDEMinTemp")).." / ("..math.Round(self:GetNWInt("LDETemp"))..") / "..math.Round(self:GetNWInt("LDEMaxTemp"))}
+					}
+				end)
 			end
 		end
 	end

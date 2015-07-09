@@ -128,7 +128,7 @@ local Func = function(self)
 	end
 end
 
-local Data={name="Core Temperature Heater",class="lde_radiator",In={"energy"},shootfunc=Func,InUse={0}}
+local Data={name="Core Temperature Radiator",class="lde_radiator",In={"water"},shootfunc=Func,InUse={0}}
 LDE.LifeSupport.RegisterDevice(Data)
 
 Environments.RegisterDevice("Ship Utilities", "Heat Management","Basic Radiator", "lde_radiator", "models/props_c17/furnitureradiator001a.mdl")

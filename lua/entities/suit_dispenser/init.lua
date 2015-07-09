@@ -59,19 +59,21 @@ function ENT:SetActive( value, caller )
 	
 	print(Res_needed)
 	
-	local MaxEng,MaxWat,MaxAir = math.floor(energy/10),math.floor(water/1),math.floor(oxygen/2)
+	local Reng,Rwat,Rair = 2,8,4
+	
+	local MaxEng,MaxWat,MaxAir = math.floor(energy/Reng),math.floor(water/Rwat),math.floor(oxygen/Rair)
 	
 	local MaxCharge = MaxEng
 	if MaxCharge>MaxWat then MaxCharge = MaxWat end
 	if MaxCharge>MaxAir then MaxCharge = MaxAir end
 	
 	if ( Res_needed < MaxCharge ) then
-		self:ConsumeResource("energy", Res_needed/10)
-		self:ConsumeResource("water", Res_needed/1)
-		self:ConsumeResource("oxygen", Res_needed/2)
+		self:ConsumeResource("energy", Res_needed/Reng)
+		self:ConsumeResource("water", Res_needed/Rwat)
+		self:ConsumeResource("oxygen", Res_needed/Rair)
 		
 		caller.suit.energy = SuitDat.maxenergy
-	elseif (energy > 0) then
+	elseif (Res_needed > MaxCharge) then
 		caller.suit.energy = caller.suit.energy + math.floor(MaxCharge * Multiplier)
 		self:ConsumeResource("energy", energy)
 		self:ConsumeResource("water", water)
@@ -91,6 +93,3 @@ function ENT:SetActive( value, caller )
 	local temp = function() quiet_steam(caller) end
 	timer.Simple(3, temp) 
 end
-
-
---duplicator.RegisterEntityClass("suit_dispenser", Environments.DupeFix, "Data" )

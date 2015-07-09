@@ -227,7 +227,7 @@ function Environments.RegisterLSEntity(name,class,In,Out,generatefunc,basevolume
 	Environments.MakeData[class].basemass = basemass
 	print("Entity Registered: "..class)
 end
-
+ 
 function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth, basemass) --in process of adding venting
 	local ENT = {}
 	ENT.Type = "anim"

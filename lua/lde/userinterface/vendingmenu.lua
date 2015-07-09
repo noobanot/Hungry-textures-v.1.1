@@ -8,12 +8,12 @@ else
 		
 		local BuildList = LDE.Factorys.BuildList
 		
-		local FactoryMenu = LDE.UI.CreateFrame({x=700,y=400},true,true,false,true)
+		local FactoryMenu = MC.CreateFrame({x=700,y=400},true,true,false,true)
 		FactoryMenu:Center()
 		FactoryMenu:SetTitle( "Vending Machine" )
 		FactoryMenu:MakePopup()
 		
-		local schematicBox = LDE.UI.CreateList(FactoryMenu,{x=150,y=350},{x=10,y=35},false)
+		local schematicBox = MC.CreateList(FactoryMenu,{x=150,y=350},{x=10,y=35},false)
 		schematicBox:SetParent(FactoryMenu)
 		schematicBox:AddColumn("Consumables.") -- Add column
 		
@@ -23,7 +23,7 @@ else
 			schematicBox:AddLine(v.name)
 		end
 		------------------
-		local ModelDisplay = LDE.UI.DisplayModel(FactoryMenu,180,{x=520,y=0},"models/Slyfo_2/acc_food_fooddispenser.mdl",80)
+		local ModelDisplay = MC.DisplayModel(FactoryMenu,180,{x=520,y=0},"models/Slyfo_2/acc_food_fooddispenser.mdl",80)
 		
 		local infoBox = vgui.Create( "DPanel", DermaFrame ) 
 		infoBox:SetPos( 170, 35 )
@@ -83,13 +83,13 @@ else
 					
 		end
 		
-		local cancelButton = LDE.UI.CreateButton(FactoryMenu,{x=180,y=60},{x=520,y=325})
+		local cancelButton = MC.CreateButton(FactoryMenu,{x=180,y=60},{x=520,y=325})
 		cancelButton:SetText( "Cancel" )
 		cancelButton.DoClick = function ()
 			FactoryMenu:Remove()
 		end
 		
-		local okButton = LDE.UI.CreateButton(FactoryMenu,{x=180,y=40},{x=520,y=285})
+		local okButton = MC.CreateButton(FactoryMenu,{x=180,y=40},{x=520,y=285})
 		okButton:SetText( "Vend Item" )
 		okButton.DoClick = function ()
 			if schematicBox:GetSelected() and schematicBox:GetSelected()[1] then

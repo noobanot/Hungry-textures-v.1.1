@@ -1,0 +1,378 @@
+--[[----------------------------------------------------
+Jupiter Menu Core -Provides a modular menu system.
+----------------------------------------------------]]--
+
+local EnvX = EnvX --Localise the global table for speed.
+EnvX.MenuCore = {}
+
+local MC = EnvX.MenuCore
+
+if(CLIENT)then
+	
+	function MC.CheckOpenFrame(Remove)
+		if MC.OpenFrame then
+			if IsValid(MC.OpenFrame) then
+				if Remove then
+					MC.OpenFrame:Remove()
+				else
+					return true
+				end
+			end
+		end
+		return false
+	end
+	
+	function MC.SetOpenFrame(Frame)
+		MC.OpenFrame = Frame
+	end
+
+	---------------------------------------------------------------
+	---------------Vgui Derma Related Functions--------------------
+	---------------------------------------------------------------
+	
+	function MC.CreateFrame(Size,Visible,XButton,Draggable,CloseDelete)
+		local Derma = vgui.Create( "DFrame" )
+			if Derma then
+				Derma:SetSize( Size.x, Size.y )
+				Derma:SetVisible( Visible )
+				Derma:ShowCloseButton( XButton )
+				Derma:SetDraggable( Draggable )
+				Derma:SetDeleteOnClose( CloseDelete )
+				
+				Derma:SetTitle("")
+			
+				function Derma:SetTitle(txt) self.Title = txt end Derma:SetTitle("")
+				function Derma:SetColor(Col) self.RenderColor = Col end Derma:SetColor(EnvX.GuiThemeColor.BG) --Dont Forget to set a color so we dont get nil Errors.
+				function Derma:SetGradientColor(Col) self.RenderGradientColor = Col end Derma:SetGradientColor(EnvX.GuiThemeColor.GC) --Dont Forget to set a color so we dont get nil Errors.
+				
+				Derma.Paint = function( self, w, h )
+					draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor )
+					
+					--Draw an texture gradient
+					local GC = self.RenderGradientColor
+					if GC.a>0 then
+						surface.SetTexture( EnvX.GradientTex )
+						surface.SetDrawColor( GC.r, GC.g, GC.b, GC.a )
+						surface.DrawTexturedRect( 0, 0, w, h )
+					end
+					
+					--Draw the title text
+					local tw,th = surface.GetTextSize( self.Title )
+					draw.DrawText(self.Title, "DermaDefault",tw+20,th, EnvX.GuiThemeColor.Text, 2)
+				end		
+			end
+		return Derma
+	end
+	
+	function MC.CreatePanel(Parent,Size,Spot,Draw)
+		local Derma = vgui.Create( "DPanel", Parent )
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetPos( Spot.x, Spot.y )
+			
+			function Derma:SetColor(Col) self.RenderColor = Col end Derma:SetColor(EnvX.GuiThemeColor.BG) --Dont Forget to set a color so we dont get nil Errors.
+			function Derma:SetGradientColor(Col) self.RenderGradientColor = Col end Derma:SetGradientColor(EnvX.GuiThemeColor.GC) --Dont Forget to set a color so we dont get nil Errors.
+
+			Derma.Paint = Draw or Derma.Paint
+		return Derma
+	end
+
+	function MC.CreateTextBar(Parent,Size,Spot,Text,Func)
+		local Derma = vgui.Create( "DTextEntry", Parent )
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetText( Text )
+			Derma.OnEnter = function( self )
+				Func( self:GetValue() )	
+			end
+		return Derma
+	end
+
+	function MC.AdvTextInput(Parent,Size,Spot,Text,Value,Func)
+		local Input = MC.CreatePanel(Parent,{x=Size.x,y=Size.y},{x=Spot.x,y=Spot.y})
+		Input.TextLabel = MC.CreateText(Input,{x=5,y=3},Text,Color(0,0,0,255))
+		Input.InputBox = MC.CreateTextBar(Input,{x=(Size.x)/4,y=Size.y},{x=Size.x*0.75,y=0},Value,Func)
+		
+		Input.SetText= function(self,Text) self.TextLabel:SetText(Text) end
+		Input.SetValue= function(self,Value) self.InputBox:SetText(Value) end
+		
+		return Input
+	end
+
+	function MC.CreateSlider(Parent,Spot,Values,Width)
+		local Derma = vgui.Create( "DNumSlider", Parent )
+			Derma:SetMinMax( Values.Min, Values.Max )
+			Derma:SetDecimals( Values.Dec )
+			Derma:SetWide( Width )
+			Derma:SetPos( Spot.x, Spot.y )
+		return Derma
+	end
+	
+	function MC.CreatePSheet(Parent,Size,Spot)
+		local Derma = vgui.Create( "DPropertySheet", Parent )
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetPos( Spot.x, Spot.y )
+				
+			Derma.OldAddSheet = Derma.AddSheet
+			function Derma:AddSheet(label, panel, material, NoStretchX, NoStretchY, Tooltip)
+				local Dat = Derma:OldAddSheet(label, panel, material, NoStretchX, NoStretchY, Tooltip)
+				
+				local Tab = Dat.Tab
+				
+				function Tab:SetColor(Col) self.RenderColor = Col end Tab:SetColor(EnvX.GuiThemeColor.FG)
+				Tab.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+					draw.RoundedBox( 5, 4, 4, w-4, h-4, self.RenderColor ) -- Draw a red box instead of the frame
+				end	
+				
+				return Dat
+			end
+			
+			function Derma:SetColor(Col) self.RenderColor = Col end Derma:SetColor(EnvX.GuiThemeColor.FG)
+
+			Derma.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+				draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor ) -- Draw a red box instead of the frame
+			end	
+			
+		return Derma
+	end
+	
+	function MC.DisplayModel(Parent,Size,Spot,Model,View,Look)
+		local Derma = vgui.Create( "DModelPanel", Parent )
+			Derma:SetModel(Model)
+			Derma:SetSize( Size, Size )
+			Derma:SetCamPos(Vector(View,View,View))
+			if(Look)then
+				Derma:SetLookAt(Vector(0,0,Look))
+			end
+			Derma:SetPos( Spot.x, Spot.y )
+		return Derma
+	end	
+	
+	function MC.CreatePBar(Parent,Size,Spot,Progress)
+		local Derma = vgui.Create( "DProgress", Parent )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetSize( Size.x, Size.y )
+			if Progress then
+				Derma:SetFraction( Progress() )
+				Derma.OThink=Derma.Think
+			
+				Derma.Think=function(self)
+					self:SetFraction( Progress())
+					--self:OThink()
+				end
+			end
+		return Derma
+	end
+	
+	function MC.CreateText(Parent,Spot,Text,Color)
+		local Derma = vgui.Create( "DLabel", Parent )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetText( Text or "" )
+			Derma:SetTextColor( Color or EnvX.GuiThemeColor.Text )
+			Derma.OldText = Derma.SetText
+			Derma.SetText = function(self,Text)
+				self:OldText(Text)
+				self:SizeToContents()
+			end
+			Derma:SizeToContents()
+		return Derma
+	end
+	
+	function MC.PropertyGrid(Parent,Size,Spot)
+		local Derma = vgui.Create( "DProperties",Parent )
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma.GetPParent = function() return Parent end
+			Derma.GetPSize = function() return Size end
+			Derma.GetPPos = function() return Spot end
+		return Derma
+	end
+	
+	function MC.CreateList(Parent,Size,Spot,Multi,Func)
+		local Derma = vgui.Create( "DListView", Parent )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetMultiSelect(Multi)
+			if Func then 
+				Derma.OldThink = Derma.Think or function() end
+				Derma.Think = function(self) 	
+					if self:GetSelected() and self:GetSelected()[1] then 
+						local selectedValue = self:GetSelected()[1]:GetValue(1) 
+						if selectedValue ~= self.Selected then 
+							self.Selected = selectedValue
+							Func(selectedValue)
+						end
+					end 
+					self:OldThink() 
+				end 
+			end
+		return Derma
+	end	
+	
+	function MC.CreateButton(Parent,Size,Spot,Text,OnClick)
+		local Derma = vgui.Create( "DButton", Parent )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetText( Text or "" )
+			Derma.DoClick = OnClick or function() end
+		return Derma
+	end
+	
+	function MC.LoadWebpage(Parent,Size,Link)
+		local label = vgui.Create("HTML",Parent)
+		label:SetSize(Size.x, Size.y)
+		label:OpenURL(Link)
+		return label		
+	end
+	
+	function MC.LoadHtml(Parent,Text)
+		EnvX.Debug("Opening Url: "..Text,3,"MenuCore")
+		local label = vgui.Create("HTML",Parent)
+		label:SetSize(800, 200)
+		label:OpenURL(Text)
+		return label
+	end
+	
+	---------------------------------------------------------------
+	--------------Draw Library Related Functions-------------------
+	---------------------------------------------------------------
+	
+	function MC.DrawRoundedBox(Size,Spot,Color,Sides)
+		draw.RoundedBoxEx( Sides.R, Spot.x, Spot.y, Size.x, Size.y, Color, Sides.TL, Sides.TR, Sides.BL, Sides.BR )
+	end
+	
+	---------------------------------------------------------------
+	----------WorldTip Replacement Related Functions---------------
+	---------------------------------------------------------------	
+	surface.CreateFont("GModWorldtip", {font = "coolvetica", size = 24, weight = 500})
+
+	function MC.UpdateInfoDisplay()
+	
+	end
+	
+	function MC.CreateInfoDisplay(data)
+		
+	end
+	
+	function MC.RenderWorldTip(Ent,Func)
+		if not Ent or not IsValid(Ent) then return end
+		if MC.WorldTip and IsValid(MC.WorldTip) then
+			MC.WorldTip:MakeInfo()
+		else
+			local ScreenSize = Vector(ScrW(),ScrH(),0)
+			local Panel = MC.CreatePanel(nil,{x=10,y=10},{x=20,y=ScreenSize.y/3},function( self, w, h )
+				draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor )
+				
+				--Draw an texture gradient
+				local GC = self.RenderGradientColor
+				if GC.a>0 then
+					surface.SetTexture( EnvX.GradientTex )
+					surface.SetDrawColor( GC.r, GC.g, GC.b, GC.a )
+					surface.DrawTexturedRect( 0, 0, w, h )
+				end
+			end)
+			
+			Panel.Ent = Ent
+
+			Panel.Think = function(self)
+				local TRE = LocalPlayer():GetEyeTrace().Entity
+				if not TRE or not IsValid(TRE) then
+					self:Remove()
+					return false
+				else
+					if TRE ~= self.Ent then
+						self:Remove()
+						return false
+					end
+				end
+			end
+			
+			Panel.Texts = {}
+			
+			function Panel:MakeInfo()
+				local Height = 10
+				local Width = self:GetWide()
+				
+				local Data = Func(Ent)
+				if table.Count(self.Texts)~=table.Count(Data)then
+					for i, n in pairs( self.Texts ) do
+						if n.Text and IsValid(n.Text) then
+							n.Text:Remove()
+						end
+						
+						if n.Progress and IsValid(n.Progress) then
+							n.Progress:Remove()
+						end
+					end
+			
+					for i, n in pairs( Data ) do
+						local w,h = 0,0
+						if n.Type == "Label" then
+							local T = MC.CreateText(self,{x=10,y=Height},n.Value)
+							T:SetFont("GModWorldtip")
+							T:SizeToContents()
+							
+							self.Texts[i]={Text=T}
+							
+							surface.SetFont( "GModWorldtip" ) -- Hack!
+							w,h = surface.GetTextSize(n.Value)
+						elseif n.Type == "Percentage" then
+							surface.SetFont( "GModWorldtip" ) -- Hack!
+							tw,th = surface.GetTextSize(n.Text)
+							
+							local P = MC.CreatePBar(self,{x=tw+20,y=30},{x=10,y=Height})
+							P:SetFraction(n.Value)
+							
+							local T = MC.CreateText(self,{x=20,y=Height+5},n.Text)
+							T:SetFont("GModWorldtip")
+							T:SizeToContents()
+							
+							self.Texts[i]={Text=T,Progress=P}
+							
+							w,h = tw+20,30
+						end
+						
+						Height=Height+h
+						
+						if w+20 > Width then
+							Width = w+20
+						end
+					end
+				else				
+					for i, n in pairs( Data ) do
+						local w,h = 0,0
+						local Gui = self.Texts[i]
+						if n.Type == "Label" then
+							Gui.Text:SetText(n.Value)
+						
+							surface.SetFont( "GModWorldtip" ) -- Hack!
+							w,h = surface.GetTextSize(n.Value)
+						elseif n.Type == "Percentage" then
+							Gui.Text:SetText(n.Text)
+							
+							surface.SetFont( "GModWorldtip" ) -- Hack!
+							tw,th = surface.GetTextSize(n.Text)
+							
+							Gui.Progress:SetSize(tw+20,30)
+							Gui.Progress:SetFraction(n.Value)
+							
+							w,h = tw+20,30
+						end
+						
+						Height=Height+h
+					
+						if w+20 > Width then
+							Width = w+20
+						end
+					end
+				end
+				self:SetSize(Width,Height+10)
+			end
+			Panel:MakeInfo()
+			
+			MC.WorldTip = Panel
+		end
+	end
+else
+	----Server side-----
+
+end

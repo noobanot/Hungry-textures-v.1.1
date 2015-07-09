@@ -14,6 +14,8 @@ LoadFile(P.."resources.lua",1)
 LoadFile(P.."variables.lua",1)
 LoadFile(P.."core/sh_funcs.lua",1)
 
+LoadFile(P.."sh_vguiease.lua",1)
+
 LoadFile(P.."menu.lua",0)
 LoadFile(P.."spawn_menu.lua",0)
 
