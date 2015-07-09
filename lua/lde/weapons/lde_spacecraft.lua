@@ -172,6 +172,10 @@ function LDE.Weapons.SpaceCraft.MakeSpaceC(Data)
 			end
 		end
 		
+		function ENT:ChangeTemp()
+			return
+		end
+		
 		function ENT:HurtHealth(amount)
 			if self.LDE.CoreHealth >= amount then
 				self.LDE.CoreHealth = math.Clamp(self.LDE.CoreHealth-math.abs(amount),0,self.LDE.CoreMaxHealth)

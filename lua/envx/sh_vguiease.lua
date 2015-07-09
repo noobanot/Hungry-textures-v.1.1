@@ -293,7 +293,21 @@ if(CLIENT)then
 				local Width = self:GetWide()
 				
 				local Data = Func(Ent)
-				if table.Count(self.Texts)~=table.Count(Data)then
+				
+				local DataMisMatch = false
+				
+				--Check if the data matchs properly.
+				if table.Count(self.Texts)==table.Count(Data) then
+					for i, n in pairs( Data ) do
+						if self.Texts[i].Type~=n.Type then
+							DataMisMatch = true
+						end
+					end
+				else
+					DataMisMatch = true
+				end
+				
+				if DataMisMatch then
 					for i, n in pairs( self.Texts ) do
 						if n.Text and IsValid(n.Text) then
 							n.Text:Remove()
@@ -311,7 +325,7 @@ if(CLIENT)then
 							T:SetFont("GModWorldtip")
 							T:SizeToContents()
 							
-							self.Texts[i]={Text=T}
+							self.Texts[i]={Type=n.Type,Text=T}
 							
 							surface.SetFont( "GModWorldtip" ) -- Hack!
 							w,h = surface.GetTextSize(n.Value)
@@ -326,7 +340,7 @@ if(CLIENT)then
 							T:SetFont("GModWorldtip")
 							T:SizeToContents()
 							
-							self.Texts[i]={Text=T,Progress=P}
+							self.Texts[i]={Type=n.Type,Text=T,Progress=P}
 							
 							w,h = tw+20,30
 						end

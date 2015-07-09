@@ -14,4 +14,5 @@ if SERVER then
 	duplicator.RegisterEntityClass("sbep_base_door", Environments.DupeFix, "Data" )
 	duplicator.RegisterEntityClass("sbep_base_door_controller", Environments.DupeFix, "Data" )
 	duplicator.RegisterEntityClass("sbep_base_docking_clamp", Environments.DupeFix, "Data" )
+	duplicator.RegisterEntityClass("warpdrive", Environments.DupeFix, "Data" )
 end

@@ -12,6 +12,10 @@ local type = type
 local tonumber = tonumber
 local pairs = pairs
 
+local EnvX = EnvX --Localise the global table for speed.
+local Utl = EnvX.Utl --Makes it easier to read the code.
+local NDat = Utl.NetMan --Ease link to the netdata table.
+
 //Stargate Overrides --Plz Work
 local loaded = false
 local o = scripted_ents.Register
