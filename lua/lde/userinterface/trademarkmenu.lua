@@ -98,10 +98,9 @@ else
 		infoBox:SetPos( 170, 35 )
 		infoBox:SetSize( 350, 350)
 		infoBox:SetParent(MarketMenu)
-		infoBox.Paint = function()    
-			surface.SetDrawColor( 50, 50, 50, 255 )
-			surface.DrawRect( 0, 0, infoBox:GetWide(), infoBox:GetTall() )
-				
+		infoBox.Paint = function()   
+			draw.RoundedBox( 16, 0, 0, infoBox:GetWide(), infoBox:GetTall(), EnvX.GuiThemeColor.FG )
+			
 			if schematicBox:GetSelected() and schematicBox:GetSelected()[1] then 
 				local selectedValue = schematicBox:GetSelected()[1]:GetValue(1) 
 				-- Get description data ----------------------
@@ -119,7 +118,8 @@ else
 					RunConsoleCommand( "requestmarket", schematicBox:GetSelected()[1]:GetValue(1), entID  )
 				end
 				
-				surface.SetTextColor( 255, 255, 255, 255 )
+				local TC = EnvX.GuiThemeColor.Text
+				surface.SetTextColor( TC.r, TC.g, TC.b, TC.a )
 				posy = 10
 				surface.SetTextPos( 15, posy )
 				surface.DrawText(curselected.name)
@@ -137,10 +137,7 @@ else
 					surface.DrawText(textLine)
 					posy = posy + 10
 				end
-			end	
-			
-			surface.SetTextColor( 255, 255, 255, 255 )
-					
+			end						
 		end
 
 		if(not Mode)then Mode = "Buy" end

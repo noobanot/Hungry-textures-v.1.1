@@ -16,8 +16,6 @@ t.additive = false
 t.antialias = true
 surface.CreateFont("lcd2", t)
 
-local texGradient 	= surface.GetTextureID( "gui/center_gradient" )
-
 local NoDraw = {
 	"CHudHealth",
 	"CHudBattery"
@@ -42,13 +40,14 @@ function LoadHud()
 		
 		if Mode then
 			
-			draw.RoundedBox(16,20,a.y-153,268,124, Color(50,50,50,alpha))
-			surface.SetTexture( texGradient )
-			surface.SetDrawColor( 255, 255, 255, 15 )
+			draw.RoundedBox(16,20,a.y-153,268,124, EnvX.GuiThemeColor.BG)
+			surface.SetTexture( EnvX.GradientTex )
+			local GC = EnvX.GuiThemeColor.GC
+			surface.SetDrawColor( GC.r, GC.g, GC.b, GC.a )
 			surface.DrawTexturedRect( 20, a.y-153, 268, 124 )
 			
 			draw.NoTexture()
-			draw.RoundedBox(16,24,a.y-147,260,112,Color(0,0,0,alpha))
+			draw.RoundedBox(16,24,a.y-147,260,112,EnvX.GuiThemeColor.FG)
 			draw.NoTexture()
 
 			/*
@@ -62,7 +61,7 @@ function LoadHud()
 			local Life = (Environments.suit.energy/Environments.suit.maxenergy)*100
 			local Fuel = (Environments.suit.fuel/Environments.suit.maxfuel)*100
 			
-			local Spot,Col = Vector(a.y-133,130,0),Color(0,140,220,255)
+			local Spot,Col = Vector(a.y-133,130,0),EnvX.GuiThemeColor.Text
 			draw.DrawText(tostring(math.Round(Life)),"lcd2",Spot.y,Spot.x,Col,2)
 			draw.DrawText("LifeSupport", "DermaDefault",Spot.y,Spot.x-7, Col, 2)
 
@@ -70,7 +69,7 @@ function LoadHud()
 			draw.DrawText(tostring(math.Round(Fuel)),"lcd2",Spot.y,Spot.x,Col,2)
 			draw.DrawText("Fuel", "DermaDefault",Spot.y,Spot.x-7,Col, 2)
 						
-			local Spot,Col = Vector(a.y-83,130,0),Color(0,140,220,255)
+			local Spot = Vector(a.y-83,130,0)
 			draw.DrawText(tostring(LocalPlayer():Health()),"lcd2",Spot.y,Spot.x,Col,2)
 			draw.DrawText("Health", "DermaDefault",Spot.y,Spot.x-7,Col, 2)
 

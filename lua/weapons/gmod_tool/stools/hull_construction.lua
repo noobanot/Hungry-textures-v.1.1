@@ -1,14 +1,14 @@
 TOOL.Category = "Tools"
-TOOL.Name = "#Part Spawner"
+TOOL.Name = "Hull Construction"
 TOOL.Command = nil
 TOOL.ConfigName = ""
 TOOL.Tab = "Environments"
 
 if CLIENT then
-    language.Add("Tool.part_spawner.name", "Ship Construction Tool")
-    language.Add("Tool.part_spawner.desc", "Spawn SBEP props.")
-    language.Add("Tool.part_spawner.0", "Left click to perform an action.")
-    language.Add("undone_SBEP Part", "Undone SBEP Part")
+    language.Add("Tool.hull_construction.name", "Hull Construction Tool")
+    language.Add("Tool.hull_construction.desc", "Easy Ship Construction")
+    language.Add("Tool.hull_construction.0", "Left click to perform an action.")
+    language.Add("undone_Hull Segment", "Undone Hull Segment")
 end
 
 TOOL.ClientConVar["model"] = "models/SmallBridge/Hulls_SW/sbhulle1.mdl"
@@ -60,49 +60,37 @@ end
 
 function TOOL.BuildCPanel(panel)
     panel:SetSpacing(10)
-    panel:SetName("EnvX Part Spawner")
+    panel:SetName("Hull Construction")
 	
 	local list = vgui.Create( "DListLayout",panel )
-	list:SetTall( 400 )
-	list.OldLists = {}
+	list:SetSize( 280,400 )
 	
-	function list:SetupLists()
-		for k,v in pairs(self.OldLists) do
-			if v and IsValid(v)then				
-				v:Remove()
-			end
-			self.OldLists[k]=nil
-		end
+	local SkinTable = {"Advanced","SlyBridge","MedBridge2","Jaanus","Scrappers"}
+	
+	local SkinSelector = vgui.Create( "DComboBox", panel )
+	SkinSelector:Dock(TOP)
+	SkinSelector:DockMargin( 2,2,2,2 )
+	SkinSelector:SetValue( SkinTable[GetConVar("hull_construction_skin"):GetInt()] or SkinTable[1] )
+	SkinSelector.OnSelect = function( index, value, data )
+		RunConsoleCommand( "hull_construction_skin", value )
+	end
+	for k,v in pairs( SkinTable ) do
+		SkinSelector:AddChoice( v )
+	end
+	
+	local GlassButton = vgui.Create( "DCheckBoxLabel", panel )
+	GlassButton:Dock(TOP)
+	GlassButton:DockMargin(2,2,2,2)
+	GlassButton:SetValue( GetConVar( "hull_construction_glass" ):GetBool() )
+	GlassButton:SetText( "Glass:" )
+	GlassButton:SetConVar( "hull_construction_glass" )
 		
-		local SkinTable = {"Advanced","SlyBridge","MedBridge2","Jaanus","Scrappers"}
-		
-		local SkinSelector = vgui.Create( "DComboBox", self )
-		SkinSelector:Dock(TOP)
-		SkinSelector:DockMargin( 2,2,2,2 )
-		SkinSelector:SetValue( SkinTable[GetConVar("part_spawner_skin"):GetInt()] or SkinTable[1] )
-		SkinSelector.OnSelect = function( index, value, data )
-			RunConsoleCommand( "part_spawner_skin", value )
-		end
-		for k,v in pairs( SkinTable ) do
-			SkinSelector:AddChoice( v )
-		end
-		table.insert(self.OldLists,SkinSelector)
-		
-		local GlassButton = vgui.Create( "DCheckBoxLabel", self )
-		GlassButton:Dock(TOP)
-		GlassButton:DockMargin(2,2,2,2)
-		GlassButton:SetValue( GetConVar( "part_spawner_glass" ):GetBool() )
-		GlassButton:SetText( "Glass:" )
-		GlassButton:SetConVar( "part_spawner_glass" )
-		table.insert(self.OldLists,GlassButton)
-		
+	function list:SetupLists()		
 		local sheet = vgui.Create( "DPropertySheet", self )
-		sheet:Dock(TOP)
 		sheet:SetSize( self:GetWide(), 400 )
-		table.insert(self.OldLists,sheet)
-		
+				
 		for Tab,v  in pairs( EnvX.PartList ) do
-			local tabpan = vgui.Create( "DPanel", sheet )
+			local tabpan = vgui.Create( "DScrollPanel", sheet )
 			tabpan:SetSize( self:GetWide(), 400 )
 			
 			local tablist = vgui.Create( "DListLayout",tabpan )
@@ -112,8 +100,7 @@ function TOOL.BuildCPanel(panel)
 				local catPanel = vgui.Create( "DCollapsibleCategory" )
 				catPanel:SetLabel(Category)
 				catPanel:SetExpanded(false)
-				self.Category = Category
-				table.insert(self.OldLists,catPanel)
+				catPanel.category = Category
 
 				local grid = vgui.Create( "DIconLayout" )
 				grid:SetSize( self:GetWide(), 400 )
@@ -125,7 +112,7 @@ function TOOL.BuildCPanel(panel)
 					icon:SetModel( modelpath )
 					icon:SetToolTip( modelpath )
 					icon.DoClick = function( self )
-						RunConsoleCommand( "part_spawner_model", modelpath )
+						RunConsoleCommand( "hull_construction_model", modelpath )
 					end
 					grid:Add( icon )
 					
@@ -133,14 +120,13 @@ function TOOL.BuildCPanel(panel)
 				catPanel:SetContents(grid)
 				tablist:Add(catPanel)
 			end
-
-			sheet:AddSheet( Tab, tabpan, "icon16/cross.png" )
+			
+			sheet:AddSheet( Tab, tabpan, "icon16/bricks.png" )
 		end
+		
 		self:Add(sheet)
 	end
 	
 	panel:AddPanel(list)
 	list:SetupLists()
-	
-	table.insert(Environments.ToolMenus,list)
 end

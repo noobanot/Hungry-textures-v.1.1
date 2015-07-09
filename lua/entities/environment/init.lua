@@ -196,9 +196,6 @@ function ENT:Configure(rad, gravity, name, env)
 	self.radius = rad
 	self.Enabled = true
 	self.gravity = gravity
-	
-	self.Env = {}
-	self.Env.sbenvironment = self:GetTable() --reverse compat
 end
 
 function ENT:CanTool()

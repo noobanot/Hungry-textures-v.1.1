@@ -637,6 +637,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		list:SetTall( 400 )
 		list.Tool = self
 		list.OldLists = {}
+		list.PersistData = {Expanded={}}
 		--list:SetPadding( 1 )
 		--list:SetSpacing( 1 )
 		--list:EnableVerticalScrollbar(true)
@@ -652,6 +653,10 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		function list:SetupLists()
 			for k,v in pairs(self.OldLists) do
 				if v and IsValid(v)then
+					if v.GetExpanded and v.category then
+						self.PersistData.Expanded[v.category]=v:GetExpanded()
+					end
+				
 					v:Remove()
 				end
 				self.OldLists[k]=nil
@@ -660,7 +665,8 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 			for cat,tab in pairs(Environments.Tooldata[self.Tool.Name]) do
 				local c = vgui.Create("DCollapsibleCategory")
 				c:SetLabel(cat)
-				c:SetExpanded(false)
+				c:SetExpanded(self.PersistData.Expanded[cat] or false)
+				c.category = cat
 				table.insert(self.OldLists,c)
 				
 				local CategoryList	= vgui.Create( "DIconLayout" )

@@ -46,33 +46,33 @@ else
 		infoBox:SetSize( 350, 350)
 		infoBox:SetParent(FactoryMenu)
 		infoBox.Paint = function()    
-			surface.SetDrawColor( 50, 50, 50, 255 )
-			surface.DrawRect( 0, 0, infoBox:GetWide(), infoBox:GetTall() )
+			draw.RoundedBox( 16, 0, 0, infoBox:GetWide(), infoBox:GetTall(), EnvX.GuiThemeColor.FG )
 			
 			if schematicBox:GetSelected() and schematicBox:GetSelected()[1] then 
-			local selectedValue = schematicBox:GetSelected()[1]:GetValue(1) 
-			local curselected = {}
-			-- Get description data ----------------------
-			for k,v in pairs(BuildList) do
-				if(selectedValue==v.name)then
-					curselected = v
-					itemDesc=v.desc
-					break
+				local selectedValue = schematicBox:GetSelected()[1]:GetValue(1) 
+				local curselected = {}
+				-- Get description data ----------------------
+				for k,v in pairs(BuildList) do
+					if(selectedValue==v.name)then
+						curselected = v
+						itemDesc=v.desc
+						break
+					end
 				end
-			end
-			if(curselected.model)then
-				local View = curselected.CamDist or 80
-				ModelDisplay:SetCamPos(Vector(View,View,View))
-				ModelDisplay:SetModel(curselected.model)
-				if(curselected.Look)then
-					ModelDisplay:SetLookAt(Vector(0,0,Look))
+				if(curselected.model)then
+					local View = curselected.CamDist or 80
+					ModelDisplay:SetCamPos(Vector(View,View,View))
+					ModelDisplay:SetModel(curselected.model)
+					if(curselected.Look)then
+						ModelDisplay:SetLookAt(Vector(0,0,Look))
+					end
 				end
-			end
-			-- End description data calls ----------------
-					
-			--surface.SetFont( "default" )
-			surface.SetTextColor( 255, 255, 255, 255 )
-			posy = 10
+				-- End description data calls ----------------
+						
+				--surface.SetFont( "default" )
+				local TC = EnvX.GuiThemeColor.Text
+				surface.SetTextColor( TC.r, TC.g, TC.b, TC.a )
+				posy = 10
 				surface.SetTextPos( 15, posy )
 				surface.DrawText(curselected.name)
 				posy = posy + 10
@@ -93,10 +93,7 @@ else
 					surface.DrawText(textLine..": ["..curselected.matamount[k].."]")
 					posy = posy + 10
 				end
-			end	
-			
-			surface.SetTextColor( 255, 255, 255, 255 )
-					
+			end						
 		end
 		
 		local cancelButton = LDE.UI.CreateButton(FactoryMenu,{x=180,y=60},{x=520,y=325})

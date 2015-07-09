@@ -13,6 +13,7 @@ if(CLIENT)then
 		Super.Base:Center()
 		Super.Base:SetTitle( "Environments X PDA V:"..EnvX.Version )
 		Super.Base:MakePopup()
+	
 		
 		Super.Catagorys = LDE.UI.CreatePSheet(Super.Base,{x=790,y=565 },{x=5,y=30})
 		
@@ -28,6 +29,25 @@ if(CLIENT)then
 			Derma:ShowCloseButton( XButton )
 			Derma:SetDraggable( Draggable )
 			Derma:SetDeleteOnClose( CloseDelete )
+			Derma:SetTitle("")
+			
+			function Derma:SetTitle(txt) self.Title = txt end Derma:SetTitle("")
+						
+			function Derma:SetColor(Col) self.RenderColor = Col end Derma:SetColor(EnvX.GuiThemeColor.BG)
+			
+			Derma.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+				draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor ) -- Draw a red box instead of the frame
+				
+				surface.SetTexture( EnvX.GradientTex )
+				local GC = EnvX.GuiThemeColor.GC
+				surface.SetDrawColor( GC.r, GC.g, GC.b, GC.a )
+				surface.DrawTexturedRect( 0, 0, w, h )
+				
+				local tw,th = surface.GetTextSize( self.Title )
+				draw.DrawText(self.Title, "DermaDefault",tw+20,th, EnvX.GuiThemeColor.Text, 2)
+				
+			end			
+			
 		return Derma
 	end
 
@@ -44,6 +64,26 @@ if(CLIENT)then
 		local Derma = vgui.Create( "DPropertySheet", Parent )
 			Derma:SetSize( Size.x, Size.y )
 			Derma:SetPos( Spot.x, Spot.y )
+			
+			Derma.OldAddSheet = Derma.AddSheet
+			function Derma:AddSheet(label, panel, material, NoStretchX, NoStretchY, Tooltip)
+				local Dat = Derma:OldAddSheet(label, panel, material, NoStretchX, NoStretchY, Tooltip)
+				
+				local Tab = Dat.Tab
+				
+				function Tab:SetColor(Col) self.RenderColor = Col end Tab:SetColor(EnvX.GuiThemeColor.FG)
+				Tab.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+					draw.RoundedBox( 5, 0, 0, w, h, self.RenderColor ) -- Draw a red box instead of the frame
+				end	
+				
+				return Dat
+			end
+			
+			function Derma:SetColor(Col) self.RenderColor = Col end Derma:SetColor(EnvX.GuiThemeColor.FG)
+
+			Derma.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+				draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor ) -- Draw a red box instead of the frame
+			end	
 		return Derma
 	end
 	
