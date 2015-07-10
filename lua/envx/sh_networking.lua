@@ -17,7 +17,7 @@ NDat.Types = {string="S",Entity="E",number="F",vector="V",angle="A",boolean="B",
 --Actually sends the data out.
 function NDat.SendData(Data,Name,ply)
 	--print("Sending Data: "..Name)
-	net.Start("sing_basenetmessage")
+	net.Start("envx_basenetmessage")
 		net.WriteString(Name)
 		net.WriteFloat(table.Count(Data.Dat))
 		for I, S in pairs( Data.Dat ) do --Loop all the variables.
@@ -48,7 +48,7 @@ function NDat:InNetF(MSG,Data,ply)
 end
 
 --Function that receives the netmessage.
-net.Receive( "sing_basenetmessage", function( length, ply )
+net.Receive( "envx_basenetmessage", function( length, ply )
 	local Name = net.ReadString() --Gets the name of the message.
 	local Count = net.ReadFloat() --Get the amount of variables were recieving.
 	
@@ -66,7 +66,7 @@ if(SERVER)then
 	Serverside Networking Handling.
 	----------------------------------------------------]]--
 
-	util.AddNetworkString( "sing_basenetmessage" )
+	util.AddNetworkString( "envx_basenetmessage" )
 
 	--Loops the players and prepares to send their data.
 	function NDat.CyclePlayers()

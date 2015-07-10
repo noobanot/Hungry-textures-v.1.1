@@ -19,7 +19,6 @@ LoadFile(P.."sh_constraints.lua",1)
 LoadFile(P.."lde_ownership.lua",1)
 
 LoadFile(P.."lde_userinterface.lua",1)
-LoadFile(P.."sh_vguiease.lua",1)
 LoadFile(P.."lde_core.lua",1)
 LoadFile(P.."lde_unlocksystem.lua",1)
 LoadFile(P.."lde_mechadds.lua",2)
