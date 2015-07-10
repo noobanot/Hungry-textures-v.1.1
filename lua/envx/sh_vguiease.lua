@@ -148,9 +148,28 @@ if(CLIENT)then
 	end	
 	
 	function MC.CreatePBar(Parent,Size,Spot,Progress)
-		local Derma = vgui.Create( "DProgress", Parent )
+		local Derma = vgui.Create( "DPanel", Parent )
 			Derma:SetPos( Spot.x, Spot.y )
 			Derma:SetSize( Size.x, Size.y )
+			
+			function Derma:SetFraction(frac) self.Fraction = math.Clamp(frac,0,1) end Derma:SetFraction(0)
+			function Derma:SetBGColor(Col) self.RenderBGColor = Col end Derma:SetBGColor(EnvX.GuiThemeColor.BG) --Dont Forget to set a color so we dont get nil Errors.
+			function Derma:SetFGColor(Col) self.RenderFGColor = Col end Derma:SetFGColor(Color(0,0,100)) --Dont Forget to set a color so we dont get nil Errors.
+			function Derma:SetGradientColor(Col) self.RenderGradientColor = Col end Derma:SetGradientColor(EnvX.GuiThemeColor.GC) --Dont Forget to set a color so we dont get nil Errors.
+			
+			Derma.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+				draw.RoundedBox( 5, 0, 0, w, h, self.RenderBGColor )
+				draw.RoundedBox( 5, 0, 0, w*self.Fraction, h, self.RenderFGColor )
+				
+				--Draw an texture gradient
+				local GC = self.RenderGradientColor
+				if GC.a>0 then
+					surface.SetTexture( EnvX.GradientTex )
+					surface.SetDrawColor( GC.r, GC.g, GC.b, GC.a )
+					surface.DrawTexturedRect( 0, 0, w, h )
+				end
+			end	
+
 			if Progress then
 				Derma:SetFraction( Progress() )
 				Derma.OThink=Derma.Think
