@@ -253,7 +253,9 @@ if(CLIENT)then
 			local Panel = MC.WorldTip
 			Panel:MakeInfo()
 			local x,y = Panel:GetSize()
-			Panel:SetPos(math.Clamp(Pos.x-(x/2),0,ScreenSize.x-x),math.Clamp(Pos.y-(y/2),0,ScreenSize.y-y))
+			local paneloffset = 0.05		--For quick changing of zee offset amount
+			
+			Panel:SetPos(math.Clamp(Pos.x-(x/2),0,ScreenSize.x-x),math.Clamp(Pos.y-(--[[y/2]] y)-(ScreenSize.y*paneloffset),0,ScreenSize.y-y))
 		else
 			local Panel = MC.CreatePanel(nil,{x=10,y=10},{x=Pos.x,y=Pos.y},function( self, w, h )
 				draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor )
