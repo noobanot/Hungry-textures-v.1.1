@@ -384,8 +384,19 @@ if(CLIENT)then
 							surface.SetFont( "GModWorldtip" ) -- Hack!
 							tw,th = surface.GetTextSize(n.Text)
 							
-							Gui.Progress:SetSize(tw+20,30)
+							local x,y = MC.WorldTip:GetSize()
+							
+							--Gui.Progress:SetSize(tw+20,30)
+							Gui.Progress:SetSize(x-20,30)
 							Gui.Progress:SetFraction(n.Value)
+							
+							local Red = math.Clamp(255 - ((255*2) * n.Value), 0, 255)
+							local Green = math.Clamp(-255 + ((255*2) * n.Value), 0, 255)
+							local Blue = math.Clamp(255 - Red*2 - Green*2, 0, 255)
+							
+							local Col = Color(Red,Green,Blue,255)
+							
+							Gui.Progress:SetFGColor(Col)
 							
 							w,h = tw+20,30
 						end
