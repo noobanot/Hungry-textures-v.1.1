@@ -69,8 +69,8 @@ LDE.Weapons.RegisterBomb(Data)
 
 
 local NukeFunc = function(self) 
-	if(!self.Exploded and self.Armed) then 
-		LDE.Weapons.NuclearEffect(self,Data)
+	if not self.Exploded and self.Armed then 
+		LDE.Weapons.NuclearEffect(self,self:GetPos())
 		Func(self)
 	end
  end

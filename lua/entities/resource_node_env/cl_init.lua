@@ -31,7 +31,8 @@ function ENT:DrawTranslucent( bDontDrawModel )
 end
 
 function ENT:DoNormalDraw( bDontDrawModel )
-	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
+	local TR = LocalPlayer():GetEyeTrace()
+	if TR.Entity == self and EyePos():Distance( TR.HitPos ) < 512 then
 		local Data = EnvX.Resources.Data
 		local RNames = EnvX.Resources.Names
 		local IDs = EnvX.Resources.Ids
@@ -53,14 +54,6 @@ function ENT:DoNormalDraw( bDontDrawModel )
 			table.insert(Return,{Type="Label",Value=self.PrintName})
 			table.insert(Return,{Type="Label",Value="Network: "..self:EntIndex()})
 			
-			if HasOOO then
-				local runmode = "UnKnown"
-				if self:GetOOO() >= 0 and self:GetOOO() <= 2 then
-					runmode = OOO[self:GetOOO()]
-				end
-				table.insert(Return,{Type="Label",Value="Mode: "..runmode})
-			end
-			
 			table.insert(Return,{Type="Label",Value=""})
 			if self.resources and table.Count(self.resources) > 0 then
 				for k, v in pairs(self.resources) do
@@ -69,8 +62,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 				end
 			else
 				table.insert(Return,{Type="Label",Value="No Resources Connected"})
-			end
-			
+			end	
 			
 			if self.ExtraOverlayData then
 				table.insert(Return,{Type="Label",Value=""})

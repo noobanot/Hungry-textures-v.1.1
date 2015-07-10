@@ -70,7 +70,8 @@ function ENT:GetOOO()
 end
 
 function ENT:DoNormalDraw( bDontDrawModel )
-	if ( LocalPlayer():GetEyeTrace().Entity == self and EyePos():Distance( self:GetPos() ) < 512) then
+	local TR = LocalPlayer():GetEyeTrace()
+	if TR.Entity == self and EyePos():Distance( TR.HitPos ) < 512 then
 		local Data = EnvX.Resources.Data
 		local RNames = EnvX.Resources.Names
 		local IDs = EnvX.Resources.Ids
@@ -122,6 +123,7 @@ function ENT:DoNormalDraw( bDontDrawModel )
 						local ND = RNames[ID] or k
 						
 						if Net then
+							local Max = math.Round(Net.maxresources[k] or 0)
 							if Net.resources_last[k] and Net.resources[k] then
 								local diff = CurTime() - Net.last_update[k]
 								if diff > 1 then
@@ -129,9 +131,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 								end
 								
 								local amt = math.Round(Net.resources_last[k] + (Net.resources[k] - Net.resources_last[k])*diff)
-								table.insert(Return,{Type="Percentage",Text=ND..": ".. amt .."/".. (Net.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. amt .."/".. Max .. (MD.MUnit or ""),Value=math.Round(amt)/Max})
 							else
-								table.insert(Return,{Type="Percentage",Text=ND..": ".. (Net.resources[k] or 0) .."/".. (Net.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
+								table.insert(Return,{Type="Percentage",Text=ND..": ".. (Net.resources[k] or 0) .."/".. Max .. (MD.MUnit or ""),Value=math.Round(Net.resources[k] or 0)/Max})
 							end
 						else
 							table.insert(Return,{Type="Percentage",Text=ND..": ".. 0 .."/".. 0 .. (MD.MUnit or ""),Value=0})
@@ -158,9 +160,9 @@ function ENT:DoNormalDraw( bDontDrawModel )
 							end
 							
 							local amt = math.Round(node.resources_last[k] + (node.resources[k] - node.resources_last[k])*diff)
-							table.insert(Return,{Type="Percentage",Text=ND..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round(Net.maxresources[k])})
+							table.insert(Return,{Type="Percentage",Text=ND..": ".. (amt) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round(amt)/math.Round((Net.maxresources[k] or 0))})
 						else
-							table.insert(Return,{Type="Percentage",Text=ND..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round(Net.maxresources[k])})
+							table.insert(Return,{Type="Percentage",Text=ND..": ".. (node.resources[k] or 0) .."/".. (node.maxresources[k] or 0) .. (MD.MUnit or ""),Value=math.Round((Net.resources[k] or 0))/math.Round((Net.maxresources[k] or 0))})
 						end
 					else
 						table.insert(Return,{Type="Percentage",Text=ND..": ".. 0 .."/".. 0 .. (MD.MUnit or ""),Value=0})

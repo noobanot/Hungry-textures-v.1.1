@@ -122,6 +122,8 @@ function ENT:Think()
 end
 
 function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
+	local R1,R2 = false,false
+	
 	if res1 then
 		local Sync = {}
 		for k,name in pairs(res1) do
@@ -133,20 +135,36 @@ function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 		end
 		if table.Count(Sync)>0 then
 			NDat.AddData({Name="EnvX_NodeSyncResource",Val=1,Dat={Node=self:EntIndex(),Resources=Sync}},ply)
+			R1 = true
 		end
 	end
 	
-	if not res2 then return end
-	local Sync = {}
-	for k,name in pairs(res2) do
-		local v = self.resources[name]
-		if v and v.haschanged then
-			Sync[name] = {name=EnvX.Resources.Ids[name] or name,value=v.value}	
-			v.haschanged = false
+	if res2 then 
+		local Sync = {}
+		for k,name in pairs(res2) do
+			local v = self.resources[name]
+			if v and v.haschanged then
+				Sync[name] = {name=EnvX.Resources.Ids[name] or name,value=v.value}	
+				v.haschanged = false
+			end
+		end
+		if table.Count(Sync)>0 then
+			NDat.AddData({Name="EnvX_NodeSyncResource",Val=1,Dat={Node=self:EntIndex(),Resources=Sync}},ply)
+			R2 = true
 		end
 	end
-	if table.Count(Sync)>0 then
-		NDat.AddData({Name="EnvX_NodeSyncResource",Val=1,Dat={Node=self:EntIndex(),Resources=Sync}},ply)
+	
+	if not R1 and not R2 then
+		local Sync = {}
+		for k,v in pairs(self.resources) do
+			if v and v.haschanged then
+				Sync[k] = {name=EnvX.Resources.Ids[k] or k,value=v.value}
+				v.haschanged = false
+			end
+		end
+		if table.Count(Sync)>0 then
+			NDat.AddData({Name="EnvX_NodeSyncResource",Val=1,Dat={Node=self:EntIndex(),Resources=Sync}},ply)
+		end
 	end
 end
 

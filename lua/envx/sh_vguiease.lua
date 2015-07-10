@@ -244,22 +244,18 @@ if(CLIENT)then
 	----------WorldTip Replacement Related Functions---------------
 	---------------------------------------------------------------	
 	surface.CreateFont("GModWorldtip", {font = "coolvetica", size = 24, weight = 500})
-
-	function MC.UpdateInfoDisplay()
-	
-	end
-	
-	function MC.CreateInfoDisplay(data)
-		
-	end
 	
 	function MC.RenderWorldTip(Ent,Func)
 		if not Ent or not IsValid(Ent) then return end
+		local ScreenSize = Vector(ScrW(),ScrH(),0)
+		local Pos = Ent:LocalToWorld(Ent:OBBCenter()):ToScreen()
 		if MC.WorldTip and IsValid(MC.WorldTip) then
-			MC.WorldTip:MakeInfo()
+			local Panel = MC.WorldTip
+			Panel:MakeInfo()
+			local x,y = Panel:GetSize()
+			Panel:SetPos(math.Clamp(Pos.x-(x/2),0,ScreenSize.x-x),math.Clamp(Pos.y-(y/2),0,ScreenSize.y-y))
 		else
-			local ScreenSize = Vector(ScrW(),ScrH(),0)
-			local Panel = MC.CreatePanel(nil,{x=10,y=10},{x=20,y=ScreenSize.y/3},function( self, w, h )
+			local Panel = MC.CreatePanel(nil,{x=10,y=10},{x=Pos.x,y=Pos.y},function( self, w, h )
 				draw.RoundedBox( 16, 0, 0, w, h, self.RenderColor )
 				
 				--Draw an texture gradient
@@ -274,8 +270,9 @@ if(CLIENT)then
 			Panel.Ent = Ent
 
 			Panel.Think = function(self)
-				local TRE = LocalPlayer():GetEyeTrace().Entity
-				if not TRE or not IsValid(TRE) then
+				local TR = LocalPlayer():GetEyeTrace()
+				local TRE = TR.Entity
+				if not TRE or not IsValid(TRE) or EyePos():Distance( TR.HitPos ) > 512 then
 					self:Remove()
 					return false
 				else

@@ -25,11 +25,15 @@ if SERVER then
 		for k,ply in pairs(player.GetAll()) do
 			local ent = ply:GetEyeTrace().Entity
 			if ent and IsValid(ent) then
-				if ent.node and IsValid(ent.node) then --its a RD entity, send the message!
+				if ent.node and IsValid(ent.node) or ent.IsNode then --its a RD entity, send the message!
 					--list.Set( "LSEntOverlayText" , class, {HasOOO = true, resnames = In, genresnames = Out} )
 					local dat = list.Get("LSEntOverlayText")[ent:GetClass()] --get the resources
 					if dat then
-						ent.node:DoUpdate(dat.resnames, dat.genresnames, ply)
+						if not ent.IsNode then
+							ent.node:DoUpdate(dat.resnames, dat.genresnames, ply)
+						else
+							ent:DoUpdate({}, {}, ply)
+						end
 					else --no list data? SG? CAP?
 					
 					end
@@ -43,7 +47,7 @@ if SERVER then
 		end
 	end
 	timer.Create("RDChecker", 0.5, 0, CheckRD) --adjust rate perhaps?
-end
+end 
 
 local function SaveGravPlating( Player, Entity, Data )
 	if not SERVER then return end
