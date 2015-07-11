@@ -153,9 +153,7 @@ local function CreateEntTable(id)
 end
 
 function Environments.GetEntTable(id)
-	if !id then
-		return ent_table
-	end
+	if not id then return ent_table end
 	return ent_table[id] or CreateEntTable(id)
 end
 

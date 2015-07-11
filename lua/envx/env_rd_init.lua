@@ -29,7 +29,7 @@ LoadFile(P.."cl_init.lua",0)
 LoadFile(P.."userinterface.lua",1)
 LoadFile(P.."shared.lua",1)
 LoadFile(P.."easecreation.lua",1)
-LoadFile(P.."EntRegister.lua",1)
+LoadFile(P.."entregister.lua",1)
 
 print("==============================================")
 print("== Environments Life Support Ents Installed ==")

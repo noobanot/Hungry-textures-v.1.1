@@ -67,8 +67,21 @@ function ENT:LoopResInfo(Info,Res)
 	local Net
 	
 	local node = self.node
+	
 	if node and IsValid(node) then
 		Net = Environments.GetNetTable(node:EntIndex())
+	else
+		if not self.IsNode then
+			local network = Environments.GetEntTable(self:EntIndex()).network
+			
+			if network ~= 0 then
+				node = Entity(node)
+				
+				if node and IsValid(node) then
+					self.node = node
+				end
+			end
+		end
 	end
 	
 	for _, k in pairs(Res) do

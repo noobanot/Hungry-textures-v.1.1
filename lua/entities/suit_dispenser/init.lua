@@ -47,7 +47,7 @@ local function quiet_steam(ent)
 end
 
 local SuitDat = EnvX.DefaultSuitData
-local Multiplier = 3.5
+local Multiplier = 1.5
 local Divider = 1/Multiplier
 
 function ENT:SetActive( value, caller )
@@ -56,28 +56,29 @@ function ENT:SetActive( value, caller )
 	local energy,water,oxygen,fuel = self:GetResourceAmount("energy"),self:GetResourceAmount("water"),self:GetResourceAmount("oxygen"),self:GetResourceAmount("hydrogen")
 	
 	local Res_needed = math.ceil((SuitDat.maxenergy - caller.suit.energy) * Divider)
-	
-	print(Res_needed)
-	
+		
 	local Reng,Rwat,Rair = 2,8,4
 	
-	local MaxEng,MaxWat,MaxAir = math.floor(energy/Reng),math.floor(water/Rwat),math.floor(oxygen/Rair)
 	
-	local MaxCharge = MaxEng
-	if MaxCharge>MaxWat then MaxCharge = MaxWat end
-	if MaxCharge>MaxAir then MaxCharge = MaxAir end
-	
-	if ( Res_needed < MaxCharge ) then
-		self:ConsumeResource("energy", Res_needed/Reng)
-		self:ConsumeResource("water", Res_needed/Rwat)
-		self:ConsumeResource("oxygen", Res_needed/Rair)
+	local NedEng,NedWat,NedAir = math.floor(Res_needed/Reng), math.floor(Res_needed/Rwat), math.floor(Res_needed/Rair)
+	local MaxEng,MaxWat,MaxAir = math.floor(energy/NedEng),math.floor(water/NedWat),math.floor(oxygen/NedAir)
+
+	if MaxEng>=1 and MaxWat>=1 and MaxAir>=1 then
+		self:ConsumeResource("energy", NedEng)
+		self:ConsumeResource("water", NedWat)
+		self:ConsumeResource("oxygen", NedAir)
 		
 		caller.suit.energy = SuitDat.maxenergy
-	elseif (Res_needed > MaxCharge) then
-		caller.suit.energy = caller.suit.energy + math.floor(MaxCharge * Multiplier)
-		self:ConsumeResource("energy", energy)
-		self:ConsumeResource("water", water)
-		self:ConsumeResource("oxygen", oxygen)
+	else
+		local MaxChr = MaxEng
+		if MaxChr>MaxWat then MaxChr=MaxWat end
+		if MaxChr>MaxAir then MaxChr=MaxAir end
+		
+		self:ConsumeResource("energy", NedEng*MaxChr)
+		self:ConsumeResource("water", NedWat*MaxChr)
+		self:ConsumeResource("oxygen", NedAir*MaxChr)
+		
+		caller.suit.energy = caller.suit.energy + math.floor(MaxChr * Multiplier)
 	end
 	
 	local fuel_needed = math.ceil(((SuitDat.maxfuel) - caller.suit.fuel) * Divider)
@@ -90,6 +91,5 @@ function ENT:SetActive( value, caller )
 	end
 	
 	caller:EmitSound( "ambient.steam01" )
-	local temp = function() quiet_steam(caller) end
-	timer.Simple(3, temp) 
+	timer.Simple(1.2, function() quiet_steam(caller) end) 
 end
