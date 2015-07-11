@@ -134,17 +134,6 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping
 	end
 end
 
-function Environments.Create_Beam(ent, localpos, forward, mat, color)
-	ent:SetNWVector("CableForward", forward)
-	ent:SetNWVector("CablePos", localpos)
-	ent:SetNWString("CableMat",  mat)
-	if color then
-		ent:SetNWVector("CableColor", Vector(color.r or 255, color.g or 255, color.b or 255))
-	else
-		ent:SetNWVector("CableColor", Vector(255,255,255,255))
-	end
-end
-
 if SERVER then
 	function Environments.RDPlayerUpdate(ply)
 		print("Ply Joined! Syncing!")
