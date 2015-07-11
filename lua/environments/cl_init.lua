@@ -204,13 +204,13 @@ EnvX.Utl:HookNet("EnvX_NodeSyncResource",function(Data)
 end)
 
 EnvX.Utl:HookNet("EnvX_SetEntNode",function(Data)
-	--print("SetNode!")
+	print("SetNode!")
 	for nodeId, nodelinks in pairs(Data.Nodes) do
 		local node = Entity(nodeId)
-		--print(tostring(node))
+		print(tostring(node))
 		for _, entId in pairs(nodelinks) do
 			local ent = Entity(entId)
-			--print(tostring(ent))
+			print(tostring(ent))
 			if IsValid(ent) then
 				local node = Entity(nodeId)
 				if nodeId == 0 then node = NULL end
