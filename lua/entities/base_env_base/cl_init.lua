@@ -75,7 +75,7 @@ function ENT:LoopResInfo(Info,Res)
 			local network = Environments.GetEntTable(self:EntIndex()).network
 			
 			if network ~= 0 then
-				node = Entity(node)
+				node = Entity(network)
 				
 				if node and IsValid(node) then
 					self.node = node
