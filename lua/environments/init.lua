@@ -147,6 +147,7 @@ end
 
 if SERVER then
 	function Environments.RDPlayerUpdate(ply)
+		print("Ply Joined! Syncing!")
 		local Nodes = {}
 		
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do
@@ -164,8 +165,8 @@ if SERVER then
 			NDat.AddData({Name="EnvX_SetEntNode",Val=5,Dat={Nodes=Nodes}},ply)
 		end
 	end
-	hook.Add("PlayerInitialSpawn", "EnvRDPlayerUpdate", Environments.RDPlayerUpdate)
-	
+	Utl:HookHook("PlayerInitialSpawn","EnvSyncPlayerJoin",function(ply) timer.Simple(5,Environments.RDPlayerUpdate(ply)) end,1)
+
 	function Environments.ZapMe(pos, magnitude)
 		if not (pos and magnitude) then return end
 		zap = ents.Create("point_tesla")
