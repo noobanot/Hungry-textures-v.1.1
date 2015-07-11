@@ -71,7 +71,7 @@ EnvX.Utl:HookNet("EnvX_NodeSync",function(Data)
 	
 	local ResourceMaxs = Data.ResourceMaxs
 	for index, res in pairs(ResourceMaxs) do
-		net.maxresources[res.name]=res.value
+		net.maxresources[index]=res
 	end
 end)
 
