@@ -1,18 +1,18 @@
+AddCSLuaFile()
 
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "base_env_base"
 
-ENT.PrintName	= "Environments Systems Core"
-ENT.Author		= "CmdrMatthew"
-ENT.Purpose		= "Base for all RD Sents"
+ENT.PrintName	= "Environments Entity Core"
+ENT.Author		= "CmdrMatthew,Ludsoe"
+ENT.Purpose		= "Base for all RD Entities"
 ENT.Instructions	= ""
 
 ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
-
+ENT.NodeOver = true
 
 if(SERVER)then
-	
 	local T = {} --Create a empty Table
 	
 	T.Power = function(Device,ply,Data)
@@ -30,9 +30,9 @@ if(SERVER)then
 	end
 	
 	ENT.Panel=T --Set our panel functions to the table.
-	
-else 
-	
+else
+	ENT.RenderGroup = RENDERGROUP_BOTH
+
 	function ENT:PanelFunc(um,e,entID)
 	
 		e.Functions={}
@@ -74,7 +74,4 @@ else
 		--if(not ValidEntity(e)) then return end;
 	end
 	usermessage.Hook("EnvODMenu", envDeviceTrigger)
-end
-
-
-
+end		

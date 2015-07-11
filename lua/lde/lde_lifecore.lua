@@ -3,8 +3,8 @@ LDE.LifeSupport = {}
 //Needed resource check
 LDE.LifeSupport.HasNeeded = function(self, List)
 	for I,b in pairs(List) do  
-		if(self:GetResourceAmount(b)<self.Data.InUse[I]*self:GetSizeMultiplier())then
-			if(self.TurnOff)then
+		if self:GetResourceAmount(b)<((self.Data.InUse[I]*self:GetSizeMultiplier())*self:GetMultiplier())then
+			if self.TurnOff then
 				self:TurnOff()
 			end
 			return false
@@ -15,9 +15,9 @@ end
 
 //Maxed Resource check
 LDE.LifeSupport.MaxedResources = function(self,List)
-	if(not List)then return false end
+	if not List then return false end
 	for I,b in pairs(List) do
-		if(self:GetResourceAmount(b)>=self:GetNetworkCapacity(b))then
+		if self:GetResourceAmount(b)>=self:GetNetworkCapacity(b) then
 			return true --Whoa stop the line we have too much junk
 		end
 	end
@@ -27,14 +27,14 @@ end
 //Use Resource loop
 LDE.LifeSupport.UseResources = function(self, List)
 	for I,b in pairs(List) do
-		self:ConsumeResource(b, self.Data.InUse[I]*self:GetSizeMultiplier())
+		self:ConsumeResource(b, (self.Data.InUse[I]*self:GetSizeMultiplier())*self:GetMultiplier())
 	end
 end
 
 //Make Resource loop
 LDE.LifeSupport.MakeResources = function(self, List)
 	for I,b in pairs(List) do
-		self:SupplyResource(b, self.Data.OutMake[I]*self:GetSizeMultiplier())
+		self:SupplyResource(b, (self.Data.InUse[I]*self:GetSizeMultiplier())*self:GetMultiplier())
 	end
 end
 
@@ -44,12 +44,12 @@ LDE.LifeSupport.ManageResources = function(self,Override)
 		if(LDE.LifeSupport.MaxedResources(self,self.Data.Out) and not Override)then return end --Dont run the device if were maxed out.
 		if(self.Data.In)then --Check if we have required resources.
 			for I,b in pairs(self.Data.In) do --For all the required resources...
-				self:ConsumeResource(b, self.Data.InUse[I]*self:GetSizeMultiplier()) --Nom dem.
+				self:ConsumeResource(b, (self.Data.InUse[I]*self:GetSizeMultiplier())*self:GetMultiplier()) --Nom dem.
 			end
 		end
 		if(self.Data.Out)then --Check if we make stuff.
 			for I,b in pairs(self.Data.Out) do --For all the outputed resources
-				self:SupplyResource(b, self.Data.OutMake[I]*self:GetSizeMultiplier())--Pump dat shit out
+				self:SupplyResource(b, (self.Data.InUse[I]*self:GetSizeMultiplier())*self:GetMultiplier())--Pump dat shit out
 			end
 		end
 		return true --Everything went perfectly...

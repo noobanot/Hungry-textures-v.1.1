@@ -1,6 +1,6 @@
 
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "base_env_base"
 
 ENT.PrintName	= "Resource Node"
 ENT.Author		= "CmdrMatthew"

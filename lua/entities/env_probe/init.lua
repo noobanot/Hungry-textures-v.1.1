@@ -61,16 +61,6 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
-function ENT:Damage()
-	if (self.damaged == 0) then self.damaged = 1 end
-end
-
-function ENT:Repair()
-	self.BaseClass.Repair(self)
-	self:SetColor(Color(255, 255, 255, 255))
-	self.damaged = 0
-end
-
 function ENT:Sense()
 	if (self:GetResourceAmount("energy") <= 0) then
 		self:EmitSound( "common/warning.wav" )

@@ -158,3 +158,69 @@ function Environments.GetEntTable(id)
 	end
 	return ent_table[id] or CreateEntTable(id)
 end
+
+EnvX.Utl:HookNet("EnvX_SyncStorage",function(Data)
+	local ent = Data.Ent
+	
+	if not ent or not IsValid(ent) then return end
+	
+	ent.resources = Data.Resources
+	ent.maxresources = Data.ResourceMaxs
+end)
+
+EnvX.Utl:HookNet("EnvX_NodeSync",function(Data)
+	local net = Environments.GetNetTable(Data.Node)
+
+	local Resources = Data.Resources
+	for index, res in pairs(Resources) do
+		net.resources_last[index] = net.resources[index]
+		net.resources[index] = res.value
+		net.last_update[index] = CurTime()
+	end
+	
+	local ResourceMaxs = Data.ResourceMaxs
+	for index, res in pairs(ResourceMaxs) do
+		net.maxresources[index]=res.value
+	end
+end)
+
+EnvX.Utl:HookNet("EnvX_NodeSyncStorage",function(Data)
+	local net = Environments.GetNetTable(Data.Node)
+	
+	local ResourceMaxs = Data.ResourceMaxs
+	for index, res in pairs(ResourceMaxs) do
+		net.maxresources[res.name]=res.value
+	end
+end)
+
+EnvX.Utl:HookNet("EnvX_NodeSyncResource",function(Data)
+	local net = Environments.GetNetTable(Data.Node)
+		
+	local Resources = Data.Resources
+	for i, res in pairs(Resources) do
+		local index = i
+		net.resources_last[index] = net.resources[index]
+		net.resources[index] = res.value
+		net.last_update[index] = CurTime()
+	end
+end)
+
+EnvX.Utl:HookNet("EnvX_SetEntNode",function(Data)
+	--print("SetNode!")
+	for nodeId, nodelinks in pairs(Data.Nodes) do
+		local node = Entity(nodeId)
+		--print(tostring(node))
+		for _, entId in pairs(nodelinks) do
+			local ent = Entity(entId)
+			--print(tostring(ent))
+			if IsValid(ent) then
+				local node = Entity(nodeId)
+				if nodeId == 0 then node = NULL end
+				ent.node = node
+			else
+				local tab = Environments.GetEntTable(entId)
+				tab.network = nodeId	
+			end			
+		end
+	end
+end)

@@ -317,8 +317,16 @@ if(CLIENT)then
 				--Check if the data matchs properly.
 				if table.Count(self.Texts)==table.Count(Data) then
 					for i, n in pairs( Data ) do
-						if self.Texts[i].Type~=n.Type then
+						local ST = self.Texts[i]
+						if ST.Type~=n.Type then
 							DataMisMatch = true
+						else
+							if ST.Text and not IsValid(ST.Text) then
+								DataMisMatch = true
+							end
+							if ST.Progress and not IsValid(ST.Progress) then
+								DataMisMatch = true
+							end							
 						end
 					end
 				else
@@ -326,6 +334,7 @@ if(CLIENT)then
 				end
 				
 				if DataMisMatch then
+					--print("Data MissMatch!")
 					for i, n in pairs( self.Texts ) do
 						if n.Text and IsValid(n.Text) then
 							n.Text:Remove()
@@ -390,8 +399,10 @@ if(CLIENT)then
 							Gui.Progress:SetSize(x-20,30)
 							Gui.Progress:SetFraction(n.Value)
 							
-							local Red = math.Clamp(255 - ((255*2) * n.Value), 0, 255)
-							local Green = math.Clamp(-255 + ((255*2) * n.Value), 0, 255)
+							local V = math.Clamp(n.Value,0.001,1)
+							
+							local Red = math.Clamp(255 - ((255*2) * V), 0, 255)
+							local Green = math.Clamp(-255 + ((255*2) * V), 0, 255)
 							local Blue = math.Clamp(255 - Red*2 - Green*2, 0, 255)
 							
 							local Col = Color(Red,Green,Blue,255)

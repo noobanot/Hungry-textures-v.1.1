@@ -12,9 +12,8 @@ function ApplyTemperatureEffect(Ent)
 	if Ent.LDE.Temperature>toocold and not Ent.LDE.IsFroze then
 		--Msg("not Frozen")
 		if Ent.LDE.Temperature>=toohot and not Ent:IsOnFire() and waterlevel==0 then
-			Ent:Ignite(1000,100)
+			--Add swanky new overheat effect
 		elseif Ent.LDE.Temperature<toohot or waterlevel>0 then
-			Ent:Extinguish()	
 			if waterlevel>0 then
 				local vOffset = Ent:GetPos()
 				local vNormal = (vOffset - Ent:GetPos()):GetNormalized()
@@ -52,7 +51,7 @@ end
 
 function LDE.HeatSim.HeatDamage(Ent)
 	if not LDE.CanHeat(Ent) then return end
-	if Ent.IsCore or string.find(Ent:GetClass(),"wire") or Ent:IsPlayer() or Ent:IsNPC() then return end
+	if Ent.IsCore or Ent:IsPlayer() or Ent:IsNPC() then return end
 	
 	--Only run heat damage so many times a second (This prevents pulse lasers getting OP)
 	if(not Ent.LastHeat)then 
@@ -67,7 +66,7 @@ function LDE.HeatSim.HeatDamage(Ent)
 	
 	local damage = Ent.LDE.Temperature-Ent.LDE.MeltingPoint
 	--print("Dealing "..damage.." damage.")
-	Ent:Ignite(2,100)
+	--Ent:Ignite(2,100)
 	LDE:DealDamage(Ent,damage,Ent,Ent,true)		--Use the damage systems damage function.
 end
 
@@ -79,12 +78,6 @@ function LDE.HeatSim.ManageBurning()
 		else
 			--print("Ent is no longer valid/burning")
 			table.remove( LDE.HeatSim.Burning, id )
-			
-			if IsValid(ent) then
-				if ent:IsOnFire() then
-					ent:Extinguish()
-				end
-			end
 		end
 	end
 end
@@ -132,13 +125,10 @@ function LDE.HeatSim.ApplyHeat(Ent,Amount)
 	if Ent.LDE.Temperature then
 		if Ent.LDE.Core and IsValid(Ent.LDE.Core)then
 			
-			HotEnt = Ent
-			Ent = Ent.LDE.Core
-
-			LDE.HeatSim.SetTemperature(HotEnt,0)
-			Ent:ChangeTemp(Amount)
+			LDE.HeatSim.SetTemperature(Ent,0)
+			Ent.LDE.Core:ChangeTemp(Amount)
 			
-			WireLib.TriggerOutput( Ent, "Temperature", Ent.LDE.CoreTemp)	
+			WireLib.TriggerOutput( Ent.LDE.Core, "Temperature", Ent.LDE.Core.LDE.CoreTemp)	
 		else
 			LDE.HeatSim.SetTemperature(Ent,Amount)
 		end

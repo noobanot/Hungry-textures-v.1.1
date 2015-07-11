@@ -11,7 +11,6 @@ local EnvX = EnvX --Localise the global table for speed.
 local Utl = EnvX.Utl --Makes it easier to read the code.
 local NDat = Utl.NetMan --Ease link to the netdata table.
 	
-
 function ENT:Initialize()
 	//self.BaseClass.Initialize(self) --use this in all ents
 	self:PhysicsInit( SOLID_VPHYSICS )
@@ -26,12 +25,8 @@ function ENT:Initialize()
 	self:Think()
 end
 
-function ENT:TriggerInput(iname, value)
-	
-end
-
 function ENT:Link(ent, delay)
-	if ent == self then return end
+	if ent == self or ent.IsNode then return end
 	
 	self.connected[ent:EntIndex()] = ent
 	if ent.maxresources then
@@ -94,11 +89,6 @@ function ENT:Unlink(ent)
 	end
 end
 
-function ENT:Repair()
-	self:SetHealth( self:GetMaxHealth())
-	self:SetColor(Color(255,255,255,255))
-end
-
 function ENT:LinkCheck()
 	local curpos = self:GetPos()
 	for k,v in pairs(self.connected) do
@@ -154,6 +144,7 @@ function ENT:DoUpdate(res1, res2, ply) --todo make cheaper
 		end
 	end
 	
+	--Because we didnt sync anything before, assume its a request to update ALL the data
 	if not R1 and not R2 then
 		local Sync = {}
 		for k,v in pairs(self.resources) do
@@ -217,7 +208,7 @@ end
 function ENT:OnRemove()	
 	if self.connected then
 		for k,v in pairs(self.connected) do
-			if v and v:IsValid() then
+			if v and IsValid(v) then
 				v:Unlink()
 			end
 		end
@@ -231,29 +222,3 @@ function ENT:GetResourceAmount(resource)
 	end
 	return 0
 end
-
-function ENT:OnRestore()
-	//self.BaseClass.OnRestore(self) --use this if you have to use OnRestore
-	if WireAddon then Wire_Restored(self) end
-end
-
-function ENT:PreEntityCopy()
-	//self.BaseClass.PreEntityCopy(self) --use this if you have to use PreEntityCopy
-	Environments.BuildDupeInfo(self)
-	if WireAddon then
-		local DupeInfo = WireLib.BuildDupeInfo(self)
-		if DupeInfo then
-			duplicator.StoreEntityModifier( self, "WireDupeInfo", DupeInfo )
-		end
-	end
-end
-
-function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
-	//self.BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities ) --use this if you have to use PostEntityPaste
-	Environments.ApplyDupeInfo(Ent, CreatedEntities)
-	if WireAddon and Ent.EntityMods and Ent.EntityMods.WireDupeInfo then
-		WireLib.ApplyDupeInfo(Player, Ent, Ent.EntityMods.WireDupeInfo, function(id) return CreatedEntities[id] end)
-	end
-end
-
-duplicator.RegisterEntityClass("resource_node_env", Environments.DupeFix, "Data" )
