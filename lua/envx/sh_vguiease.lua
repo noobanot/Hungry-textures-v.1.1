@@ -3,7 +3,7 @@ Jupiter Menu Core -Provides a modular menu system.
 ----------------------------------------------------]]--
 
 local EnvX = EnvX --Localise the global table for speed.
-EnvX.MenuCore = {}
+EnvX.MenuCore = EnvX.MenuCore or {}
 
 local MC = EnvX.MenuCore
 
@@ -226,6 +226,13 @@ if(CLIENT)then
 			end
 		return Derma
 	end	
+			
+	function MC.LoadWebpage(Parent,Size,Link)
+		local Derma = vgui.Create("HTML",Parent)
+		Derma:SetSize(Size.x, Size.y)
+		Derma:OpenURL(Link)
+		return Derma		
+	end
 	
 	function MC.CreateButton(Parent,Size,Spot,Text,OnClick)
 		local Derma = vgui.Create( "DButton", Parent )
@@ -233,22 +240,43 @@ if(CLIENT)then
 			Derma:SetSize( Size.x, Size.y )
 			Derma:SetText( Text or "" )
 			Derma.DoClick = OnClick or function() end
+			Derma:SetColor(EnvX.GuiThemeColor.Text)
+			
+			function Derma:SetBGColor(Col) self.RenderColor = Col end Derma:SetBGColor(EnvX.GuiThemeColor.FG)
+			function Derma:SetGradientColor(Col) self.RenderGradientColor = Col end Derma:SetGradientColor(EnvX.GuiThemeColor.GC)
+			function Derma:SetGradientColorOver(Col) self.RenderGradientColorOver = Col end Derma:SetGradientColorOver(EnvX.GuiThemeColor.GHO)
+
+			Derma.Paint = function( self, w, h )
+				draw.RoundedBox( 6, 0, 0, w, h, self.RenderColor )
+
+				--Draw an texture gradient
+				local GC = self.RenderGradientColor
+				if self.Hovered then GC = self.RenderGradientColorOver end
+				if GC.a>0 then
+					surface.SetTexture( EnvX.GradientTex )
+					surface.SetDrawColor( GC.r, GC.g, GC.b, GC.a )
+					surface.DrawTexturedRect( 0, 0, w, h )
+				end		
+			end
 		return Derma
 	end
 	
-	function MC.LoadWebpage(Parent,Size,Link)
-		local label = vgui.Create("HTML",Parent)
-		label:SetSize(Size.x, Size.y)
-		label:OpenURL(Link)
-		return label		
+	function MC.CreateSlider(Parent,Spot,Values,Width)
+		local Derma = vgui.Create( "DNumSlider", Parent )
+			Derma:SetMinMax( Values.Min, Values.Max )
+			Derma:SetDecimals( Values.Dec )
+			Derma:SetWide( Width )
+			Derma:SetPos( Spot.x, Spot.y )
+		return Derma
 	end
 	
-	function MC.LoadHtml(Parent,Text)
-		EnvX.Debug("Opening Url: "..Text,3,"MenuCore")
-		local label = vgui.Create("HTML",Parent)
-		label:SetSize(800, 200)
-		label:OpenURL(Text)
-		return label
+	function MC.CreateCheckbox(Parent,Spot,Text)
+		local Derma = vgui.Create( "DCheckBoxLabel", Parent )
+		Derma:SetPos( Spot.x, Spot.y )
+		Derma:SetText( Text )
+		Derma:SetValue( 0 )
+		Derma:SizeToContents() -- Make its size to the contents. Duh?
+		return Derma
 	end
 	
 	---------------------------------------------------------------

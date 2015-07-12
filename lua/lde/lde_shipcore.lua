@@ -44,42 +44,62 @@ LDE.CoreSys.Radiate = function(self,Data)
 	end
 end
 
+local ShipClasses = {
+	"Heavy - Fighter / Bomber / Interceptor",
+	"Corvette",
+	"Frigate",
+	"Heavy Frigate",
+	"Destroyer",
+	"Cruiser",
+	"Battle-Cruiser",
+	"Battleship",
+	"Dreadnaught",
+	"Super Battleship",
+	"Class 1 Leviathon",
+	"Class 2 Leviathon",
+	"Class 3 Leviathon",
+	"Class 1 Titan",
+	"Class 2 Titan",
+	"Battle-Barge",
+	"Super Dreadnaught",
+	"Leviathon Destroyer",
+	"Mega Titan",
+	"Super Leviathon",
+	"Titan Destroyer",
+	"Eversor Regalis",
+	"That's No Moon!",
+	"Mecha Planet",
+	"Galactic Vengeance",
+	"HOLY FUCKING JESUS"
+}
+
+/*
+for i, cls in pairs( ShipClasses ) do
+	local Scale = 50000*(i*((i/5)+(i/10)))
+	print("Class: "..cls.." V: "..Scale) 
+end
+*/
 LDE.CoreSys.CoreClass = function(self)
 	local T = self.LDE.CoreMaxShield+self.LDE.CoreMaxHealth
 	self.LDE.TotalHealth = T
-	local Classification = ""
-    if(T<20000)then Classification="Fighter / Bomber / Interceptor"
-		elseif(T<40000) then Classification="Heavy - Fighter / Bomber / Interceptor"
-		elseif(T<60000) then Classification="Corvette"
-		elseif(T<85000) then Classification="Frigate"
-		elseif(T<100000) then Classification="Heavy Frigate"
-		elseif(T<150000) then Classification="Destroyer"
-		elseif(T<200000) then Classification="Cruiser"
-		elseif(T<300000) then Classification="Battle-Cruiser"
-		elseif(T<400000) then Classification="Battleship"
-		elseif(T<500000) then Classification="Dreadnaught"
-		elseif(T<600000) then Classification="Super Battleship"
-		elseif(T<700000) then Classification="Class 1 Leviathon"
-		elseif(T<800000) then Classification="Class 2 Leviathon"
-		elseif(T<900000) then Classification="Class 3 Leviathon"
-		elseif(T<1000000) then Classification="Class 1 Titan"
-		elseif(T<2000000) then Classification="Class 2 Titan"
-		elseif(T<3000000) then Classification="Battle-Barge"
-		elseif(T<4000000) then Classification="Super Dreadnaught"
-		elseif(T<5000000) then Classification="Leviathon Destroyer"
-		elseif(T<6000000) then Classification="Mega Titan"
-		elseif(T<7500000) then Classification="Super Leviathon"
-		elseif(T<8500000) then Classification="Titan Destroyer"
-		elseif(T<10000000)then Classification="Eversor Regalis"
-		else Classification="HOLY FUCKING JESUS"
+	local Classification = "Fighter / Bomber / Interceptor"
+	
+	for i, cls in pairs( ShipClasses ) do
+		local Scale = 50000*(i*((i/5)+(i/10)))
+		if T > Scale then
+			Classification = cls
+		else
+			break
+		end
 	end
+
 	self.ShipClass = Classification
 	self:SetNWInt("LDECoreClass", Classification)
 end
 
 LDE.CoreSys.CoreHealth = function(self,Data)
 	-- Get all constrained props
-	self.Props = constraint.GetAllWeldedEntities(self.Entity)
+	self.Props = constraint.ShipCoreDetect(self.Entity)
 				
 	-- Loop through all props
 	local hp = self.LDE.CoreHealth
@@ -91,13 +111,11 @@ LDE.CoreSys.CoreHealth = function(self,Data)
 	local temp = 0
 	local CPS = 0
 	for _, ent in pairs( self.Props ) do
-		if (ent and LDE:CheckValid( ent ) )then
-			if (!ent.LDE) then ent.LDE = {} end
-			
-			LDE.HeatSim.SetTemperature(ent,0)
+		if ent and LDE:CheckValid( ent ) then
+			if not ent.LDE then ent.LDE = {} end
 
-			if(!self.PropHealth)then self.PropHealth={} end --Make sure we have the prop health table.		
-			if (!ent.LDEHealth or !ent.LDEMaxMass) then LDE:CalcHealth( ent ) end
+			if not self.PropHealth then self.PropHealth={} end --Make sure we have the prop health table.		
+			if not ent.LDEHealth or not ent.LDEMaxMass then LDE:CalcHealth( ent ) end
 			local entcore = ent.LDE.Core
 			local capacity = ent.LDE.HeatCapacity or 0
 			local maxheat = ent.LDE.MeltingPoint or 0
@@ -110,11 +128,13 @@ LDE.CoreSys.CoreHealth = function(self,Data)
 			local entshield = (Calcedhealth)*Data.ShieldRate
 			local entpoints = Calcedhealth*Data.CPSRate
 			
+			LDE.HeatSim.SetTemperature(ent,0)
+			
 			if string.find(ent:GetClass(),"spore") then 
 				continue
 				--health,enthealth,entshield,entpoints=0,0,0,0  --Spores dont get any treatment
 			else
-				if (!entcore or !entcore:IsValid()) then -- if the entity has no core
+				if not entcore or not IsValid(entcore) then -- if the entity has no core
 					ent.LDE.Core = self
 					ent.Shield = self --Environments Damage Override Compatability
 					self.PropHealth[ent:EntIndex()] = enthealth
@@ -145,7 +165,6 @@ LDE.CoreSys.CoreHealth = function(self,Data)
 	self.LDE.CoreTemp = self.LDE.CoreTemp+temp
 	self.LDE.CoreMaxTemp = meltp*Data.TempResist
 	self.LDE.CoreMinTemp =  freezep*Data.TempResist
-	self.LDE.SDTime = table.Count(self.Props)
 	self.LDE.MaxCorePoints=CPS
 	
 	if (self.LDE.CoreHealth > self.LDE.CoreMaxHealth) then 
@@ -166,14 +185,14 @@ LDE.CoreSys.CoreHealth = function(self,Data)
 end
 
 LDE.CoreSys.CoreModels = {
-"models/props_wasteland/panel_leverBase001a.mdl",
-"models/Slyfo_2/miscequipmentfieldgen.mdl",
-"models/Cerus/Modbridge/Misc/LS/ls_gen11a.mdl",
-"models/SmallBridge/Life Support/sbfusiongen.mdl",
-"models/Slyfo_2/rocketpod_bigrockethalf.mdl",
-"models/Slyfo_2/miscequipmentmount.mdl",
-"models/props_lab/reciever01b.mdl",
-"models/SBEP_community/d12shieldemitter.mdl"
+	"models/props_wasteland/panel_leverBase001a.mdl",
+	"models/Slyfo_2/miscequipmentfieldgen.mdl",
+	"models/Cerus/Modbridge/Misc/LS/ls_gen11a.mdl",
+	"models/SmallBridge/Life Support/sbfusiongen.mdl",
+	"models/Slyfo_2/rocketpod_bigrockethalf.mdl",
+	"models/Slyfo_2/miscequipmentmount.mdl",
+	"models/props_lab/reciever01b.mdl",
+	"models/SBEP_community/d12shieldemitter.mdl"
 }
 
 //Base Device Code we will inject the functions into.
@@ -190,6 +209,7 @@ function LDE.CoreSys.RegisterCore(Data)
 	ENT.Data = Data
 	ENT.IsLDEC = 1
 	ENT.IsCore = true
+	ENT.NoEnvPanel = true
 	
 	if SERVER then
 		function ENT:Initialize()   
@@ -205,8 +225,8 @@ function LDE.CoreSys.RegisterCore(Data)
 			self.Inputs = Wire_CreateInputs(self, { "SelfDestruct","Vent Shields","UnLink All" })
 			
 			--Setup all of our variables.
-			self.OverHeating= 0 self.Thinkz= 0 self.Dtime= 0
-			self.LDE = {CorePoints=0,MaxCorePoints=1,CoreHealth=1,CoreMaxHealth=1,CoreShield=0,CoreMaxShield=0,TotalHealth=1,CanRecharge=1,Flashing=1,CoreTemp=0,CoreMinTemp=-1,CoreMaxTemp=1,SDTime=1,DeathSeq=false,Core=self}
+			self.OverHeating= 0 self.Thinkz= 0
+			self.LDE = {CorePoints=0,MaxCorePoints=1,CoreHealth=1,CoreMaxHealth=1,CoreShield=0,CoreMaxShield=0,TotalHealth=1,CanRecharge=1,Flashing=1,CoreTemp=0,CoreMinTemp=-1,CoreMaxTemp=1,DeathSeq=false,Core=self}
 			self.Props ={} self.Weapons ={} self.CoreLinked ={} self.PropHealth ={} self.Shielded ={} 
 			self.ShipClass = "Calculating"
 			
@@ -224,7 +244,7 @@ function LDE.CoreSys.RegisterCore(Data)
 			WireLib.TriggerOutput( self, "Temperature", self.LDE.CoreTemp)
 			WireLib.TriggerOutput( self, "Freezing Point", self.LDE.CoreMinTemp or 0 )
 			WireLib.TriggerOutput( self, "Melting Point", self.LDE.CoreMaxTemp or 0 )	
-			WireLib.TriggerOutput( self, "Mount Points", self.LDE.CorePoints or 0 )	
+			WireLib.TriggerOutput( self, "Mount Points", self.LDE.CorePoints or 0 )
 			WireLib.TriggerOutput( self, "Mount Capacity", self.LDE.MaxCorePoints or 0 )
 			
 			self:SetNWInt("LDECoreType", self.Data.name)
@@ -240,7 +260,7 @@ function LDE.CoreSys.RegisterCore(Data)
 
 		function ENT:ClearProp( Entity )
 			for key, ent in pairs( self.Props ) do
-				if (Entity == ent) then
+				if Entity == ent then
 					table.remove( self.Props, key )
 					self.Prophealth[ent:EntIndex()] = nil
 					return --Stop the loop there.
@@ -265,7 +285,7 @@ function LDE.CoreSys.RegisterCore(Data)
 
 		function ENT:CoreUnLink( Entity )
 			for key, ent in pairs( self.CoreLinked ) do
-				if (Entity == ent) then
+				if Entity == ent then
 					table.remove( self.CoreLinked, key )
 					Entity.LDE.Core = nil
 					if Entity.IsLDEWeapon or Entity.PointCost then
@@ -285,9 +305,9 @@ function LDE.CoreSys.RegisterCore(Data)
 		end
 		
 		function ENT:UnLinkAll()
-			if(not self.CoreLinked)then return end
+			if not self.CoreLinked then return end
 			for _, ent in pairs( self.CoreLinked ) do
-				if(ent and ent:IsValid())then
+				if ent and IsValid(ent) then
 					ent.LDE.Core = nil
 					ent.Shield = nil
 				end
@@ -298,7 +318,6 @@ function LDE.CoreSys.RegisterCore(Data)
 		function ENT:TriggerInput(iname, value)
 			if (iname == "SelfDestruct") then
 				if (value > 0) then
-					self.Dtime = CurTime() + (self.LDE.SDTime/10)
 					self.LDE.DeathSeq = true
 				else
 					self.LDE.DeathSeq = false
@@ -327,7 +346,7 @@ function LDE.CoreSys.RegisterCore(Data)
 				self.LDE.CorePoints = self.LDE.MaxCorePoints --Set the points to max.
 				
 				for key, ent in pairs( self.Weapons ) do
-					if(ent and ent:IsValid())then
+					if ent and IsValid(ent) then
 						if ent.PointCost <= self.LDE.CorePoints then
 							self.LDE.CorePoints=self.LDE.CorePoints-ent.PointCost
 							ent.HasPoints=true
@@ -345,23 +364,12 @@ function LDE.CoreSys.RegisterCore(Data)
 								
 				LDE.CoreSys.CoreClass(self)
 			end
-			
-			--print("Thinking T: "..self.LDE.CoreTemp.." MXT: ".. self.LDE.CoreMaxTemp.." MNT: "..self.LDE.CoreMinTemp)
-			
-			if (self.LDE.CoreTemp >= self.LDE.CoreMaxTemp) then 
+						
+			if (self.LDE.CoreTemp > self.LDE.CoreMaxTemp) then 
 				self.OverHeating=1
-				self:ignitels()
 				LDE:DealDamage(self, math.abs(self.LDE.CoreTemp-self.LDE.CoreMaxTemp)*3, self, self,true)
 			else
 				self.OverHeating=0
-				self:extinguishall()
-				if(self.LDE.CoreTemp<=self.LDE.CoreMinTemp)then
-					self:freezels()
-					--print("Frozen")
-				else
-					--print("Thawn")
-					self:thawls()
-				end
 			end
 				
 			local Networked = {
@@ -379,7 +387,7 @@ function LDE.CoreSys.RegisterCore(Data)
 			-- Set NW ints
 			for DV, NW in pairs(Networked) do
 				local hp = self:GetNWInt(NW)
-				if (!hp or hp != self.LDE[DV]) then
+				if not hp or hp ~= self.LDE[DV] then
 					--   print("Synced "..NW.." as "..DV.." for "..self.LDE[DV])
 					self:SetNWInt(NW, self.LDE[DV])
 				end				
@@ -398,64 +406,6 @@ function LDE.CoreSys.RegisterCore(Data)
 			if(Amount==0)then return end
 			self.LDE.CoreTemp=self.LDE.CoreTemp+Amount
 			WireLib.TriggerOutput( self, "Temperature", self.LDE.CoreTemp)
-		end
-
-		function ENT:ignitels()
-			if(not self.OnFire)then
-				self.OnFire=true
-				for _, ent in pairs( self.CoreLinked ) do
-					if(ent.IsLS)then
-						local waterlevel = ent:WaterLevel() or 0
-						if(!ent:IsOnFire() and waterlevel==0) then
-							ent:Ignite(1000,100)
-						elseif(waterlevel>0) then
-							ent:Extinguish()
-						end
-					end
-				end
-			end
-		end
-		
-		function ENT:freezels()
-			if(not self.IsFroze)then
-				self.IsFroze=true
-				for _, ent in pairs( self.CoreLinked ) do
-					--if(ent.IsLS)then
-						ent.LDE.IsFroze=true
-					--end
-				end
-			end
-		end
-		
-		function ENT:thawls()
-			if(self.IsFroze)then
-				self.IsFroze=false
-				for _, ent in pairs( self.CoreLinked ) do
-					--if(ent.IsLS)then
-						ent.LDE.IsFroze=false
-					--end
-				end
-			end
-		end
-		
-		function ENT:extinguishall()
-			if(self.OnFire)then
-				self.OnFire=false
-				for _, ent in pairs( self.Props ) do
-					ent:Extinguish()
-				end
-			end
-		end
-
-		function ENT:RemoveAllProps()
-			for _, ent in pairs( self.Props ) do
-				local effectdata = EffectData()
-				effectdata:SetOrigin( ent:GetPos() )
-				effectdata:SetScale( (ent:OBBMaxs() - ent:OBBMins()):Length() )
-				util.Effect( "LDE_deatheffect", effectdata )
-				ent:Remove()
-			end
-			self:Remove()
 		end
 
 		function ENT:BuildDupeInfo()

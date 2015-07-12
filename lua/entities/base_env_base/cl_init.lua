@@ -59,6 +59,10 @@ function ENT:GetStatusInfo(Info) --Entities overwrite this to show stuff above r
 	return false 
 end 
 
+function ENT:GetPreResInfo(Info) --Entities overwrite this to show stuff above resources.
+	return false
+end
+
 function ENT:LoopResInfo(Info,Res)
 	local Data = EnvX.Resources.Data
 	local RNames = EnvX.Resources.Names
@@ -174,6 +178,7 @@ function ENT:DoNormalDraw()
 			table.insert(Info,{Type="Label",Value=""})
 			
 			if self:GetStatusInfo(Info) then table.insert(Info,{Type="Label",Value=""}) end
+			if self:GetPreResInfo(Info) then table.insert(Info,{Type="Label",Value=""}) end
 			if self:GetResInfo(Info) then table.insert(Info,{Type="Label",Value=""}) end	
 			if self:ExtraData(Info) then table.insert(Info,{Type="Label",Value=""}) end
 			

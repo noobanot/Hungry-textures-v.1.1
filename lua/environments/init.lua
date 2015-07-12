@@ -119,13 +119,6 @@ function Environments.ApplyDupeInfo( ent, CreatedEntities, Player ) --add duping
 			
 			ent.env_extra = DupeInfo.extra
 			
-			local mat = DupeInfo.LinkMat
-			local pos = DupeInfo.LinkPos
-			local forward = DupeInfo.LinkForw
-			local color = DupeInfo.LinkColor
-			if mat and pos and forward then
-				Environments.Create_Beam(ent, pos, forward, mat, color) --make work
-			end
 			ent.EntityMods.EnvDupeInfo = nil
 			
 			//set the player/owner
@@ -154,7 +147,7 @@ if SERVER then
 			NDat.AddData({Name="EnvX_SetEntNode",Val=5,Dat={Nodes=Nodes}},ply)
 		end
 	end
-	Utl:HookHook("PlayerInitialSpawn","EnvSyncPlayerJoin",function(ply) timer.Simple(5,Environments.RDPlayerUpdate(ply)) end,1)
+	Utl:HookHook("PlayerInitialSpawn","EnvSyncPlayerJoin",function(ply) timer.Simple(5,function() Environments.RDPlayerUpdate(ply) end) end,1)
 
 	function Environments.ZapMe(pos, magnitude)
 		if not (pos and magnitude) then return end

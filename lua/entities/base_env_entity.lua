@@ -63,7 +63,9 @@ else
 	function envDeviceTrigger(um)
 		entID = um:ReadString()
 		e = um:ReadEntity()
-
+		
+		if not e or not IsValid(e) or not e.PanelFunc then return end
+		
 		e:PanelFunc(um,e,entID)
 		
 		e.Window = vgui.Create( "EnvDeviceGUI")

@@ -124,10 +124,10 @@ local Base = {Tool="Weapon Systems",Type="Beam Lasers"}
 local Client = function(self) return LDE.Weapons.ShowCharge(self,self.Data.Bullet) end --Clientside
 local ClientSetup = function(ENT) ENT.LDETools.Charge = Client end
 local Func = function(self) LDE.Weapons.ManageCharge(self,self.Data.Bullet) return true end --Charge function
+local Fire = function(self) LDE.Weapons.FireLaser(self,self.Data.Bullet) end
 
 --Large Beam
 local Effects = {Beam="LDE_laserbeam_long",Hit="LDE_laserhiteffect"}
-local Fire = function(self) LDE.Weapons.FireLaser(self,self.Data.Bullet) end
 local Bullet = {Damage=60,heat=1,ShootDir=Vector(-1,0,0),Recoil=0,CoolDown=1,ChargeRate=10,MinCharge=80,MaxCharge=120,ChargeShoot=Fire,Effect=Effects}
 local Data={name="Large Beam",class="large_beam_laser_weapon",WireOut={"Charge","CanFire"},In={"energy"},ChargeType=true,shootfunc=Func,ClientSetup=ClientSetup,Points=180,heat=20,firespeed=0.2,InUse={200},Bullet=Bullet,Shot=Shot,MountType="Medium",MAO=Angle(0,180,0),MVO=Vector(50,0,0)}
 local Makeup = {name={"Large Beam"},model={"models/mandrac/laser3.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class,Unlock=true,UnlockCost=20000,UnlockType="Lasers"}
@@ -135,7 +135,6 @@ LDE.Weapons.CompileWeapon(Data,Makeup)
 
 --Small Beam
 local Effects = {Beam="LDE_laserbeam_long",Hit="LDE_laserhiteffect"}
-local Fire = function(self) LDE.Weapons.FireLaser(self,self.Data.Bullet) end
 local Bullet = {Damage=30,heat=1,ShootDir=Vector(1,0,0),Recoil=0,CoolDown=1,ChargeRate=10,MinCharge=80,MaxCharge=120,ChargeShoot=Fire,Effect=Effects}
 local Data={name="Small Beam",class="small_beam_laser_weapon",WireOut={"Charge","CanFire"},In={"energy"},ChargeType=true,shootfunc=Func,ClientSetup=ClientSetup,Points=90,heat=10,firespeed=0.2,InUse={100},Bullet=Bullet,Shot=Shot,MountType="Small"}
 local Makeup = {name={"Small Beam"},model={"models/slyfo_2/mini_turret_flamer.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class,Unlock=true,UnlockCost=5000,UnlockType="Lasers"}

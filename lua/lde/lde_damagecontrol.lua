@@ -712,7 +712,7 @@ function LDE:KillEnt(ent)
 				local total=0
 				for n,i in pairs( ent.resources ) do 
 				//	print("n: "..tostring(n).." i: "..tostring(i))
-					total=total+i
+					total=total+(i or 0)
 					if(i>0)then
 						Resources[n]={}
 						Resources[n].amount=i

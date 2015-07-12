@@ -61,19 +61,15 @@ end
 
 function ENT:AcceptInput(name,activator,caller)
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		if(not self.PanelUser)then
-			umsg.Start("EnvODMenu",caller)
-				umsg.String(self:EntIndex( ))
-				umsg.Entity(self.Entity);
-			umsg.End()
-			
-			self.PanelUser = caller 
-		end
+		umsg.Start("EnvODMenu",caller)
+			umsg.String(self:EntIndex( ))
+			umsg.Entity(self.Entity);
+		umsg.End()
 	end
 end
 
 function ENT:OnRemove()
-	if self.node and self.node:IsValid() then
+	if self.node and IsValid(self.node) then
 		self.node:Unlink(self)
 	end
 	if WireLib then WireLib.Remove(self) end

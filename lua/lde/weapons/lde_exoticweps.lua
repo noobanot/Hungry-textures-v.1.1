@@ -46,15 +46,10 @@ local Intial = function(self)
 	self.Sound = CreateSound( self, Sound("ambient/atmosphere/noise2.wav") )
 
 	self:SetNWFloat( "multiplier", self.multiplier )  --Need this set or in some cases.. like advanced dupes, it can be nil and draw no effect (until the multiplier is changed)
-	self:SetNWBool( "hit_eh", false )
-	self:SetNWBool( "imp_eh", false )
-	self:SetNWEntity( "ent_eh", nil)
-	
-	Msg(tostring(self:GetOwner()).."\n")
 end
 
 local wirefunc = function(self,iname,value)
-	if (iname == "Fire") then
+	if iname == "Fire" then
 		if value == 1 then
 			self.chargetime = CurTime() + 6			
 			self.Active,self.wirefire = 1,true
@@ -93,10 +88,9 @@ local wirefunc = function(self,iname,value)
 	end
 end
 
-local Func = function(self,CanFire) 
+local Func = function(self,CanFire)
 	if self.Active == 1 and CanFire then
-		if(self.wirefire == false)then self.wirefire=true self.chargetime=CurTime()+6 end
-		
+		if self.wirefire == false then self.wirefire=true self.chargetime=CurTime()+6 end
 		self:DoRes(self.multiplier)
 		
 		if self.playedcharge == false and self.energytofire then
@@ -113,8 +107,8 @@ local Func = function(self,CanFire)
 			self:SetNWBool( "charging", false )
 			self.chargetime = CurTime() + 6	
 		end	
-		
-		if	self.energytofire and CurTime() > self.chargetime  then
+				
+		if self.energytofire and CurTime() > self.chargetime  then
 			if self.playedfire == false and self.energytofire then
 				self:EmitSound(Sound("explode_7"))
 				self:EmitSound(Sound( "npc/strider/fire.wav" ))
@@ -149,6 +143,7 @@ local Func = function(self,CanFire)
 		self:WeaponIdle()
 		self:SetNWBool( "charging", false )
 	end
+	
 	self:SetNWFloat( "multiplier", self.multiplier )
 	local energyneedsec = (self.energybase * self.multiplier)*10
 	local damagesec = (self.damagebase * self.multiplier)*10
@@ -173,9 +168,7 @@ local shared = function(ENT)
 			self:StopSound(Sound("explode_7"))
 			self:StopSound(Sound("ambient/atmosphere/noise2.wav"))
 			self:StopSound(Sound( "npc/strider/fire.wav" ))
-			--if self.playedfiring == true then
-				self.Sound:Stop()
-			--end
+			self.Sound:Stop()
 		end
 		
 		function ENT:WeaponFiring()
@@ -191,9 +184,8 @@ local shared = function(ENT)
 			
 			LDE.HeatSim.ApplyHeat(self,(1000*self.multiplier),false)
 			
-			if(tr.Entity and tr.Entity:IsValid())then
+			if tr.Entity and IsValid(tr.Entity) then
 				LDE.AdvDamage:BudderEffect(tr.Entity,(self.damagebase * self.multiplier),10,self,self)
-				--LDE:DealDamage(tr.Entity,(self.damagebase * self.multiplier))
 			end
 		end
 		
@@ -201,7 +193,7 @@ local shared = function(ENT)
 			local energy = self:GetResourceAmount("Plasma")
 			local energyneed = self.energybase * multi
 		   
-			if (energy >= energyneed) then
+			if energy >= energyneed then
 				self.energytofire = true
 				self:ConsumeResource("Plasma",energyneed)
 				return true            
@@ -213,9 +205,6 @@ local shared = function(ENT)
 
 		function ENT:WeaponIdle()
 			self:SetNWBool( "drawbeam", false )
-			self:SetNWBool( "hit_eh", false )
-			self:SetNWBool( "imp_eh", false )
-			self:SetNWEntity( "ent_eh", nil)
 			
 			if self.playedfiring == true then
 				self.Sound:Stop()
@@ -228,15 +217,10 @@ local shared = function(ENT)
 end
 
 local client = function(self)
-	local drawbeam = self:GetNWBool("drawbeam")
-	local charging = self:GetNWBool("charging")
-	local hit_eh = self:GetNWBool("hit_eh")
-	local imp_eh = self:GetNWBool("imp_eh")
-	local ent = self:GetNWEntity("ent_eh")
 	local multi = self:GetNWFloat( "multiplier")
 	local muzzel = self:GetPos() + (self:GetForward() * 147.5) + (self:GetUp() * 9.25) 
 	
-	if charging == true then
+	if self:GetNWBool("charging") then
    		local effectdata = EffectData()
 			effectdata:SetOrigin(muzzel)
 			effectdata:SetMagnitude(multi)
@@ -247,7 +231,7 @@ local client = function(self)
 			effectdata:SetNormal(self:GetForward())
 			util.Effect( "ion_refract", effectdata )
    	end 	
-	if drawbeam == true then
+	if self:GetNWBool("drawbeam") then
 	
 		local trace = {}
 				trace.start = self:GetPos() + (self:GetForward() * 147.5) + (self:GetUp() * 9.25)
@@ -268,13 +252,12 @@ local client = function(self)
 				effectdata:SetMagnitude(multi)
 				effectdata:SetScale(dist)
 				util.Effect( "ion_beam", effectdata )
-		if imp_eh == false then 			
-				util.Effect( "ion_impact", effectdata )		
-		end
+				
+		util.Effect( "ion_impact", effectdata )		
    	end
 end
 
-local Data={name="Hyper Rift Beam",class="hyper_rift_laser_weapon",Client=client,Shared=shared,Intial=Intial,WireFunc=wirefunc,WireSpecial=wire,In={"Plasma"},MountType="Titan",shootfunc=Func,Client=client,Points=3000,heat=0,firespeed=0.1,InUse={0}}
+local Data={name="Hyper Rift Beam",class="hyper_rift_laser_weapon",Client=client,Shared=shared,Intial=Intial,WireFunc=wirefunc,WireSpecial=wire,In={"Plasma"},MountType="Titan",shootfunc=Func,Points=3000,heat=0,firespeed=0.01,InUse={0}}
 local Makeup = {name={"Hyper Rift Beam"},model={"models/Spacebuild/Nova/machuge.mdl"},Tool=Base.Tool,Type=Base.Type,class=Data.class,Unlock=true,UnlockCost=1000000,UnlockType="Exotic"}
 LDE.Weapons.CompileWeapon(Data,Makeup)
 

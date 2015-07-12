@@ -10,27 +10,26 @@ LDE.Cash.Market.Resources = {}
 
 
 LDE.Cash.Resources = {
-energy = {E=true,S=5000000000,C=0.000003,O="energy",name="Energy",desc={"","","Energy is the base form of everything in the universe.","It is used to power nearly everything.","",""}},
-water = {E=true,S=3000000000,C=0.000005,O="water",name="Water",desc={"","","Water is a combination of an Oxygen molecule and 2 Hydrogen.","It is used for cooling, or split in to H and O2.","",""}},
-oxygen = {E=true,S=5000000000,C=0.000006,O="oxygen",name="Oxygen",desc={"","","Oxygen is a requirement for habitation. You breathe it,","and your muscles use it for power.","",""}},
-hydrogen = {E=true,S=5000000000,C=0.000006,O="hydrogen",name="Hydrogen",desc={"","","Hydrogen is a very volatile, flammable element.","It is part of the makeup for water, and is used for jetpacks.","",""}},
-nitrogen = {E=true,S=1000000000,C=0.000001,O="nitrogen",name="Nitrogen",desc={"","","Nitrogen is one of the most efficient coolants,","much more so than water. It is also harder to produce.","",""}},
-steam = {E=true,S=5000000000,C=0.000005,O="steam",name="Steam",desc={"","","Steam is a different form of water, one with more energy.","It is used to make ","",""}},
-carbondioxide = {E=true,S=3000000000,C=0.000002,O="carbon dioxide",name="Carbon Dioxide",desc={"","","Carbon Dioxide, or CO2, is exhaled by humans.","It is used to make nitrogen, or split in to Carbon and Oxygen.","",""}},
-Electromium = {S=800000000,C=0.1,O="Electromium",name="Electromium",desc={"","","Electromium is a resource first created in science labs,","synthesized from pure energy.","It is refinable in to Liquid Polylodarium.","",""}},
-Carbon = {S=600000000,C=0.8,O="Carbon",name="Carbon",desc={"","","Used for armor, or to produce CO2, carbon is a base element.","",""}},
-RawOre = {S=400000000,C=0.2,O="Raw Ore",name="Raw Ore",desc={"","","Raw ore is produced by drilling deep within a planet or asteroids'","core, and extracting the ores from the dirt and rock.","",""}},
-RefinedOre = {S=300000000,C=0.4,O="Refined Ore",name="Refined Ore",desc={"","","Refined ore is made by refining raw ore, by taking out impurities.","",""}},
-HardenedOre = {S=250000000,C=0.8,O="Hardened Ore",name="Hardened Ore",desc={"","","Hardened ore is made by hardening refined ore", "with crystal polylodarium.","",""}},
-BasicRounds = {S=1000000000,C=0.6,O="Basic Rounds",name="Basic Rounds",desc={"","","Basic rounds are self-contained oxidizing explosive charges,","thrown out of a gun at very, very high speeds by their explosion.","",""}},
-Shells = {S=800000000,C=1,O="Shells",name="Shells",desc={"","","A larger form of bullets, shells are generally used in ordnance.","",""}},
-Plasma = {S=800000000,C=0.8,O="Plasma",name="Plasma",desc={"","","Super Heated Polylodarium, Most commonly used as ammunition.","",""}},
-HeavyShells = {S=250000000,C=2,O="Heavy Shells",name="Heavy Shells",desc={"","","An even larger form of shells,", "heavy shells are generally used in superordnance.","",""}},
-MissileParts = {S=1000000000,C=0.9,O="Missile Parts",name="Missile Parts",desc={"","","Missile parts are used by missile launchers to", "assemble missiles and fire them.","",""}},
-Casings = {S=5000000000,C=0.5,O="Casings",name="Casings",desc={"","","Casings are used to create ammunition,", "and store the explosive arm and payload before firing.","",""}},
-CrystalisedPolylodarium = {S=800000000,C=0.8,O="Crystalised Polylodarium",name="Crystalised Polylodarium",desc={"","","Is a form of alien fauna that stablises","antimatter in extremely heated enviroments.",""}},
-LiquidPolylodarium = {S=500000000,C=1.2,O="Liquid Polylodarium",name="Liquid Polylodarium",desc={"","","Liquid Polylodarium is the stablised antimatter particles","from refined Crystalised Polylodarium.",""}},
-Blackholium = {S=1000,C=800,O="Blackholium",name="Blackholium",desc={"","","First discovered by scientists in a freak accident", " involving a research ship, ","scientists have no idea what blackholium is,", " or how it works, or even what it does.","",""}}
+	energy = {E=true,S=5000000000,C=0.000003,O="energy",name="Energy",desc={"","","Energy is the base form of everything in the universe.","It is used to power nearly everything.","",""}},
+	water = {E=true,S=3000000000,C=0.000005,O="water",name="Water",desc={"","","Water is a combination of an Oxygen molecule and 2 Hydrogen.","It is used for cooling, or split in to H and O2.","",""}},
+	oxygen = {E=true,S=5000000000,C=0.000006,O="oxygen",name="Oxygen",desc={"","","Oxygen is a requirement for habitation. You breathe it,","and your muscles use it for power.","",""}},
+	hydrogen = {E=true,S=5000000000,C=0.000006,O="hydrogen",name="Hydrogen",desc={"","","Hydrogen is a very volatile, flammable element.","It is part of the makeup for water, and is used for jetpacks.","",""}},
+	nitrogen = {E=true,S=1000000000,C=0.000001,O="nitrogen",name="Nitrogen",desc={"","","Nitrogen is one of the most efficient coolants,","much more so than water. It is also harder to produce.","",""}},
+	steam = {E=true,S=5000000000,C=0.000005,O="steam",name="Steam",desc={"","","Steam is a different form of water, one with more energy.","It is used to make ","",""}},
+	carbondioxide = {E=true,S=3000000000,C=0.000002,O="carbon dioxide",name="Carbon Dioxide",desc={"","","Carbon Dioxide, or CO2, is exhaled by humans.","It is used to make nitrogen, or split in to Carbon and Oxygen.","",""}},
+	Carbon = {S=600000000,C=0.8,O="Carbon",name="Carbon",desc={"","","Used for armor, or to produce CO2, carbon is a base element.","",""}},
+	RawOre = {S=400000000,C=0.2,O="Raw Ore",name="Raw Ore",desc={"","","Raw ore is produced by drilling deep within a planet or asteroids'","core, and extracting the ores from the dirt and rock.","",""}},
+	RefinedOre = {S=300000000,C=0.4,O="Refined Ore",name="Refined Ore",desc={"","","Refined ore is made by refining raw ore, by taking out impurities.","",""}},
+	HardenedOre = {S=250000000,C=0.8,O="Hardened Ore",name="Hardened Ore",desc={"","","Hardened ore is made by hardening refined ore", "with crystal polylodarium.","",""}},
+	BasicRounds = {S=1000000000,C=0.6,O="Basic Rounds",name="Basic Rounds",desc={"","","Basic rounds are self-contained oxidizing explosive charges,","thrown out of a gun at very, very high speeds by their explosion.","",""}},
+	Shells = {S=800000000,C=1,O="Shells",name="Shells",desc={"","","A larger form of bullets, shells are generally used in ordnance.","",""}},
+	Plasma = {S=800000000,C=0.8,O="Plasma",name="Plasma",desc={"","","Super Heated Polylodarium, Most commonly used as ammunition.","",""}},
+	HeavyShells = {S=250000000,C=2,O="Heavy Shells",name="Heavy Shells",desc={"","","An even larger form of shells,", "heavy shells are generally used in superordnance.","",""}},
+	MissileParts = {S=1000000000,C=0.9,O="Missile Parts",name="Missile Parts",desc={"","","Missile parts are used by missile launchers to", "assemble missiles and fire them.","",""}},
+	Casings = {S=5000000000,C=0.5,O="Casings",name="Casings",desc={"","","Casings are used to create ammunition,", "and store the explosive arm and payload before firing.","",""}},
+	CrystalisedPolylodarium = {S=800000000,C=0.8,O="Crystalised Polylodarium",name="Crystalised Polylodarium",desc={"","","Is a form of alien fauna that stablises","antimatter in extremely heated enviroments.",""}},
+	LiquidPolylodarium = {S=500000000,C=1.2,O="Liquid Polylodarium",name="Liquid Polylodarium",desc={"","","Liquid Polylodarium is the stablised antimatter particles","from refined Crystalised Polylodarium.",""}},
+	Blackholium = {S=1000,C=800,O="Blackholium",name="Blackholium",desc={"","","First discovered by scientists in a freak accident", " involving a research ship, ","scientists have no idea what blackholium is,", " or how it works, or even what it does.","",""}}
 }
 
 if SERVER then

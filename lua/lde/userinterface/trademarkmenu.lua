@@ -97,7 +97,7 @@ else
 		end
 			
 		local infoBox = vgui.Create( "DPanel", DermaFrame ) 
-		infoBox:SetPos( 170, 35 )
+		infoBox:SetPos( 165, 35 )
 		infoBox:SetSize( 350, 350)
 		infoBox:SetParent(MarketMenu)
 		infoBox.Paint = function()   

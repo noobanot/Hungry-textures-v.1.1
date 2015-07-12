@@ -121,25 +121,27 @@ LDE.Weapons.ManageCharge = function(self,Data)
 	else
 		self.CanFire=false
 	end
-	if(self.CanFire==true)then
+		
+	if self.CanFire==true then
 		self.Charge = math.Clamp(self.Charge+Data.ChargeRate,0,Data.MaxCharge)
-		if(Data.Single==false)then
-			if(self.Charge>=Data.MinCharge)then 
+		if not Data.Single then
+			if self.Charge>=Data.MinCharge then 
 				Data.ChargeShoot(self,Data) --Constant firing
 			end
 		end
 	else
 		if(Data.Single==true and self.Charge>=Data.MinCharge)then
 			Data.ChargeShoot(self,Data) --Fire our single shot.
-			timer.Simple(Data.CoolDown, function() if(self and self:IsValid())then self.CanFire=1 end end)
+			timer.Simple(Data.CoolDown, function() if self and IsValid(self)then self.CanFire=1 end end)--Reimplement this.
 			self.CanFire = 0
 			self.Charge = 0
 		else
 			self.Charge = math.Clamp(self.Charge-Data.ChargeRate*2,0,Data.MaxCharge) ---Decrease in charge
 		end
-	end				
+	end	
+	
 	cha = self:GetNWInt("charge")
-	if (!cha or cha != self.Charge) then
+	if not cha or cha ~= self.Charge then
 		self:SetNWInt("charge", self.Charge)
 	end
 	WireLib.TriggerOutput(self, "Charge", self.Charge)--Set the charge wire output.

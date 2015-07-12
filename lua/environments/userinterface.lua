@@ -4,15 +4,19 @@ local Environments = Environments --yay speed boost!
 Environments.UI = {}
 Environments.UI.Panel ={}
 
+local MC = EnvX.MenuCore
+
 if(CLIENT)then
 
 	local VGUI = {}
 		function VGUI:Init()
 		
-			self.GBase = Environments.UI.CreateFrame({x=300,y=200},true,true,true,true)
+			self.GBase = MC.CreateFrame({x=300,y=200},true,true,true,true)
 			self.GBase:Center()
-			self.GBase:SetTitle( "Device Interface" )
+			self.GBase:SetTitle( "" )
 			self.GBase:MakePopup()
+			
+			MC.CreateText(self.GBase,{x=10,y=5},"Device Interface")
 			
 			self.GForm = vgui.Create( "DPanelList", self.GBase )
 			self.GForm:SetPos(0,20)
@@ -25,8 +29,8 @@ if(CLIENT)then
 			print("------Compiling Panel------")
 			local Data = {}
 			
-			if(not e.DevicePanel)then print("Error No Panel Data.") return end
-			if(e.NoEnvPanel)then print("Whoa... This ent doesnt want a panel :/") self.GBase:Remove() return end
+			if not e.DevicePanel then print("Error No Panel Data.") return end
+			if e.NoEnvPanel then print("Whoa... This ent doesnt want a panel :/") self.GBase:Remove() return end
 			local explode = string.Explode("@",e.DevicePanel)--Grab our Data out of the string.
 			
 			for t,s in pairs(explode) do
@@ -68,96 +72,6 @@ if(CLIENT)then
 				print("Error Compiling page... "..Type.." is not a valid format.")
 			end
 		end
-	end
-		
-	function Environments.UI.CreateFrame(Size,Visible,XButton,Draggable,CloseDelete)
-		local Derma = vgui.Create( "DFrame" )
-			Derma:SetSize( Size.x, Size.y )
-			Derma:SetVisible( Visible )
-			Derma:ShowCloseButton( XButton )
-			Derma:SetDraggable( Draggable )
-			Derma:SetDeleteOnClose( CloseDelete )
-			Derma.OldClose = Derma.Close
-			Derma.Close = function(self)
-				if(self.Device)then
-					RunConsoleCommand( "envclosepanel",entID)
-				end
-				Derma:OldClose()
-			end
-		return Derma
-	end
-
-	function Environments.UI.CreateSlider(Parent,Spot,Values,Width)
-		local Derma = vgui.Create( "DNumSlider", Parent )
-			Derma:SetMinMax( Values.Min, Values.Max )
-			Derma:SetDecimals( Values.Dec )
-			Derma:SetWide( Width )
-			Derma:SetPos( Spot.x, Spot.y )
-		return Derma
-	end
-	
-	function Environments.UI.CreatePSheet(Parent,Size,Spot)
-		local Derma = vgui.Create( "DPropertySheet", Parent )
-			Derma:SetSize( Size.x, Size.y )
-			Derma:SetPos( Spot.x, Spot.y )
-		return Derma
-	end
-	
-	function Environments.UI.DisplayModel(Parent,Size,Spot,Model,View,Look)
-		local Derma = vgui.Create( "DModelPanel", Parent )
-			Derma:SetModel(Model)
-			Derma:SetSize( Size, Size )
-			Derma:SetCamPos(Vector(View,View,View))
-			if(Look)then
-				Derma:SetLookAt(Vector(0,0,Look))
-			end
-			Derma:SetPos( Spot.x, Spot.y )
-		return Derma
-	end	
-	
-	function Environments.UI.CreatePBar(Parent,Size,Spot,Progress)
-		local Derma = vgui.Create( "DProgress", Parent )
-			Derma:SetPos( Spot.x, Spot.y )
-			Derma:SetSize( Size.x, Size.y )
-			Derma:SetFraction( Progress )
-		return Derma
-	end
-	
-	function Environments.UI.CreateList(Parent,Size,Spot,Multi)
-		local Derma = vgui.Create( "DListView", Parent )
-			Derma:SetPos( Spot.x, Spot.y )
-			Derma:SetSize( Size.x, Size.y )
-			Derma:SetMultiSelect(Multi)
-		return Derma
-	end	
-	
-	function Environments.UI.CreateButton(Parent,Size,Spot)
-		local Derma = vgui.Create( "DButton", Parent )
-			Derma:SetPos( Spot.x, Spot.y )
-			Derma:SetSize( Size.x, Size.y )
-		return Derma
-	end	
-	
-	function Environments.UI.CreateLabel(Text,Parent)
-		local label = vgui.Create( "DLabel", Parent )
-		label:SetText( Text )
-		label:SetMultiline( true )
-		--label:SetSize( 430 , 10 )
-		label:SizeToContents()
-		label:SetWrap(true)
-		label:SetDark(true)
-		label:SetAutoStretchVertical(true)
-		return label
-	end
-	
-	function Environments.UI.CreateCheckbox(Text, Parent)
-		local CheckBoxThing = vgui.Create( "DCheckBoxLabel", Parent )
-		//CheckBoxThing:SetPos( 10,50 )
-		CheckBoxThing:SetText( Text )
-		//CheckBoxThing:SetConVar( "sbox_godmode" ) -- ConCommand must be a 1 or 0 value
-		CheckBoxThing:SetValue( 0 )
-		CheckBoxThing:SizeToContents() -- Make its size to the contents. Duh?
-		return CheckBoxThing
 	end
 
 	---------Page Compilation Functions----------
@@ -243,12 +157,11 @@ if(CLIENT)then
 	local Table = {}
 
 	Table.Label=function(label,D,Parent)
-		label = Environments.UI.CreateLabel(D.Text,Parent)
-		return label
+		return MC.CreateText(Parent,{x=0,y=0},D.Text)
 	end
 	
 	Table.Display=function(label,D,Parent,Device)
-		label = Environments.UI.CreateLabel(D.Text,Parent)
+		label = MC.CreateText(Parent,{x=0,y=0},D.Text)
 		label.Think = function(self)
 			self:SetText(Device.Functions[D.Func]())
 		end
@@ -256,16 +169,13 @@ if(CLIENT)then
 	end
 	
 	Table.Button=function(label,D,Parent,Device)
-		label = Environments.UI.CreateButton(Parent,{x=90,y=30},{x=0,y=0})
-		label:SetText(D.Text)					
-		label.DoClick = function()
+		return MC.CreateButton(Parent,{x=90,y=30},{x=0,y=0},D.Text,function()
 			Device.Functions[D.Func]()
-		end
-		return label
+		end)
 	end
 	
 	Table.Slider=function(label,D,Parent,Device)
-		label = Environments.UI.CreateSlider(Parent,{x=0,y=0},{Min=0,Max=100,Dec=0},300)
+		label = MC.CreateSlider(Parent,{x=0,y=0},{Min=0,Max=100,Dec=0},300)
 		label:SetText(D.Text)
 		label.OnValueChanged = function(self,Value)
 			Device.Functions[D.Func](Value)
@@ -275,7 +185,7 @@ if(CLIENT)then
 	end
 	
 	Table.Checkbox = function(label,D,Parent,Device)
-		label = Environments.UI.CreateCheckbox(D.Text, Parent)
+		label = MC.CreateCheckbox(Parent,{x=0,y=0},D.Text)
 		label.OnChange = function(self, value)
 			if value then
 				Device.Functions[D.Func](1)
@@ -296,7 +206,7 @@ else
 		---Put Clientside panel disable check here---
 		
 		local Device = Entity( tonumber(args[1]) ) --Get the device out of the command
-		if(not Device or not Device:IsValid())then return end --Is the device valid?
+		if not Device or not IsValid(Device)then return end --Is the device valid?
 		---Put can run check here---
 		
 		local Command = args[2] -- Grab the command were gonna send the device.
@@ -312,7 +222,7 @@ else
 
 	function EnvClosePan(ply,cmd,args)
 		local Device = Entity( tonumber(args[1]) ) --Get the device out of the command
-		if(not Device or not Device:IsValid())then return end --Is the device valid?
+		if not Device or not IsValid(Device) then return end --Is the device valid?
 		---Put can run check here---
 		if(ply == Device.PanelUser)then --Make sure the command sender is the person using the panel.
 			Device.PanelUser = nil --Clear the Panel user since they closed their panel.

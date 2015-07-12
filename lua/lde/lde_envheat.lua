@@ -119,7 +119,7 @@ function LDE.HeatSim.ApplyHeat(Ent,Amount)
 	if Ent:IsPlayer() or Ent:IsNPC() then return end
 	if not Ent.LDE then Ent.LDE = {} end
 	
-	local Amount = Amount*(CurTime()-(Ent.TimeSinceLast or CurTime()))
+	local Amount = Amount*math.Clamp(CurTime()-(Ent.TimeSinceLast or CurTime()),0.01,1)
 	Ent.TimeSinceLast = CurTime()
 	
 	if Ent.LDE.Temperature then

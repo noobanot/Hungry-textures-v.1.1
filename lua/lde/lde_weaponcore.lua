@@ -338,16 +338,16 @@ function LDE.Weapons.RegisterWeapon(Data,Models)
 			self.Active=self.Active or 0
 			self.LDE = self.LDE or {}
 
-			 if self:CheckCanFire() then return false end
+			if self:CheckCanFire() then return false end
 			
 			local CF = CurTime()>=self.LastTime+self.Data.firespeed
 			if CF then
 				WireLib.TriggerOutput(self, "CanFire", 1)
 				self:SetCanFire(1)
 			else
-				if(self.Data.firespeed>=1)then
-					self:CantFire()
-				end
+				--if(self.Data.firespeed>=1)then
+				--	self:CantFire()
+				--end
 			end 
 			
 			if self:FireWep(CF) then
@@ -360,11 +360,6 @@ function LDE.Weapons.RegisterWeapon(Data,Models)
 		end
 		
 	else
-		
-		if(Data.ClientSetup)then
-			Data.ClientSetup(ENT)
-		end
-		
 		function ENT:PanelFunc(um,e,entID)
 			if(self.Data.EnvPanel)then
 				self.Data.EnvPanel(um,e,entID) --Call any defined env panel functions.
@@ -381,22 +376,23 @@ function LDE.Weapons.RegisterWeapon(Data,Models)
 			end
 		end
 		
-		function ENT:LDEToolTips()
-			if(not self.LDETools)then self.LDETools={} end
-			if(not self.ExtraOverlayData)then self.ExtraOverlayData={} end --Make sure we have a table to add to.
-			
+		function ENT:GetPreResInfo(Info)
+			if not self.LDETools then self.LDETools={} end
 			for i, t in pairs(self.LDETools) do
-				local S=t(self)
-				self.ExtraOverlayData[i]=S
+				table.insert(Info,{Type="Label",Value=i..": "..t(self)})
 			end
+			
+			return true
 		end
 		
 		function ENT:Think()
 			if(self.Data.Client)then
 				self.Data.Client(self)
-			end
-			
-			self:LDEToolTips()--Call the tooltip function.
+			end	
+		end
+				
+		if(Data.ClientSetup)then
+			Data.ClientSetup(ENT)
 		end
 	end
 	
