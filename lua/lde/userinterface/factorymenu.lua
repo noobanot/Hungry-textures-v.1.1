@@ -208,7 +208,7 @@ LDE.Factorys.BuildList.NukeBomb = {
 	materials={"energy","Refined Ore","Liquid Polylodarium"}, --Needed Resource names
 	matamount={5000,2000,600},
 	Time=30,
-	desc = "The Zues Nuclear Bomb is based off old Human weaponry, its immense damage output and large blast radius make it a deadly bomb."
+	desc = "The Zeus Nuclear Bomb is based off old Human weaponry, its immense damage output and large blast radius make it a deadly bomb."
 }
 
 LDE.Factorys.BuildList.SNugs = {

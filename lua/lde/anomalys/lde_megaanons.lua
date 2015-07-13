@@ -121,7 +121,7 @@ local Think = function(self)
 					--print("P: "..self.Power.." range: "..range.." radius: "..self.Radius.." D/R: "..range/self.Radius.." R/D: "..self.Radius/range)
 					
 					
-					LDE:DealDamage(v,(self.Power/10)*(self.Radius/range),self,self,false)
+					LDE:DealDamage(v,(self.Power/1000)*(self.Radius/range),self,self,false)
 					
 					if(IsValid(phys)) then
 						local dir = (v:GetPos()-self:GetPos())

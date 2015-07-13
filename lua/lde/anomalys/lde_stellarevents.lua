@@ -34,9 +34,9 @@ end
 local Data={name="SporeCloud Spawner",class="lde_spore_cloud",Type="Spawner",Startup=Int,Dist={Min=800,Max=1200}}
 LDE.Anons.GenerateAnomaly(Data)
 
---Secret satalight
+--Secret satellite
 local Spawn = function() 		
-	rock = ents.Create("space_satalight")
+	rock = ents.Create("space_satellite")
 	local Point = LDE.Anons:PointInOrbit(rock.Data,rock)
 	if(not Point)then return end	
 	rock:SetPos(Point)
@@ -44,50 +44,17 @@ local Spawn = function()
 	rock:Spawn()
 end
 
-local Think = function(self)
-	local R = math.random(1,10)
-	local Beep = self.Beep or 0
-	if(R<5 and Beep<CurTime())then
-		self.Beep=CurTime()+0.3
-		self:EmitSound( self.Sounds[math.random(1,table.Count(self.Sounds))],80,math.Rand(90,110) )
-	end
-	
-	if(self.Bumped)then return end --We got bumped / stop applying orbital forces.
-	local Planet = self.Planet
-	
-	if(not Planet or not Planet:IsValid())then print("No Planet") self:Remove() end --An error has occured.
-	
-	//The entity to be forced
-	//Local axis that will be aligned with the aim vector (x value means facing forward)
-	local ent,axis,aim,ang = self,Vector(100,0,0),Planet:GetPos(),Angle( -30 , CurTime()*10 , 0 )
-
-	phys = ent:GetPhysicsObject()
-	if(phys:IsValid()) then
-
-		local mass = phys:GetMass()
-
-		local orbit = Vector(Planet.radius+500,0,0)
-		orbit:Rotate(ang)
-		phys:AddAngleVelocity((phys:GetAngleVelocity() * -0.1))
-		phys:ApplyForceCenter(( (aim+orbit) - phys:GetPos() - phys:GetVelocity()/100)*mass)
-
-	end
-
-end
+local Think = function(self) end
 
 local Int = function(self)			
 	local models = {"models/Slyfo/probe1.mdl","models/Slyfo/sat_platform.mdl","models/Slyfo/sat_relay.mdl"} 
-	self.Sounds = {"RD/pump/beep-2.wav","RD/pump/beep-3.wav","RD/pump/beep-4.wav","RD/pump/beep-5.wav"}
+	self.Sounds = {"music/radio1.mp3"}
 	self:SetModel(models[math.random(1,table.Count(models))])
 	
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
-	
-	if self:GetPhysicsObject():IsValid() then
-		self:GetPhysicsObject():Wake()
-	end
-	
+	self:EmitSound("ambient/machines/wall_ambient_loop1.wav",80,math.Rand(90,110) )
 end
-local Data={name="Satalight",class="space_satalight",Type="Orbit",Think=Think,Startup=Int,ThinkSpeed=0.01,SpawnMe=Spawn,minimal=1}
+local Data={name="Satellite",class="space_satellite",Type="Orbit",Think=Think,Startup=Int,ThinkSpeed=0.01,SpawnMe=Spawn,minimal=1}
 LDE.Anons.GenerateAnomaly(Data)
