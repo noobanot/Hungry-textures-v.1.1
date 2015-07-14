@@ -19,57 +19,17 @@ ENT.ExtraOverlayData = {}
 ENT.ExtraOverlayData["\nStatus"] = "\n".."Idle"
 list.Set( "LSEntOverlayText" , "env_autogen", {HasOOO = true, genresnames ={ "energy", "water", "oxygen", "hydrogen"} } )
 
+local MC = EnvX.MenuCore
+
 if(SERVER)then
-	
-	local T = {} --Create a empty Table
-	
-	T.Power = function(Device,ply,Data)
-		Device:SetActive( nil, ply )
-	end
-	
-	--[[T.O2Per = function(Device,ply,Data)
-		if (Device.TriggerInput) then
-			Device:TriggerInput("Max O2 level", tonumber(Data))//SetMultiplier(tonumber(args[2]))
-		end
-	end
-	
-	T.Gravity = function(Device,ply,Data)
-		if (Device.TriggerInput) then
-			Device:TriggerInput("Gravity", tonumber(Data))//SetMultiplier(tonumber(args[2]))
-		end
-	end
-	]]
-	ENT.Panel=T --Set our panel functions to the table.
+
 else 
 	ENT.LastStatus=""
 	
-	function ENT:PanelFunc(um,e,entID)
-
-		e.Functions={}
-		
-		e.DevicePanel = [[
-		@<Button>Toggle Power</Button><N>PowerButton</N><Func>Power</Func>
-		]]
-		--@<Slider>O2 Percent</Slider><N>O2Percent</N><Func>O2Per</Func><Set>GetO2Per</Set>
-		--@<Checkbox>Gravity</Checkbox><N>Gravity</N><Func>Gravity</Func>
-
-		e.Functions.Power = function()
-			RunConsoleCommand( "envsendpcommand",entID,"Power")
-		end
-		
-		--[[e.Functions.O2Per = function(Value)
-			RunConsoleCommand( "envsendpcommand",entID,"O2Per",Value)
-		end
-		
-		e.Functions.GetO2Per = function(label,Data,Device)
-			label:SetValue( Device:GetNetworkedInt("EnvMaxO2") or 11 )
-		end
-		
-		e.Functions.Gravity = function(Value)
-			RunConsoleCommand( "envsendpcommand",entID,"Gravity", Value)
-		end
-		]]--
-		
+	function ENT:PanelFunc(entID)	
+		self.DevicePanel = {
+			function() return MC.CreateButton(Parent,{x=90,y=30},{x=0,y=0},"Toggle Power",function() RunConsoleCommand( "envsendpcommand",self:EntIndex(),"Power") end) end
+		}
 	end
 	
 	function ENT:Initialize()

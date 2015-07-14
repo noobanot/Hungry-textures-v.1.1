@@ -147,8 +147,7 @@ else
 		CreateClientConVar( "tradeamount", "0",false,false)
 
 		
-		local Slide = MC.CreateSlider(MarketMenu,{x=520,y=205},{Min=0,Max=10000,Dec=0},170)
-		Slide:SetText( "Amount" )
+		local Slide = MC.CreateSlider(MarketMenu,{x=170,y=30},{x=520,y=205},{Min=0,Max=10000,Dec=0},"Amount")
 		Slide:SetConVar( "tradeamount" )
 		
 		local change = MC.CreateButton(MarketMenu,{x=180,y=40},{x=520,y=165})

@@ -18,6 +18,8 @@ function ENT:Initialize()
 	
 	self.Active = 0
 	self.Multiplier = 1
+	self.DeviceSounds = {}
+	self.Mute = 0
 	
 	self.maxresources = {}
 	
@@ -27,7 +29,7 @@ function ENT:Initialize()
 		return 
 	end
 end
-   
+
 function ENT:SetActive( value, caller )
 	if ((not(value == nil) and value != 0) or (value == nil)) and self.Active == 0 then
 		if self.TurnOn then self:TurnOn( nil, caller ) end
@@ -53,18 +55,52 @@ function ENT:SetSizeMultiplier(num)
 	self.SizeMultiplier = tonumber(num) or 1
 end
 
+function ENT:PlayDeviceSound(snd)
+	if not self:GetDeviceMuted() then
+		self:StopSound( snd )
+		self:EmitSound( snd )
+		
+		self.DeviceSounds[snd]=true
+	end
+end
+
+function ENT:StopDeviceSound(snd)
+	self:StopSound( snd )
+	self.DeviceSounds[snd]=nil
+end
+
+function ENT:StopSounds()
+	for k,v in pairs(self.DeviceSounds or {}) do
+		self:StopSound(k)
+		self.DeviceSounds[k]=nil
+	end
+end
+
 function ENT:SetMultiplier(num)
 	if num < 1 then num = 1 end
 	self.Multiplier = tonumber(num) or 1
 	self:SetNetworkedInt( "EnvMultiplier", self.Multiplier )
 end
 
+function ENT:GetDeviceMuted()
+	if self.Mute > 0 then 
+		return true
+	end
+	return false
+end
+
+function ENT:SetDeviceMute(value)
+	self.Mute = value
+	self:SetNetworkedInt( "EnvDeviceMuted", value )
+	
+	if value > 0 then
+		self:StopSounds()
+	end
+end
+
 function ENT:AcceptInput(name,activator,caller)
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then
-		umsg.Start("EnvODMenu",caller)
-			umsg.String(self:EntIndex( ))
-			umsg.Entity(self.Entity);
-		umsg.End()
+		NDat.AddData({Name="EnvxDevicePanel",Val=1,Dat={EntID=self:EntIndex(),Entity=self}},caller)
 	end
 end
 
@@ -73,6 +109,8 @@ function ENT:OnRemove()
 		self.node:Unlink(self)
 	end
 	if WireLib then WireLib.Remove(self) end
+	
+	self:StopSounds()
 end
 
 function ENT:ConsumeResource( resource, amount)

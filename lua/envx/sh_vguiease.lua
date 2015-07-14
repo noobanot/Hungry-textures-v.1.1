@@ -97,15 +97,6 @@ if(CLIENT)then
 		
 		return Input
 	end
-
-	function MC.CreateSlider(Parent,Spot,Values,Width)
-		local Derma = vgui.Create( "DNumSlider", Parent )
-			Derma:SetMinMax( Values.Min, Values.Max )
-			Derma:SetDecimals( Values.Dec )
-			Derma:SetWide( Width )
-			Derma:SetPos( Spot.x, Spot.y )
-		return Derma
-	end
 	
 	function MC.CreatePSheet(Parent,Size,Spot)
 		local Derma = vgui.Create( "DPropertySheet", Parent )
@@ -261,21 +252,41 @@ if(CLIENT)then
 		return Derma
 	end
 	
-	function MC.CreateSlider(Parent,Spot,Values,Width)
-		local Derma = vgui.Create( "DNumSlider", Parent )
-			Derma:SetMinMax( Values.Min, Values.Max )
-			Derma:SetDecimals( Values.Dec )
-			Derma:SetWide( Width )
-			Derma:SetPos( Spot.x, Spot.y )
-		return Derma
-	end
-	
-	function MC.CreateCheckbox(Parent,Spot,Text)
+	function MC.CreateCheckbox(Parent,Spot,Text,Func)
 		local Derma = vgui.Create( "DCheckBoxLabel", Parent )
 		Derma:SetPos( Spot.x, Spot.y )
 		Derma:SetText( Text )
-		Derma:SetValue( 0 )
+		Derma:SetChecked( 0 )
 		Derma:SizeToContents() -- Make its size to the contents. Duh?
+		
+		Derma.ChFunc = Func
+		
+		function Derma:OnChange(value)
+			if not self.ChFunc then return end
+			if value then
+				self.ChFunc(1)
+			else
+				self.ChFunc(0)
+			end
+		end
+		return Derma
+	end
+
+	function MC.CreateSlider(Parent,Size,Spot,Values,Text,Func)
+		local Derma = vgui.Create( "DNumSlider", Parent )
+			Derma:SetMinMax( Values.Min, Values.Max )
+			Derma:SetDecimals( Values.Dec )
+			Derma:SetValue(Values.Val or 0)
+			Derma:SetSize( Size.x, Size.y )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetText( Text )
+			Derma:SetWide(Size.x)
+			
+			function Derma:OnValueChanged(Value)
+				if Func then
+					Func(Value)
+				end
+			end				
 		return Derma
 	end
 	

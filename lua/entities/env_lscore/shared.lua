@@ -10,6 +10,7 @@ ENT.Category = "Environments"
 
 list.Set( "LSEntOverlayText" , "env_lscore", {HasOOO = true, resnames ={ "oxygen", "energy", "water", "nitrogen"} } )
 
+local MC = EnvX.MenuCore
 
 if(SERVER)then
 	
@@ -35,32 +36,19 @@ if(SERVER)then
 	
 else 
 
-	function ENT:PanelFunc(um,e,entID)
-
-		e.Functions={}
-		
-		e.DevicePanel = [[
-		@<Button>Toggle Power</Button><N>PowerButton</N><Func>Power</Func>
-		@<Slider>O2 Percent</Slider><N>O2Percent</N><Func>O2Per</Func><Set>GetO2Per</Set>
-		@<Checkbox>Gravity</Checkbox><N>Gravity</N><Func>Gravity</Func>
-		]]
-
-		e.Functions.Power = function()
-			RunConsoleCommand( "envsendpcommand",entID,"Power")
-		end
-		
-		e.Functions.O2Per = function(Value)
-			RunConsoleCommand( "envsendpcommand",entID,"O2Per",Value)
-		end
-		
-		e.Functions.GetO2Per = function(label,Data,Device)
-			label:SetValue( Device:GetNetworkedInt("EnvMaxO2") or 11 )
-		end
-		
-		e.Functions.Gravity = function(Value)
-			RunConsoleCommand( "envsendpcommand",entID,"Gravity", Value)
-		end
-		
+	function ENT:PanelFunc(entID)	
+		self.DevicePanel = {
+			function() return MC.CreateButton(Parent,{x=90,y=30},{x=0,y=0},"Toggle Power",function() RunConsoleCommand( "envsendpcommand",self:EntIndex(),"Power") end) end,
+			function()
+				local S = MC.CreateSlider(Parent,{x=150,y=30},{x=0,y=0},{Min=1,Max=100,Dec=0},"O2 Percent",function(val) RunConsoleCommand( "envsendpcommand",self:EntIndex(),"O2Per",val) end)
+				S:SetValue(self:GetNetworkedInt("EnvMaxO2") or 11)
+				return S
+			end,
+			function()
+				local S = MC.CreateCheckbox(Parent,{x=0,y=0},"Gravity",function(val) RunConsoleCommand( "envsendpcommand",self:EntIndex(),"Gravity",val) end)
+				S:SetChecked()
+				return S
+			end
+		}
 	end
-
 end

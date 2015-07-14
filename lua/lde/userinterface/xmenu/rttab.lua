@@ -14,7 +14,7 @@ else
 		
 		CreateClientConVar( "cashtransfer_amount", "200",false,false)
 
-		local cashamount = MC.CreateSlider(base,{x=0,y=0},{Min=0,Max=2000000,Dec=0},1000)
+		local cashamount = MC.CreateSlider(base,{x=1000,y=30},{x=0,y=0},{Min=0,Max=2000000,Dec=0},"")
 		cashamount:SetText( "Amount of Taus \n That get sent." )
 		cashamount:SetValue( 0 )
 		cashamount:SetConVar( "cashtransfer_amount" )

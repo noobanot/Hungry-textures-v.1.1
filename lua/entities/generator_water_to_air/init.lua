@@ -26,9 +26,7 @@ end
 
 function ENT:TurnOn()
 	if (self.Active == 0) then
-		if (self.Mute == 0) then
-			self:EmitSound( "Airboat_engine_idle" )
-		end
+		self:PlayDeviceSound( "Airboat_engine_idle" )
 		self.Active = 1
 		self:SetOOO(1)
 	elseif ( self.overdrive == 0 ) then
@@ -38,11 +36,9 @@ end
 
 function ENT:TurnOff()
 	if (self.Active == 1) then
-		if (self.Mute == 0) then
-			self:StopSound( "Airboat_engine_idle" )
-			self:EmitSound( "Airboat_engine_stop" )
-			self:StopSound( "apc_engine_start" )
-		end
+		self:StopDeviceSound( "Airboat_engine_idle" )
+		self:PlayDeviceSound( "Airboat_engine_stop" )
+		self:StopDeviceSound( "apc_engine_start" )
 		self.Active = 0
 		self.overdrive = 0
 		self:SetOOO(0)
@@ -51,11 +47,9 @@ end
 
 function ENT:TurnOnOverdrive()
 	if ( self.Active == 1 ) then
-		if (self.Mute == 0) then
-			self:StopSound( "Airboat_engine_idle" )
-			self:EmitSound( "Airboat_engine_idle" )
-			self:EmitSound( "apc_engine_start" )
-		end
+		self:StopDeviceSound( "Airboat_engine_idle" )
+		self:PlayDeviceSound( "Airboat_engine_idle" )
+		self:PlayDeviceSound( "apc_engine_start" )
 		self:SetOOO(2)
 		self.overdrive = 1
 	end
@@ -63,11 +57,9 @@ end
 
 function ENT:TurnOffOverdrive()
 	if ( self.Active == 1 and self.overdrive == 1) then
-		if (self.Mute == 0) then
-			self:StopSound( "Airboat_engine_idle" )
-			self:EmitSound( "Airboat_engine_idle" )
-			self:StopSound( "apc_engine_start" )
-		end
+		self:StopDeviceSound( "Airboat_engine_idle" )
+		self:PlayDeviceSound( "Airboat_engine_idle" )
+		self:StopDeviceSound( "apc_engine_start" )
 		self:SetOOO(1)
 		self.overdrive = 0
 	end	
@@ -107,37 +99,14 @@ function ENT:TriggerInput(iname, value)
 	end
 	if (iname == "Mute") then
 		if (value > 0) then
-			self:StopSound( "Airboat_engine_idle" )
-			self.Mute = 1
+			self:SetDeviceMute(1)
 		else
-			if self.Active > 0 then
-				self:EmitSound( "Airboat_engine_idle" )
-			end
-			self.Mute = 0
+			self:SetDeviceMute(0)
 		end
 	end
 	if (iname == "Multiplier") then
 		self:SetMultiplier(value)
 	end
-end
-
-function ENT:Damage()
-	if (self.damaged == 0) then
-		self.damaged = 1
-	end
-	if ((self.Active == 1) and (math.random(1, 10) <= 4)) then
-		self:TurnOff()
-	end
-end
-
-function ENT:Repair()
-	self.BaseClass.Repair(self)
-	self.damaged = 0
-end
-
-function ENT:OnRemove()
-	self.BaseClass.OnRemove(self)
-	self:StopSound( "apc_engine_start" )
 end
 
 function ENT:Proc_Water()

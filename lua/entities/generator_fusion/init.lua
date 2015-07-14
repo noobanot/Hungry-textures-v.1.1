@@ -36,8 +36,8 @@ end
 function ENT:TurnOn()
 	if (self.Active == 0) then
 		self.Active = 1
-		self:EmitSound( "k_lab.ambient_powergenerators" )
-		self:EmitSound( "ambient/machines/thumper_startup1.wav" )
+		self:PlayDeviceSound( "k_lab.ambient_powergenerators" )
+		self:PlayDeviceSound( "ambient/machines/thumper_startup1.wav" )
 		if WireLib then WireLib.TriggerOutput(self, "On", 1) end
 		self:SetOOO(1)
 	end
@@ -46,8 +46,8 @@ end
 function ENT:TurnOff()
 	if (self.Active == 1) then
 		self.Active = 0
-		self:StopSound( "k_lab.ambient_powergenerators" )
-		self:StopSound( "coast.siren_citizen" )
+		self:StopDeviceSound( "k_lab.ambient_powergenerators" )
+		self:StopDeviceSound( "coast.siren_citizen" )
 		if WireLib then 
 			WireLib.TriggerOutput(self, "On", 0)
 			WireLib.TriggerOutput(self, "Output", 0)
@@ -62,135 +62,12 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
-function ENT:Damage()
-	if (self.damaged == 0) then self.damaged = 1 end
-end
-
 function ENT:Repair()
 	self.BaseClass.Repair(self)
 	self:SetColor(Color(255, 255, 255, 255))
 	self.damaged = 0
 	self.critical = 0
-	self.hwcount = 0
-	self:StopSound( "coast.siren_citizen" )
-end
-
-function ENT:Destruct()
-	self:StopSound( "coast.siren_citizen" )
-	if (self:GetResourceAmount("energy") < 100000) or (GetConVarNumber("LS_AllowNukeEffect") == 0) then
-		Environments.LSDestruct( self )
-	else -- !!oh shi-
-		self:ConsumeResource("energy", self:GetResourceAmount("energy"))
-		local effectdata = EffectData()
-		effectdata:SetMagnitude( 1 )
-		
-		local Pos = self:GetPos()
-	
-		effectdata:SetOrigin( Pos )
-		effectdata:SetScale( 23000 )
-		util.Effect( "warpcore_breach", effectdata )
-		local players = player.GetAll()
-		for _, ply in pairs( players ) do
-			ply:EmitSound( "explode_9" )
-		end
-		self:EmitSound( "explode_9" )
-		
-		local blastradius = 3000
-		
-		for _,ent in pairs( constraint.GetAllConstrainedEntities( self ) ) do
-			if ent != self then
-				if (string.find(ent:GetClass(),"prop") ~= nil) then
-					local delay = (math.random(300, 700) / 100)
-					ent:SetSolid( SOLID_NONE ) --we don't need to be crunching the phys collisions too
-					ent:DrawShadow( false )
-					ent:SetKeyValue("exploderadius","1")
-					ent:SetKeyValue("explodedamage","1")
-					ent:Fire("break","",tostring(delay))
-					ent:Fire("kill","",tostring(delay + 1))
-					ent:Fire("enablemotion","",0) --bye bye fort that took you 4 hours to make
-					constraint.RemoveAll( ent )
-				else
-					if (ent:IsValid()) and not (ent:IsPlayer() or (ent.IsPlanet and ent:IsPlanet()) or (ent.IsStar and ent:IsStar())) then
-						ent:Remove()
-					end
-				end
-			
-			end
-		end
-		
-		for key,found in pairs(ents.FindInSphere(Pos,blastradius)) do
-			movetype = 	found:GetMoveType()
-			if (movetype == 2 or movetype == 3 or movetype == 5 or movetype == 6 or movetype == 8 or movetype == 9) then
-				local entpos = found:LocalToWorld(found:OBBCenter()) --more accurate than getpos
-				local vecang = entpos - Pos
-				if vecang.z < 0 then vecang.z = 0 end
-				vecang:Normalize()
-			
-				if found:IsNPC() then --ugh, messy
-					util.BlastDamage(self, self:GetPlayer(), found:GetPos(), 256, 512)
-				elseif found:IsPlayer() then
-					found:SetModel("models/player/charple01.mdl")
-					util.BlastDamage(self, self:GetPlayer(), found:GetPos(), 256, 512)
-				elseif found:IsValid() then
-					
-					local physobj = found:GetPhysicsObject()
-					local mass = 1
-					if(physobj:IsValid()) then
-						mass = physobj:GetMass();
-					end
-					
-					if (found:GetMoveType() ~= 6) or not physobj:IsValid() then --if it's not a physics object...
-						found:SetVelocity(vecang*(170*mass)) --push it away
-					elseif (string.find(found:GetClass(),"ragdoll") ~= nil) then --if it's a ragdoll...
-						physobj:ApplyForceCenter(vecang*(8e4*mass)) --push it away anyway :D
-					else -- if it is a physics object...
-						physobj:ApplyForceOffset(vecang*(8e4*mass),entpos + Vector(math.random(-20,20),math.random(-20,20),math.random(20,40))) --still push it away
-					end
-					
-					util.BlastDamage(self, self:GetPlayer(), Pos - vecang*64, 384, 1000) --splode it
-				end
-			end
-		end
-		
-		local shake = ents.Create("env_shake")
-		shake:SetKeyValue("amplitude", "16")
-		shake:SetKeyValue("duration", "6")
-		shake:SetKeyValue("radius", 1) 
-		shake:SetKeyValue("spawnflags", 5) 
-		shake:SetKeyValue("frequency", "240")
-		shake:SetPos(Pos)
-		shake:Spawn()
-		shake:Fire("StartShake","","0.6")
-		shake:Fire("kill","","8")
-		
-		--shatter all glass
-		for k,v in pairs(ents.FindByClass("func_breakable_surf")) do
-			local dist = (v:GetPos() - Pos):Length()
-			v:Fire("Shatter","",dist/19e3)
-		end
-		
-		for k,v in pairs(ents.FindByClass("func_breakable")) do
-			local dist = (v:GetPos() - Pos):Length()
-			v:Fire("break","",dist/19e3)
-		end
-		self:StopSound( "k_lab.ambient_powergenerators" )
-		self:StopSound( "coast.siren_citizen" )
-		self:StopSound( "common/warning.wav"	 )
-		self:StopSound( "ambient/levels/labs/electric_explosion3.wav" )
-		self:StopSound( "ambient/levels/labs/electric_explosion4.wav" )
-		self:StopSound( "ambient/levels/labs/electric_explosion1.wav" )
-		self:Remove()
-	end
-end
-
-function ENT:OnRemove()
-	self:StopSound( "k_lab.ambient_powergenerators" )
-	self:StopSound( "coast.siren_citizen" )
-	self:StopSound( "common/warning.wav"	 )
-	self:StopSound( "ambient/levels/labs/electric_explosion3.wav" )
-	self:StopSound( "ambient/levels/labs/electric_explosion4.wav" )
-	self:StopSound( "ambient/levels/labs/electric_explosion1.wav" )
-	self.BaseClass.OnRemove(self)
+	self:StopDeviceSound( "coast.siren_citizen" )
 end
 
 function ENT:Extract_Energy()
@@ -206,21 +83,21 @@ function ENT:Extract_Energy()
 				zapme((pos + (ang:Right() * 90)), 5)
 				zapme((pos - (ang:Right() * 90)), 5)
 			end
-			self:EmitSound( "ambient/levels/labs/electric_explosion3.wav" )
+			self:PlayDeviceSound( "ambient/levels/labs/electric_explosion3.wav" )
 			inc = 0
 		elseif (test <= 4) then
 			if zapme then
 				zapme((pos + (ang:Right() * 90)), 3)
 				zapme((pos - (ang:Right() * 90)), 3)
 			end
-			self:EmitSound( "ambient/levels/labs/electric_explosion4.wav" )
+			self:PlayDeviceSound( "ambient/levels/labs/electric_explosion4.wav" )
 			inc = math.ceil(inc / 4)
 		elseif (test <= 6) then
 			if zapme then
 				zapme((pos + (ang:Right() * 90)), 2)
 				zapme((pos - (ang:Right() * 90)), 2)
 			end
-			self:EmitSound( "ambient/levels/labs/electric_explosion1.wav" )
+			self:PlayDeviceSound( "ambient/levels/labs/electric_explosion1.wav" )
 			inc = math.ceil(inc / 2)
 		end
 	end
@@ -231,15 +108,15 @@ function ENT:Extract_Energy()
 	if self:GetResourceAmount("water") < required_water then
 		if (self.critical == 0) then
 			if self.time > 3 then 
-				self:EmitSound( "common/warning.wav" )
+				self:PlayDeviceSound( "common/warning.wav" )
 				self.time = 0
 			else
 				self.time = self.time + 1
 			end
 		else
 			if self.time > 1 then 
-				self:StopSound( "coast.siren_citizen" )
-				self:EmitSound( "coast.siren_citizen" )
+				self:StopDeviceSound( "coast.siren_citizen" )
+				self:PlayDeviceSound( "coast.siren_citizen" )
 				self.time = 0
 			else
 				self.time = self.time + 1
@@ -272,7 +149,7 @@ function ENT:Leak() --leak cause this is like with storage, make be it could lea
 		end
 	else
 		if self.critical == 1 then
-			self:StopSound( "coast.siren_citizen" )
+			self:StopDeviceSound( "coast.siren_citizen" )
 			self.critical = 0
 		end
 	end

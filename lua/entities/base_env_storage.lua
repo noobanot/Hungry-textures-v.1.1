@@ -11,6 +11,8 @@ ENT.Instructions	= ""
 ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
 
+ENT.NoEnvPanel = true
+
 if(SERVER)then
 
 else
