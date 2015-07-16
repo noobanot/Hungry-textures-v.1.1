@@ -54,7 +54,14 @@ local Int = function(self)
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
-	self:EmitSound("ambient/machines/wall_ambient_loop1.wav",80,math.Rand(90,110) )
+	
 end
-local Data={name="Satellite",class="space_satellite",Type="Orbit",Think=Think,Startup=Int,ThinkSpeed=0.01,SpawnMe=Spawn,minimal=1}
+
+local Client = function(self)
+	function ENT:Initialize()
+		self:EmitSound("ambient/machines/wall_ambient_loop1.wav",80,math.Rand(90,110) )
+	end
+end
+
+local Data={name="Satellite",class="space_satellite",Type="Orbit",Client=Client,Think=Think,Startup=Int,ThinkSpeed=0.01,SpawnMe=Spawn,minimal=1}
 LDE.Anons.GenerateAnomaly(Data)
