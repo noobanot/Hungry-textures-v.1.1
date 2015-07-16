@@ -559,7 +559,7 @@ function Environments.RegisterTool(name, filename, category, description, cleanu
 		end
 	end
 
-	if SinglePlayer() and SERVER or !SinglePlayer() and CLIENT then
+	if game.SinglePlayer() and SERVER or not game.SinglePlayer() and CLIENT then
 		// Ghosts, scary
 		function TOOL:UpdateGhostEntity( ent, player )
 			if !ent or !ent:IsValid() then return end

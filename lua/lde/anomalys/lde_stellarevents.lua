@@ -58,7 +58,7 @@ local Int = function(self)
 end
 
 local Client = function(self)
-	function ENT:Initialize()
+	function self:Initialize()
 		self:EmitSound("ambient/machines/wall_ambient_loop1.wav",80,math.Rand(90,110) )
 	end
 end
