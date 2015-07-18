@@ -330,78 +330,10 @@ hook.Add("Tick", "ProjectileThink", ProjectileThink)
 
 ----------------------------------------------------------------------------
 --Safezone/Piratezone loader-------------------------------------------
-local Folder = "env_zones"
-local MapFileP = "/"..game.GetMap().."p.txt"
-local MapFileS = "/"..game.GetMap().."s.txt"
-MapFileP = Folder..string.gsub(MapFileP,"_","")
-MapFileS = Folder..string.gsub(MapFileS,"_","")
-print("MapFiles = "..MapFileP.." - "..MapFileS)
+local Persist = EnvX.Persist
 
-local function env_zone_filesetup()
-	--First, check for our storage directory and make it if needed
-	if not file.IsDir(Folder,"data") then
-		print(Folder.." not found, creating.")
-		file.CreateDir(Folder)
-	end
-
-	--Second, create the data files if they don't exist.
-	--print("MapFileP: "..tostring(MapFileP))
-	if not file.Exists(MapFileP,"data") then
-		print("MapFileP doesn't exist, creating file.")
-		file.Write(MapFileP, "data")
-		print("File created.")
-	end
-	if not file.Exists(MapFileS,"data") then
-		print("MapFileS doesn't exist, creating file.")
-		file.Write(MapFileS, "data")
-		print("File created.")
-	end
-end
-env_zone_filesetup()
-
-local function num_to_vec_convert(tbl)
-	local newvec = Vector(0,0,0)
-	local newtbl = {}
-	local Counter = 1
-	local Temp = {}
-	if table.Count(tbl) <= 0 then
-		print("num_to_vec_convert: Empty Table")
-		return newtbl
-	end
-	for k, num in pairs(tbl) do
-		Temp[Counter] = tonumber(num)
-		Counter=Counter+1
-		if Counter == 4 then
-			--print("Adding Vector")
-			newvec = Vector(Temp[1],Temp[2],Temp[3])
-			table.insert(newtbl,newvec)
-			Counter = 1
-		end
-	end
-	PrintTable(newtbl)
-	return newtbl
-end
-
-local function vec_to_num_convert(tbl)
-	local newtbl = {}
-	if table.Count(tbl) <= 0 then
-		print("vec_to_num_convert: Empty Table")
-		return newtbl
-	end
-	for k, vec in pairs(tbl) do
-		if type(vec) == "Vector" then
-		--local vx = vec:x()
-		--local vy = vec:y()
-		--local vz = vec:z()
-			--print("Tearing apart Vector")
-			table.insert(newtbl,tostring(vec.x))
-			table.insert(newtbl,tostring(vec.y))
-			table.insert(newtbl,tostring(vec.z))
-		end
-	end
-	--PrintTable(newtbl)
-	return newtbl
-end
+local FilePath = Persist.FileLocalPath().."envx_zoning/"
+local FileName = "["..string.lower(game.GetMap()).."]zones"
 
 --Inject Vars into newly created environments
 local function env_create_zone(ent)
@@ -410,14 +342,12 @@ local function env_create_zone(ent)
 		if ent:GetClass() == "environment" then
 			local pos = ent:GetPos()
 			print(tostring(pos))
-			local zonedatap = file.Read(MapFileP)
-			local zonedatas = file.Read(MapFileS)
-			local zonedatatablep = string.Explode("|",zonedatap)
-			local zonedatatables = string.Explode("|",zonedatas)
-			local zonedatatablep = num_to_vec_convert(zonedatatablep)
-			local zonedatatables = num_to_vec_convert(zonedatatables)
-			if table.Count(zonedatatablep) > 0 then
-				for k, v in pairs(zonedatatablep) do
+			local Zones = Persist.LoadPersist(FilePath,FileName,{SafeZones={},PirateZones={}})
+			local PirateZones = Zones.PirateZones
+			local SafeZones = Zones.SafeZones
+			
+			if table.Count(PirateZones) > 0 then
+				for k, v in pairs(PirateZones) do
 					if type(v) == "Vector" then
 						if pos:Distance(v) < 100 then
 							print("Adding Pirate Zone")
@@ -426,8 +356,8 @@ local function env_create_zone(ent)
 					end
 				end
 			end
-			if table.Count(zonedatatables) > 0 then
-				for k, v in pairs(zonedatatables) do
+			if table.Count(SafeZones) > 0 then
+				for k, v in pairs(SafeZones) do
 					if type(v) == "Vector" then
 						if pos:Distance(v) < 100 then
 							print("Adding Safe Zone")
@@ -448,86 +378,57 @@ end
 hook.Add("OnEntityCreated", "env_create_zone", env_create_zone)
 
 local function env_set_zone(ply,cmd,args)
-	if ply != NULL and not ply:IsAdmin() then return end
-	if ply.environment.name != "space" then
-		local ent = ply.environment
+	if ply ~= NULL and not ply:IsAdmin() then return end
+	if ply.environment.name ~= "space" then
+		local ent,num = ply.environment,args[1]
 		local pos = ent:GetPos()
-		local num = args[1]
+		local Zones = Persist.LoadPersist(FilePath,FileName,{SafeZones={},PirateZones={}})
+		
 		if type(num) == "string" then
 			--ply:ChatPrint("Debug Msg: Number detected")
 			if num == "1" then
-				local zonedatas = file.Read(MapFileS)
-				local zonedatatables = {}
-				if zonedatas != "" then
-					zonedatatables = string.Explode("|",zonedatas)
-					zonedatatables = num_to_vec_convert(zonedatatables)
-				end
-				table.insert(zonedatatables,pos)
-				PrintTable(zonedatatables)
-				zonedatatables = vec_to_num_convert(zonedatatables)
-				PrintTable(zonedatatables)
-				zonedatas = table.concat(zonedatatables,"|")
-				print(zonedatas)
-				file.Write(MapFileS, zonedatas)
+				table.insert(Zones.SafeZones,pos)
+				
 				ent.EnvZone = 1
 				ply:ChatPrint("Planet set to Safe Zone")
+				
+				Persist.SavePersist(FilePath,FileName,Zones)
 			elseif num == "2" then
-				local zonedatap = file.Read(MapFileP)
-				local zonedatatablep = {}
-				if zonedatap != "" then
-					zonedatatablep = string.Explode("|",zonedatap)
-					zonedatatablep = num_to_vec_convert(zonedatatablep)
-				end
-				table.insert(zonedatatablep,pos)
-				zonedatatablep = vec_to_num_convert(zonedatatablep)
-				zonedatap = table.concat(zonedatatablep,"|")
-				file.Write(MapFileP, zonedatap)
+				table.insert(Zones.PirateZones,pos)
+				
 				ent.EnvZone = 2
 				ply:ChatPrint("Planet set to Pirate Zone")
+				
+				Persist.SavePersist(FilePath,FileName,Zones)
 			elseif num == "0" then
-				local zonedatap = file.Read(MapFileP)
-				local zonedatas = file.Read(MapFileS)
-				local zonedatatablep = string.Explode("|",zonedatap)
-				local zonedatatables = string.Explode("|",zonedatas)
-				zonedatatablep = num_to_vec_convert(zonedatatablep)
-				zonedatatables = num_to_vec_convert(zonedatatables)
-				if table.Count(zonedatatablep) > 0 then
-					for k, v in pairs(zonedatatablep) do
+				local PirateZones = Zones.PirateZones
+				local SafeZones = Zones.SafeZones
+				
+				if table.Count(PirateZones) > 0 then
+					for k, v in pairs(PirateZones) do
 						if type(v) == "Vector" then
 							if pos:Distance(v) < 100 then
 								print("Removing Pirate Zone")
-								zonedatatablep[k] = nil
+								PirateZones[k] = nil
 							end
 						end
 					end
-					if table.Count(zonedatatablep) > 0 then
-						zonedatatablep = vec_to_num_convert(zonedatatablep)
-						PrintTable(zonedatatablep)
-						zonedatap = table.concat(zonedatatablep,"|")
-					else
-						zonedatap = ""
-					end
-					file.Write(MapFileP, zonedatap)
 				end
-				if table.Count(zonedatatables) > 0 then
-					for k, v in pairs(zonedatatables) do
+				
+				if table.Count(SafeZones) > 0 then
+					for k, v in pairs(SafeZones) do
 						if type(v) == "Vector" then
 							if pos:Distance(v) < 100 then
 								print("Removing Safe Zone")
-								zonedatatables[k] = nil
+								SafeZones[k] = nil
 							end
 						end
 					end
-					if table.Count(zonedatatables) > 0 then
-						zonedatatables = vec_to_num_convert(zonedatatables)
-						zonedatas = table.concat(zonedatatables,"|")
-					else
-						zonedatas = ""
-					end
-					file.Write(MapFileS, zonedatas)
 				end
 				ent.EnvZone = 0
 				ply:ChatPrint("Planet set to Normal Zone")
+				
+				Persist.SavePersist(FilePath,FileName,Zones)
 			else
 				ply:ChatPrint("0=Remove Zone, 1=Safe Zone, 2=Pirate Zone")
 			end

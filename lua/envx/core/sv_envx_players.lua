@@ -469,11 +469,11 @@ end
 --                  Life Support Hooks                --
 --------------------------------------------------------
 function Environments.Hooks.LSInitSpawn(ply)
+	print("init spawn")
+	
 	ply:SetupMMU()
-
-	umsg.Start("Environments", ply)
-		umsg.Short(Environments.Version)
-	umsg.End()
+	
+	EnvX.Utl.NetMan.AddData({Name="envx_setup_client",Val=1,Dat={Engine=Environments.Version}},ply)
 end
 
 function Environments.Hooks.LSSpawn(ply)
@@ -497,6 +497,7 @@ end
 
 function Environments.Hooks.LSInitSpawnDry(ply) --for when its not a space map
 	ply:ResetSuit()
+	print("init spawn dry")	
 	
 	ply.environment = {}
 	ply.environment.temperature = 288
@@ -505,9 +506,7 @@ function Environments.Hooks.LSInitSpawnDry(ply) --for when its not a space map
 	ply.environment.pressure = 1
 	
 	//INIT THEM!
-	umsg.Start("Environments", ply)
-		umsg.Short(Environments.Version)
-	umsg.End()
+	EnvX.Utl.NetMan.AddData({Name="envx_setup_client",Val=1,Dat={Engine=Environments.Version}},ply)
 end
 
 function Environments.Hooks.LSSpawn(ply)

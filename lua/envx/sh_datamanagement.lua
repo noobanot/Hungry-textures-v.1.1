@@ -31,7 +31,7 @@ end
 Persist.CheckFolderExist()
 
 --Setups the file path to save data. Based on if its server or client saving.
-function Persist.FilePath()
+function Persist.FileLocalPath()
 	if SERVER then
 		return Persist.DataFolder.."/server/"
 	else
@@ -40,11 +40,15 @@ function Persist.FilePath()
 end
 
 --This Function attempts to load data from file, and if it fails returns default data.
-function Persist.LoadPersist(File,Default)
+function Persist.LoadPersist(Path,File,Default)
 	local Data = {}
-
+	
+	if not file.IsDir(Path,"data") then
+		file.CreateDir(Path)
+	end
+		
 	--Check if the file exists.
-	local FPath = Persist.FilePath()..File..".txt"
+	local FPath = Path..File..".txt"
 	if file.Exists(FPath,"data") then
 		local Read = file.Read(FPath) or ""
 		Data = util.JSONToTable(Read) --Load the data from the file.
@@ -63,8 +67,14 @@ function Persist.LoadPersist(File,Default)
 end
 
 --Save our data to file.
-function Persist.SavePersist(File,Data)
-	file.Write(Persist.FilePath()..File..".txt", util.TableToJSON(Data))
+function Persist.SavePersist(Path,File,Data)
+	if file.IsDir(Path,"data") then
+		file.Write(Path..File..".txt", util.TableToJSON(Data))
+	else
+		file.CreateDir(Path)
+		--print(Path)
+		Persist.SavePersist(Path,File,Data)
+	end
 end
 
 

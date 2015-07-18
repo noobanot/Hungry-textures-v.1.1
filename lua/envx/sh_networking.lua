@@ -39,9 +39,10 @@ function NDat.SendData(Data,Name,ply)
 end
 
 function Utl:HookNet(MSG,Func) NDat.NHook[MSG] = Func end
-function NDat:InNetF(MSG,Data,ply) 
+function NDat:InNetF(MSG,Data,ply)
 	if(NDat.NHook[MSG])then
 		NDat.NHook[MSG](Data,ply) 
+		--print("Recieved Message: "..MSG)
 	else 
 		print("Unhandled message... "..MSG) 
 	end 
@@ -86,7 +87,7 @@ if(SERVER)then
 	]]	
 	function NDat.AddData(Data,ply)
 		local T=NDat.Data[ply:Nick()]
-		if not T then return end
+		if not T then NDat.AddPlay(ply) NDat.AddData(Data,ply) return end
 		for I, S in pairs( Data.Dat ) do
 			if S == nil then 
 				Data.Dat[I]=nil
@@ -101,7 +102,7 @@ if(SERVER)then
 	
 	--Creates the table we will use for each player.
 	function NDat.AddPlay(ply)
-		NDat.Data[ply:Nick()]={Data={},Ent=ply}
+		NDat.Data[ply:Nick()] = NDat.Data[ply:Nick()] or {Data={},Ent=ply}
 	end
 	
 	Utl:SetupThinkHook("SyncNetData",0.01,0,NDat.CyclePlayers)	

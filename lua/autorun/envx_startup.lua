@@ -20,7 +20,7 @@ Types:
 "Basic"-Prints Basic Debugging messages.
 "None"-Doesnt print to console at all.
 */ 
- 
+
 include("envx/load.lua")
 if SERVER then AddCSLuaFile("envx/load.lua") end
 local LoadFile = EnvX.LoadFile --Lel Speed.
@@ -37,10 +37,11 @@ LoadFile("envx/sh_envxload.lua",1)
 LoadFile("scoreboard/init.lua",1) 
 
 if CLIENT then
-	function Load(msg)
-		local Engine = net.ReadFloat()
+	EnvX.Utl:HookNet("envx_setup_client",function(Data)
+		local Engine = Data.Engine
+		
 		if Engine > 0 then
-			--include("envx/core/engine/cl_core.lua")
+			LoadFile("envx/core/cl_core.lua",0)
 			EnvX.SpaceEngine = true
 		else
 			EnvX.SpaceEngine = false
@@ -52,8 +53,7 @@ if CLIENT then
 		end
 		concommand.Add("envx_reload_hud", Reload)
         Reload()
-	end
-	net.Receive( "Jupiter_Init", Load)
+	end)
 	
 	language.Add( "worldspawn", "World" )
 	language.Add( "trigger_hurt", "Environment" )

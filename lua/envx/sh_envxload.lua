@@ -30,25 +30,7 @@ LoadFile(P.."core/sv_ls_support.lua",2)
 
 LoadFile(P.."env_rd_init.lua",1)
 
-if CLIENT then
-	function Load(msg)
-		include("vgui/HUD.lua")
-		LoadFile(P.."core/cl_core.lua",0)
-		EnvX.SpaceEngine = true
-		
-		local function Reload()
-			include("vgui/HUD.lua")
-			LoadHud()
-		end
-		concommand.Add("env_reload_hud", Reload)
-		LoadHud()
-		
-		if msg then
-			print("Environments Version "..msg:ReadShort().." Running On Server")
-		end
-	end
-	usermessage.Hook("Environments", Load)
-else
+if SERVER then
 	LoadFile(P.."core/cl_core.lua",0)
 	LoadFile("vgui/HUD.lua",0)
 	

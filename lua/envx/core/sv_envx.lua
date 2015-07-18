@@ -4,7 +4,6 @@
 ------------------------------------------
 
 --localize
---loser xD http://steamcommunity.com/id/AlauraLoveless/
 local math = math
 local hook = hook
 local game = game
@@ -86,9 +85,6 @@ local function LoadEnvironments()
 	print("// Adding Environments..           //")
 	local status, error = pcall(function() --log errors
 	--Get All Planets Loaded
-	if INFMAP then print("INFINITE MAP SYSTEM DETECTED!") --detect our map/system
-		print("LOADING ENVIRONMENTS AS SUCH") 
-	end
 	Environments.RegisterEnvironments() 
 	if UseEnvironments then --It is a spacebuild map
 		//Add Hooks
@@ -224,7 +220,7 @@ function Environments.RegisterEnvironments()
 	local i = 0
 	local map = game.GetMap()
 	
-	if file.Exists( "environments/" .. map ..".txt" ) then
+	if file.Exists( "environments/" .. map ..".txt","data" ) then
 		Environments.GetMapEntities()
 		print("//   Attempting to Load From File  //")
 		local contents = file.Read( "environments/" .. map .. ".txt" )
