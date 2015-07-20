@@ -23,26 +23,27 @@ if SERVER then
 	end,1)
 	
 	function Factions.PlayerSetFaction(ply,Faction)
-		local ID = ply:SteamID()
-		Factions.Players[ID] = Faction.Name
-		ply.EnvxFaction = Faction.Name
+		local ID,FName = ply:SteamID(),Faction.Info.Name
+		Factions.Players[ID] = FName
+		ply.EnvxFaction = FName
 	end
 	
-	function Factions.CreateFaction(Name,Members,Settings)
+	function Factions.CreateFaction(Info,Members,Settings)
 		local Faction = table.Copy(Factions.BaseFaction)
 		
-		Faction:Setup(Name,Members,Settings)
+		Faction:Setup(Info,Members,Settings)
 		
-		LDE.Factions.Factions[Name] = Faction
+		LDE.Factions.Factions[Info.Name] = Faction
 	end
-
+	concommand.Add("lde_generatefactiontest",function() Factions.CreateFaction({Name="Test"}) end)
+	
 	local FilePath = Persist.FileLocalPath().."envx_factions/"
 	local FileName = "factions"
 	
 	function Factions.SaveFactions()
 		local SaveData = {Version=1,Factions={},Players={}}
 		for k,v in pairs(LDE.Factions.Factions) do
-			SaveData.Factions[k]={Name=v.Name,Members=v.Members,Settings=v.Settings}
+			SaveData.Factions[k]={Info=v.Info,Members=v.Members,Settings=v.Settings}
 		end
 		
 		SaveData.Players = Factions.Players
@@ -56,14 +57,65 @@ if SERVER then
 		
 		if Version == 1 then
 			for k,v in pairs(Loaded.Factions) do
-				Factions.CreateFaction(v.Name,v.Members,v.Settings)
+				Factions.CreateFaction(v.Info,v.Members,v.Settings)
 			end
 			
-			Factions.Players = Loaded.Players
+			Factions.Players = Loaded.Players		
 		end
 	end
 	
 	Factions.LoadFactions()
+	
+	---Networking side of things.
+	
+	function Factions.SyncToClients(client)
+		local Data = {Factions={}}
+		
+		--Sync the factions over using the same format as the save system.
+		for k,v in pairs(LDE.Factions.Factions) do
+			Data.Factions[k]={Info=v.Info,Members=v.Members,Settings=v.Settings}
+		end
+		
+		if client and IsValid(client) then
+			NDat.AddData({Name="EnvxFactionsSync",Val=3,Dat=Data},client)
+		else
+			NDat.AddDataAll({Name="EnvxFactionsSync",Val=3,Dat=Data})
+		end
+	end
+	
+	Utl:HookNet("EnvxFactionsSyncRequest",function(Data,ply)
+		Factions.SyncToClients(ply)
+	end)
+	
+	Utl:SetupThinkHook("EnvxFactionsAutoSync",10,0,function() Factions.SyncToClients() end)
 else
-
+	Utl:HookNet("EnvxFactionsSync",function(Data)
+		Factions.Factions = Data.Factions
+		
+		if Factions.PDAPage and IsValid(Factions.PDAPage) then
+			Factions.PDAPage:OnFactionSync()
+		end
+	end)
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

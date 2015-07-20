@@ -6,21 +6,25 @@ local Factions = LDE.Factions
 
 ---Lets define the actual class here.
 local Class = {
-	Name="Error",
 	Members = {},
 	Diplomacy = {},
+	Info = {Name="Error",Desc="This faction hasn't provided a description yet!"},
 	Settings = {Password="",Permanent=false}
 }
 
+--Players will create and manage their own ranks, this is just to get them started...
 Class["Ranks"]={
 	{Name="Owner",Permissions={EditInfo=true,EditSettings=true,EditRanks=true,EditDiplomacy=true,EditMembers=true}},
 	{Name="Member",Permissions={EditInfo=false,EditSettings=false,EditRanks=false,EditDiplomacy=false,EditMembers=false}}
 }
 
 --
-function Class:Setup(Name,Members,Settings)
-	self.Name = Name or "Error"
+function Class:Setup(Info,Members,Settings)
 	self.Members = Members or {}
+	
+	for k,v in pairs(Info) do
+		self.Info[k]=v
+	end
 	
 	for k,v in pairs(self.Members) do
 		local ply = Utl:GetPlayerbyID(k)
@@ -33,6 +37,20 @@ function Class:Setup(Name,Members,Settings)
 	for k,v in pairs(Settings or {}) do
 		self.Settings[k]=v
 	end
+end
+
+function Class:AlertMembers(str)
+	for k,v in pairs(self.Members) do
+		local ply = Utl:GetPlayerbyID(k)
+		if ply and IsValid(ply) then
+			ply:SendColorChat("Faction",EnvX.GuiThemeColor.Text,str)
+		end
+	end
+end
+
+function Class:ChangeSetting(setting,value)
+	self.Settings[setting]=value
+	self:AlertMembers("Faction Setting: "..tostring(setting).." Changed to "..tostring(value))
 end
 
 function Class:AddMember(ply) 

@@ -18,7 +18,6 @@ LoadFile(P.."sh_constraints.lua",1)
 --LoadFile(P.."sh_networking.lua",1)
 LoadFile(P.."lde_ownership.lua",1)
 
-LoadFile(P.."lde_userinterface.lua",1)
 LoadFile(P.."lde_core.lua",1)
 LoadFile(P.."lde_unlocksystem.lua",1)
 LoadFile(P.."lde_mechadds.lua",2)
@@ -33,6 +32,9 @@ LoadFile(P.."lde_sporeai.lua",1)
 LoadFile(P.."lde_overrides.lua",1)
 LoadFile(P.."lde_effectcore.lua",1)
 LoadFile(P.."lde_factioncore.lua",1)
+LoadFile(P.."class/faction.lua",1)
+
+LoadFile(P.."lde_userinterface.lua",1)
 
 LoadFile(P.."lde_damagecontrol.lua",2)
 LoadFile(P.."lde_sporeai.lua",2)
