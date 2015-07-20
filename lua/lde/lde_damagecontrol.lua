@@ -539,7 +539,7 @@ function LDE:DealPlyDamage(ent,amount,attacker,inflictor)
 	end
 	dmginfo:SetDamage(amount)
 	
-	LDE.Mutations.HandleMutations(victim,"OnDamage",{weapon=inflictor,attacker=attacker})
+	LDE.PlayerData.HandleMutations(victim,"OnDamage",{weapon=inflictor,attacker=attacker})
 	
 	if(attacker)then
 		--print("Attacker ent: "..tostring(attacker))

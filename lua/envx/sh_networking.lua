@@ -12,7 +12,7 @@ local BoolNum = function(V) if V>0 then return true else return false end end --
 
 NDat.NetDTWrite = {S=net.WriteString,E=function(V) net.WriteFloat(V:EntIndex()) end,F=net.WriteFloat,V=net.WriteVector,A=net.WriteAngle,B=function(V) net.WriteFloat(NumBool(V)) end,T=function(T) net.WriteString(util.TableToJSON(T)) end}
 NDat.NetDTRead = {S=net.ReadString,E=function(V) return Entity(net.ReadFloat()) end,F=net.ReadFloat,V=net.ReadVector,A=net.ReadAngle,B=function() return BoolNum(net.ReadFloat()) end,T=function() return util.JSONToTable(net.ReadString()) or {} end}
-NDat.Types = {string="S",Entity="E",number="F",vector="V",angle="A",boolean="B",table="T"}
+NDat.Types = {string="S",Player="E",Entity="E",number="F",vector="V",angle="A",boolean="B",table="T"}
 
 --Actually sends the data out.
 function NDat.SendData(Data,Name,ply)

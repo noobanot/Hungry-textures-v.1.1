@@ -94,8 +94,8 @@ if(SERVER)then
 	function LDEPlayDeath(victim, weapon, killer)
 		if not IsValid(victim) then return end --Idk This is wierd
 
-		LDE.Mutations.HandleMutations(victim,"OnDeath",{weapon=weapon,attacker=attacker}) --Call the ondeath hook for mutations.
-		LDE.Mutations.HandleMutations(killer,"OnKill",{weapon=weapon,victim=victim}) --Call the ondeath hook for mutations.
+		LDE.PlayerData.HandleMutations(victim,"OnDeath",{weapon=weapon,attacker=attacker}) --Call the ondeath hook for mutations.
+		LDE.PlayerData.HandleMutations(killer,"OnKill",{weapon=weapon,victim=victim}) --Call the ondeath hook for mutations.
 		victim:ClearMutations()	--Clear all mutations.
 		
 		if not killer:IsPlayer() then killer = killer:CPPIGetOwner() end

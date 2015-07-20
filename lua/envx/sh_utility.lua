@@ -10,6 +10,7 @@ Utl.ThinkLoop = Utl.ThinkLoop or {} --Create the think loop table.
 Utl.DebugTable = Utl.DebugTable or {} --Create the debug output storage.
 Utl.Hooks = Utl.Hooks or {} --Create the hook table.
 Utl.Effect = Utl.Effect or {} --Create a table to store effect data in.
+Utl.Players = Utl.Players or {}
 
 local DTable = EnvX.Utl.DebugTable --Localise the debug storage.
 local HTable = EnvX.Utl.Hooks --Localise the hook table for speed.
@@ -169,7 +170,31 @@ if(SERVER)then
 	Utl:MakeHook("OnRemove")
 	Utl:MakeHook("Shutdown")
 	Utl:MakeHook("PlayerSay")
-			
+	
+	function Utl:GetPlayerbyID(ID)
+		if not ID then return end
+		
+		local ply = Utl.Players[ID]
+		if ply and IsValid(ply) then
+			if ply:SteamID()==ID then
+				return ply
+			else
+				Utl.Players[ID] = nil --Id to entity mismatch.
+			end
+		end
+	end
+	
+	Utl:HookHook("PlayerInitialSpawn","UtlLogPlayer",function(ply)
+		local ID = ply:SteamID()
+		Utl.Players[ID]=ply--Log the player
+	end,1)
+	
+	Utl:HookHook("PlayerDisconnected","UtlUnLogPlayer",function(ply)
+		local ID = ply:SteamID()
+		Utl.Players[ID]=nil--Remove the player
+	end,1)
+
+		
 	function Utl:LoopValidPlayers(F,A1,A2,A3,A4,A5)
 		local players = player.GetAll()	
 		for _, ply in ipairs( players ) do

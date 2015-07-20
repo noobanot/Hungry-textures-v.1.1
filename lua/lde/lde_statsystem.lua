@@ -2,7 +2,6 @@ module( "LDEplystats", package.seeall )
 
 LDE.Cash = {}
 LDE.Cash.Market = {}
-LDE.Mutations	= {}
 
 --------------------Market------------------------------
 LDE.Cash.Market.Resources = {}
@@ -157,12 +156,7 @@ function LDE.TakeMoney(ply,amount)
 	updatePlayer(ply)
 end
 
-if(SERVER)then
-	util.AddNetworkString('LDE_Stat')
-	util.AddNetworkString('LDE_Strings')
-	util.AddNetworkString('LDE_Unlocks')
-	util.AddNetworkString('LDE_SyncBuff')
-	
+if(SERVER)then	
 	function LDE.FindByNamePly(name)
 		name = string.lower(name);
 		for _,v in ipairs(player.GetHumans()) do
@@ -193,143 +187,11 @@ if(SERVER)then
 			
 	end
 	concommand.Add("LDE_sendfunds", playergivecash)
-	
-	function LDE.Mutations.HandleMutations(Ply,Event,Extra)
-		if(not Ply or not Ply:IsValid() or not Ply:IsPlayer())then return end --Y U DO THIS!
-		for _, mutation in pairs( Ply.Mutations ) do
-			if(mutation.start+mutation.time<=CurTime()and not mutation.Removed)then
-				if(mutation.Data["OnTimeEnd"])then
-					mutation.Data["OnTimeEnd"](Ply)
-				end
-				Ply:RemoveMutation(mutation.name)
-			else
-				if(mutation.Data[Event])then
-					mutation.Data[Event](Ply,Extra)
-				end
-			end
-		end
-	end
-	
-	function LDE.Mutations.ManagePlayers()
-		local players = player.GetAll()
-		
-		for _, ply in ipairs( players ) do
-			if ply and ply:IsConnected() then
-				if(not ply.Mutations)then ply.Mutations = {} end
-				LDE.Mutations.HandleMutations(ply,"Tick")
-			end
-		end		
-	end
-	timer.Create("LDEPlayerMutations", 1,0, LDE.Mutations.ManagePlayers)
 end
-
-local function StoreMutations( length, client )
-	Ent = net.ReadEntity()
-	if(not Ent or not Ent:IsValid())then return end --Derp
-	Ent.Mutations = util.JSONToTable(net.ReadString()) or {}
-	--print("Storing stats.")
-end
-net.Receive("LDE_SyncBuff", StoreMutations)
-
-local function StoreStat( length, client )
-	Ent = net.ReadEntity()
-	if(not Ent or not Ent:IsValid())then return end --Derp
-	Ent.Stats = util.JSONToTable(net.ReadString()) or {}
-	--print("Storing stats.")
-end
-net.Receive("LDE_Stat", StoreStat)
-
-local function StoreStrings( length, client )
-	Ent = net.ReadEntity()
-	if(not Ent or not Ent:IsValid())then return end --Derp
-	Ent.SStrings = util.JSONToTable(net.ReadString()) or {}
-	--print("Storing stats.")
-end
-net.Receive("LDE_Strings", StoreStrings)
-
-local function StoreUnlocks( length, client )
-	Ent = net.ReadEntity()
-	if(not Ent or not Ent:IsValid())then return end --Derp
-	Ent.Unlocks = util.JSONToTable(net.ReadString()) or {}
-	--print("Storing stats.")
-end
-net.Receive("LDE_Unlocks", StoreUnlocks)
 
 ---Player functions	
 local meta = FindMetaTable( "Player" )
 if not meta then return end
-
-function meta:GetStats()
-	return self.Stats or {}
-end
-
-function meta:GetUnlocks()
-	return self.Unlocks or {}
-end
-
-function meta:GetStrings()
-	return self.SStrings or {}
-end
-
-function meta:UnlockItem(Item)
-	self.Unlocks = self:GetUnlocks()
-	
-	self.Unlocks[Item] = true
-	
-	self:SyncLDEUnlocks()
-end
-
-function meta:SyncMutations()
-	net.Start('LDE_SyncBuff')
-		net.WriteEntity(self)
-		net.WriteString(util.TableToJSON(self.Mutations))
-	net.Broadcast()
-end
-
-function meta:ClearMutations()
-	for _, mutation in pairs( self.Mutations ) do
-		self:RemoveMutation(mutation.name)
-	end
-	self.Mutations={}	--Clear the mutations table.
-	self:SyncMutations() --Sync the mutations changes.
-end
-
-function meta:RemoveMutation(Name)
-	self.Mutations=self.Mutations or {}
-	if(self.Mutations[Name])then
-		self.Mutations[Name].Removed = true
-		LDE.Mutations.HandleMutations(self,"OnRemove")
-		self.Mutations[Name]=nil	--Remove the mutation from the table.
-		self:SyncMutations() --Sync the mutations changes.
-	end
-end
-
-function meta:GiveMutation(Name,Duration,Data,Stacks,Lock)
-	self.Mutations=self.Mutations or {}
-	local Table = {name = Name,time = Duration,start=CurTime(),Data = Data}--Format the mutation.
-	local mutation = self.Mutations[Name]
-	if(Stacks and mutation and mutation.start+mutation.time<=CurTime())then
-		Table = {name = Name,time = mutation.time+Duration,start=mutation.start,Data = Data}--Merge the mutation tables.
-	elseif(mutation)then
-		if(Stacks or Lock)then
-			return
-		end
-	end
-	self.Mutations[Name]=Table --Add it to the players mutations list.
-	self:SyncMutations() --Sync the mutations we got out.	
-	LDE.Mutations.HandleMutations(self,"OnStart") --Call the startup hook for mutations.
-end
-
-function meta:SetLDERole(role)
-	self:SetLDEString("Role",role)
-	self.Role = role
-end
-
-function meta:GetLDERole()
-	return self:GetLDEString("Role")
-end
-
-----Cash Transferance Systems---
 
 function meta:TakeCash(num)
 	local stat = "Cash"
@@ -361,61 +223,3 @@ function meta:TransferCash(ply,num)
 		ply:GiveCash(num)
 	end
 end
-
------Modular Stat system--------
-
-function meta:GiveLDEStat(stat,num)
-	self:SetLDEStat( stat, self:GetLDEStat(stat)+tonumber(num) or 0 )
-end
-
-function meta:TakeLDEStat(stat,num)
-	self:SetLDEStat( stat, self:GetLDEStat(stat)-tonumber(num) or 0)
-end
-
-function meta:SyncLDEStats()
-	net.Start('LDE_Stat')
-		net.WriteEntity(self)
-		net.WriteString(util.TableToJSON(self.Stats))
-	net.Broadcast()
-end
-
-function meta:SetLDEStat(stat,num) --Modular stat system.
-	self:SetNWInt( "LDE"..stat, tonumber(num) or 0 )
-	self.Stats[stat]=tonumber(num) or 0
-	self:SyncLDEStats()
-end
-
-function meta:GetLDEStat(stat) --Modular stat system.
-	local Stat = self:GetNWInt( "LDE"..stat ) 
-	if(not Stat)then
-		Stat=0
-		self:SetLDEStat(stat,0)
-	end
-	return Stat
-end
-
-function meta:SyncLDEStrings()
-	net.Start('LDE_Strings')
-		net.WriteEntity(self)
-		net.WriteString(util.TableToJSON(self.SStrings))
-	net.Broadcast()
-end
-
-function meta:SyncLDEUnlocks()
-	net.Start('LDE_Unlocks')
-		net.WriteEntity(self)
-		net.WriteString(util.TableToJSON(self.Unlocks))
-	net.Broadcast()
-end
-
-function meta:SetLDEString(name,str)
-	self:SetNWString("LDES"..name, str or "")
-	self.SStrings[name]=str or ""
-	self:SyncLDEStrings()
-end
-
-function meta:GetLDEString(name)
-	return self:GetNWString("LDES"..name) or "Error"
-end
-
-

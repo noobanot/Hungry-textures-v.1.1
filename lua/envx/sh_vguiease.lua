@@ -187,6 +187,45 @@ if(CLIENT)then
 		return Derma
 	end
 	
+	function MC.CreateAdvText(Parent,Size,Spot,Text,Color)	
+		local Derma = vgui.Create( "DPanel", Parent )
+			Derma:SetPos( Spot.x, Spot.y )
+			Derma:SetSize( Size.x, Size.y )			
+			function Derma:SetText(Text) self.Text = Text end Derma:SetText( Text or "" )
+			function Derma:SetTextColor(Col) self.TextColor = Col end Derma:SetTextColor( Color or EnvX.GuiThemeColor.Text )
+			
+			function Derma:Paint(w,h)
+				local TC = self.TextColor
+				surface.SetTextColor( TC.r, TC.g, TC.b, TC.a )
+				
+				local explode = string.Explode(" ",self.Text or "")
+				local NewLines = {}
+				
+				local line = ""
+				for _, textLine in pairs(explode) do
+					local text = line..textLine.." "
+					tw,th = surface.GetTextSize(text)
+					if tw < w-20 then
+						line = text
+					else
+						table.insert(NewLines,line)
+						line = textLine.." " 
+					end
+				end
+				table.insert(NewLines,line)
+				
+				posy=0
+				for _, textLine in pairs (NewLines) do
+					surface.SetTextPos( 5, posy )
+					surface.DrawText(textLine)
+					posy = posy + 10
+				end
+			end
+			
+			Derma:SizeToContents()
+		return Derma
+	end
+	
 	function MC.PropertyGrid(Parent,Size,Spot)
 		local Derma = vgui.Create( "DProperties",Parent )
 			Derma:SetSize( Size.x, Size.y )
