@@ -33,7 +33,9 @@ if SERVER then
 		
 		Faction:Setup(Info,Members,Settings)
 		
-		LDE.Factions.Factions[Info.Name] = Faction
+		Factions.Factions[Info.Name] = Faction
+		
+		return Faction
 	end
 	concommand.Add("lde_generatefactiontest",function() Factions.CreateFaction({Name="Test"}) end)
 	
@@ -50,30 +52,39 @@ if SERVER then
 		
 		Persist.SavePersist(FilePath,FileName,SaveData)
 	end
-	Utl:SetupThinkHook("EnvxFactionsAutoSave",10,0,function() Factions.SaveFactions() end)
 	
 	function Factions.LoadFactions() 
-		local Loaded = Persist.LoadPersist(FilePath,FileName,{Version=0,Factions={},Players={}})
+		local Loaded = Persist.LoadPersist(FilePath,FileName,{Version=0,Factions={},Players={},Ranks={}})
 		
-		if Version == 1 then
+		if Loaded.Version == 1 then
 			for k,v in pairs(Loaded.Factions) do
-				Factions.CreateFaction(v.Info,v.Members,v.Settings)
+				local Faction = Factions.CreateFaction(v.Info,v.Members,v.Settings)
+				
+				
 			end
 			
 			Factions.Players = Loaded.Players		
 		end
+		
+		Utl:SetupThinkHook("EnvxFactionsAutoSave",10,0,function() Factions.SaveFactions() end)
 	end
-	
-	Factions.LoadFactions()
+	Utl:SetupThinkHook("EnvxFactionsStartupLoad",2,1,function() Factions.LoadFactions() end)
+
 	
 	---Networking side of things.
 	
 	function Factions.SyncToClients(client)
-		local Data = {Factions={}}
+		local Data = {Factions={},Players={}}
 		
 		--Sync the factions over using the same format as the save system.
 		for k,v in pairs(LDE.Factions.Factions) do
-			Data.Factions[k]={Info=v.Info,Members=v.Members,Settings=v.Settings}
+			Data.Factions[k]={Info=v.Info,Members=v.Members,Settings=v.Settings,Ranks=v.Ranks}
+		end
+		
+		local plys = player.GetAll()
+		for k,v in pairs(plys) do
+			local ID = v:SteamID()
+			Data.Players[ID] = Factions.Players[ID]
 		end
 		
 		if client and IsValid(client) then
@@ -91,6 +102,7 @@ if SERVER then
 else
 	Utl:HookNet("EnvxFactionsSync",function(Data)
 		Factions.Factions = Data.Factions
+		Factions.Players = Data.Players
 		
 		if Factions.PDAPage and IsValid(Factions.PDAPage) then
 			Factions.PDAPage:OnFactionSync()
