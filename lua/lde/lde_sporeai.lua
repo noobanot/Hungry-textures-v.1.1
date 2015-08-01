@@ -397,12 +397,7 @@ LDE.Anons:RegisterAnomaly(Data)
 
 local Gene = function(self,Attached)
 	if(Attached.LDE)then
-		local Core = Attached.LDE.Core
-		if(Core and Core:IsValid())then
-			LDE:DamageShields(Core,50,false,self,true)
-		else
-			LDE:DealDamage(Attached,10,self,self)
-		end
+		LDE:DealDamage(Attached,10,self,self)
 	end
 end
 LDE.SporeAI.MakeGeneSlice("Attach","Acidic",Color(0,150,0,255),Gene)

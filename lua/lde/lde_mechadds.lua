@@ -47,7 +47,6 @@ function LDE:BlastDamage(Data)
 				
 				if Hit and not HitWorld and IsValid(HitEnt) then
 					if LDE:CheckValid(HitEnt) and not LDE:IsImmune(HitEnt) then
-						--LDE:DamageShields(HitEnt,Data.ShrapDamage,false)
 						LDE:DealDamage(HitEnt,Data.ShrapDamage,Data.Inflictor,Data.Inflictor)
 					end
 				end
@@ -81,7 +80,6 @@ function LDE:BlastDamage(Data)
 					local HitEnt = trace.Entity
 				
 					if (Hit and not HitWorld and IsValid(HitEnt)) or not Hit then
-						--LDE:DamageShields(HitEnt,Data.ShockDamage,false)
 						if not Hit then	--We didn't hit anything because the prop isn't parented correctly or is oddly shaped, so attempt damage anyway
 							if LDE:CheckValid(v) and not LDE:IsImmune(v) then
 								if not table.HasValue(targets, v) then
@@ -102,7 +100,6 @@ function LDE:BlastDamage(Data)
 			local count = table.Count(targets)
 			local damage = math.floor((Data.ShockDamage / count) * (1+(0.1*(count-1))))	--10% Damage increase for each entity caught in the blast beyond the first
 			for k, v in pairs(targets) do
-				--LDE:DamageShields(v,damage,false)
 				LDE:DealDamage(v,damage,Data.Inflictor,Data.Inflictor)
 			end
 		end

@@ -1,11 +1,7 @@
 
-LDE.DamageSystem = true
-
 --####	Basic Health Stuff	####--
 local MaxHealth,MinHealth = 1000000,100	-- Max Health Allowed
-
-local sounds = {Sound("tech/sga_impact_01.wav"),Sound("tech/sga_impact_02.wav"),Sound("tech/sga_impact_03.wav"),Sound("tech/sga_impact_04.wav")}
-for k,v in pairs(sounds) do util.PrecacheSound(v) end
+local HealthMult = 1
 
 function DebugPrint(str)
 	if false then
@@ -13,97 +9,18 @@ function DebugPrint(str)
 	end
 end
 
-
-function LDE_EntityTakeDamage( ent, dmginfo )
-	if(not dmginfo)then --LDE:Debug("ERROR NO DAMAGE INFO!") 
-		return 
-	end
-    if not IsValid(ent) then return false end
-	if not ent.LDEHealth and not ent:IsPlayer() and not ent:IsNPC() then
-   		LDE:CalcHealth(ent)
-	end
-	if(not ent.LDE)then ent.LDE = {} end
-    local inflictor = dmginfo:GetInflictor()
-	local attacker = dmginfo:GetAttacker()
-	local amount = dmginfo:GetDamage()
-	
-	if ent:IsOnFire() then
-		local waterlevel = ent:WaterLevel() or 0
-		if(waterlevel>0)then ent:Extinguish() end	
-	end
-	
-    if ent.LDEHealth then
-		local damage = {}
-		if dmginfo:IsBulletDamage() then
-			amount = amount*2
-			if amount > 50 then
-				amount = 50	
-			end
-			damage= {EM = 0,EXP = 0,KIN = amount,THERM = 0} 			
-		elseif dmginfo:IsExplosionDamage() then
-		    damage= {EM = 0,EXP = amount,KIN = 0,THERM = 0}
-		else
-			if ent.LDE.Core != nil then
-				if dmginfo:GetInflictor():GetClass() == "prop_combine_ball" then
-				 	amount = amount / 10
-				else
-					amount = amount * 2.0
-				end
-			else
-				amount = amount / 2
-			end
-			damage= {EM = 0,EXP = 0,KIN = amount,THERM = 0}
-		end
-		LDE:ApplyDamage(ent, damage, attacker, inflictor)
-	elseif (ent:IsPlayer() or ent:IsNPC()) then
-		LDE:ApplyPlayerDamage(ent,dmginfo)
-	else
-	    return false  
+function table.Random(t) --darn you garry
+	local rk = math.random(1,table.Count(t))
+	local i = 1
+	for k,v in pairs(t) do
+		if i == rk then return v, k end
+		i = i + 1
 	end
 end
-hook.Add( "EntityTakeDamage", "LDE_EntityTakeDamage", LDE_EntityTakeDamage)
 
-function LDE:ApplyPlayerDamage(ent,dmginfo,amount)
-	if(not dmginfo)then  ent:TakeDamage(amount) return end
-	if(ent.environment)then
-		//print("Environment Detected.")
-		if(ent.environment.EnvZone and ent.environment.EnvZone>0)then dmginfo:SetDamage(0) return true end
-		//print("Its not a safe zone.")
-	end
-	if not IsValid(ent) or (ent:IsPlayer() and not ent:Alive()) then return false end
-	local inflictor = dmginfo:GetInflictor()
-	local attacker = dmginfo:GetAttacker()
-	local amount = dmginfo:GetDamage()
-	if(inflictor:IsWorld() or attacker:IsWorld())then return false end
-	if dmginfo:IsFallDamage() then
-		amount = amount/10
-	end
-	dmginfo:SetDamage(amount)
-	
-	if(ent:IsPlayer() and attacker)then
-		--print("Attacker ent: "..tostring(attacker))
-		if(not attacker:IsPlayer())then attacker=attacker:CPPIGetOwner() end
-		if(attacker and attacker:IsPlayer())then
-			--print("Attacker "..attacker:Name().." \n")
-			local Text = ent:GetName().." was damaged by "..attacker:GetName().." for "..amount
-			----LDE.Logger.LogEvent( Text )
-		end
-	end
-	
-	return true
-end
+------------------------Health----------------------------------------
 
-function LDE:ApplyDamage(ent, damage, attacker, inflictor, override) --Attacker is the player, inflictor is the weapon)
-	//print("Attacker: "..tostring(attacker))
-	if not IsValid(ent) then return false end 	
-	
-	local amount = damage.EM+damage.EXP+damage.KIN+damage.THERM
-	
-	LDE:DealDamage(ent,amount,attacker,inflictor)
-end
-
--- Health
-
+--Grabs the volume of an entity
 function GetVolume(ent)
 
 	local min = ent:OBBMins()
@@ -115,34 +32,36 @@ function GetVolume(ent)
 	
 end
 
+--Global variable for health multiplier
 function LDE:GetHealthMultiplier(ent)
-	return 2	
+	return HealthMult
 end
 
+--This here gets the maximum health of an entity.
 function LDE:CalcHealth( ent )
-	if(ent.LDEMaxHealth)then return ent.LDEMaxHealth end
+	if ent.LDEMaxHealth then return ent.LDEMaxHealth end
 	
 	local volume = GetVolume(ent)	
 	local multiplier = LDE:GetHealthMultiplier(ent)
 	local health = math.Round(((volume)^(0.515))*multiplier)
 	
-	if(not ent.LDEHealth)then ent.LDEHealth=health end
+	if not ent.LDEHealth then ent.LDEHealth=health end
 	
-	ent.LDEMaxHealth=health
+	ent.LDEMaxHealth = health
 	return health
 end
 
 -- Returns the health of the entity without setting it
 function LDE:GetHealth( ent )
-	if(ent.InfHealth)then return 99999999 end
-	if(not self:CheckValid( ent )) then return 0 end
-	if(not ent.LDE) then ent.LDE = {} end
+	if ent.InfHealth then return 99999999 end
+	if not self:CheckValid( ent ) then return 0 end
+
 	local phys = ent:GetPhysicsObject()
 	if (not IsValid(phys)) then return 0 end
 	local Max = LDE:GetMaxHealth(ent)
-	if (ent.LDEHealth) then
-		-- Check if the entity has too much health (if the player changed the mass to something huge then back again)
-		if (ent.LDEHealth > Max) then
+	
+	if ent.LDEHealth then
+		if ent.LDEHealth > Max then
 			return Max
 		end
 		return ent.LDEHealth
@@ -154,7 +73,7 @@ end
 -- Returns the maximum health of the entity without setting it
 function LDE:GetMaxHealth( ent )
 	local Hp = 0
-	if(ent.LDEMaxHealth)then
+	if ent.LDEMaxHealth then
 		Hp = ent.LDEMaxHealth
 	else
 		Hp = LDE:CalcHealth(ent)
@@ -162,14 +81,7 @@ function LDE:GetMaxHealth( ent )
 	return Hp
 end
 
-function table.Random(t) --darn you garry
-	local rk = math.random(1,table.Count(t))
-	local i = 1
-	for k,v in pairs(t) do
-		if i == rk then return v, k end
-		i = i + 1
-	end
-end
+---------------------------Core Destruction Functions------------------------------------
 
 function LDE:ExplodeCoreEffect(ent,scale)
 	local effectdata = EffectData()
@@ -184,10 +96,10 @@ end
 
 function LDE:DestroyDeathCluster(ent)
 	--print("Death Func Called!")
-	if(not IsValid(ent))then return end
-	if(ent.Ents)then
+	if not IsValid(ent) then return end
+	if ent.Ents then
 		for key,found in pairs(ent.Ents) do
-			if(IsValid(found))then
+			if IsValid(found) then
 				LDE:BreakOff(found)
 			end
 		end
@@ -201,7 +113,7 @@ function LDE:CoreKillProp(Prop,mass)
 	local delay = (math.random(300, 800) / 100)
 	timer.Create("Kill "..Prop:EntIndex(),delay+5,1,function() LDE:DestroyDeathCluster(Prop) end) --Kill the clump after some time has passed.
 	local physobj = Prop:GetPhysicsObject()
-	if(physobj:IsValid()) then
+	if IsValid(physobj) then
 	physobj:Wake()
 	physobj:EnableMotion(true)
 	local Mult= 100
@@ -216,7 +128,7 @@ function LDE:CoreDeathWeld(ent)
 	if(ent.Looped >= ent.ExplodeLoop)then
 		--print("Cores Dead!")
 		for key,Prop in pairs(ent.Clumps) do
-			if(Prop and Prop:IsValid())then
+			if Prop and IsValid(Prop) then
 				if(Prop.Cluster == Prop)then
 					local mass = Prop.ClumpWeight
 					LDE:CoreKillProp(Prop,mass)
@@ -382,9 +294,9 @@ function LDE:BreakOff(ent)
 	if(not ent or not ent:IsValid())then
 		return
 	end
-	if(not ent.LDE)then ent.LDE = {} end
-	if(ent.LDE.Core and ent.LDE.Core:IsValid() and not ent.LDE.Core.IsSpaceCraft)then
-		if(ent.LDE.Core.CoreUnlink)then
+	if not ent.LDE then ent.LDE = {} end
+	if ent.LDE.Core and IsValid(ent.LDE.Core) and not ent.LDE.Core.IsSpaceCraft then
+		if ent.LDE.Core.CoreUnlink then
 			ent.LDE.Core:CoreUnLink( ent )
 		end
 	end
@@ -409,7 +321,7 @@ function LDE:BreakOff(ent)
 		local delay = (math.random(300, 800) / 100)
 		timer.Create("Kill "..ent:EntIndex(),delay+10,1,function() LDE:KillEnt(ent) end) --Kill the ent after some time has passed.
 		local physobj = ent:GetPhysicsObject()
-		if(physobj:IsValid()) then
+		if IsValid(physobj) then
 			physobj:Wake()
 			physobj:EnableMotion(true)
 			local mass = physobj:GetMass()
@@ -440,8 +352,73 @@ function LDE:ShieldDamageEffect(ent)
  		--util.Effect( "sc_shield_hit", ed, true, true)
 		util.Effect( "LDE_shield_hit", ed, true, true)
 		ent.LDE.Shieldglowing = true
-		timer.Simple( 0.8, function() if(not ent or not ent:IsValid())then return end ent.LDE.Shieldglowing = false end )	
+		timer.Simple( 0.8, function() if not ent or not IsValid(ent) then return end ent.LDE.Shieldglowing = false end )	
  	end
+end
+
+
+--------------------------------Damnage Bit-------------------------------------------
+
+function LDE_EntityTakeDamage( ent, dmginfo )
+	if not dmginfo then
+		return 
+	end
+	
+    if not IsValid(ent) then return false end
+	
+	if not ent.LDEHealth and not ent:IsPlayer() and not ent:IsNPC() then
+   		LDE:CalcHealth(ent)
+	end
+	
+    local inflictor = dmginfo:GetInflictor()
+	local attacker = dmginfo:GetAttacker()
+	local amount = dmginfo:GetDamage()
+	
+	--Under water props shouldnt burn.
+	if ent:IsOnFire() then
+		if ent:WaterLevel() > 0 then 
+			ent:Extinguish() 
+		end	
+	end
+	
+    if ent.LDEHealth then
+		LDE:DealDamage(ent,amount,attacker,inflictor)
+	elseif ent:IsPlayer() or ent:IsNPC() then
+		LDE:ApplyPlayerDamage(ent,dmginfo)
+	else
+	    return false  
+	end
+end
+hook.Add( "EntityTakeDamage", "LDE_EntityTakeDamage", LDE_EntityTakeDamage)
+
+function LDE:ApplyPlayerDamage(ent,dmginfo,amount)
+	if not dmginfo then  ent:TakeDamage(amount) return end
+	if ent.environment then
+		//print("Environment Detected.")
+		if ent.environment.EnvZone and ent.environment.EnvZone>0 then dmginfo:SetDamage(0) return true end
+		//print("Its not a safe zone.")
+	end
+	if not IsValid(ent) or not ent:Alive() then return false end
+	local inflictor,attacker,amount = dmginfo:GetInflictor(),dmginfo:GetAttacker(),dmginfo:GetDamage()
+	
+	if inflictor:IsWorld() or attacker:IsWorld() then return false end
+	
+	if dmginfo:IsFallDamage() then
+		amount = amount/10
+	end
+	dmginfo:SetDamage(amount)
+	
+	if ent:IsPlayer() and attacker then
+		--print("Attacker ent: "..tostring(attacker))
+		if not attacker:IsPlayer() then attacker=attacker:CPPIGetOwner() end
+		if attacker and attacker:IsPlayer() then
+			--print("Attacker "..attacker:Name().." \n")
+			local Text = ent:GetName().." was damaged by "..attacker:GetName().." for "..amount
+			----LDE.Logger.LogEvent( Text )
+		end
+	end
+	
+	return true
 end
 
 ---This is for dealing advanced damage.
@@ -460,23 +437,23 @@ function LDE:DealAdvDamage(ent,data)
 		ignoresafe = false --Does the damage ignore safe zones
 	}
 	]]
-	if(not IsValid(ent))then return end
-	if(LDE:IsImmune(ent))then return end -- Its Immune.... dont do damage.
-	if (not self:CheckValid( ent )) then return end
-	if(not data)then print("Damage is nil") return end
+	if not IsValid(ent) then return end
+	if LDE:IsImmune(ent) then return end -- Its Immune.... dont do damage.
+	if not self:CheckValid( ent ) then return end
+	if not data then print("Damage is nil") return end
 	
 	--print("It passed!.")
 	
-	if(not inflictorowner == targetowner or not data.ignoresafe or data.ignoresafe==false)then
-		if(LDE:IsInSafeZone(ent))then
+	if not inflictorowner == targetowner or not data.ignoresafe or data.ignoresafe==false then
+		if LDE:IsInSafeZone(ent) then
 			return
 		end
 	end
 	
-	if(ent:IsPlayer())then
+	if ent:IsPlayer() then
 		data.Player(ent,data)
-	elseif(ent.LDE.Core and ent.LDE.Core:IsValid())then
-		if(ent.LDE.Core.IsSpaceCraft)then
+	elseif ent.LDE.Core and IsValid(ent.LDE.Core) then
+		if ent.LDE.Core.IsSpaceCraft then
 			data.SpaceCraft(ent,data)
 		else
 			data.Core(ent,data)
@@ -511,25 +488,25 @@ function LDE:DealDamage(ent,amount,attacker,inflictor,ignoresafe)
 	
 	local targetowner = ent:CPPIGetOwner() or ""
 	
-	if(not ignoresafe or ignoresafe==false )then
-		if(LDE:IsInSafeZone(ent))then
-			if(inflictorowner ~= targetowner)then
+	if not ignoresafe or ignoresafe==false then
+		if LDE:IsInSafeZone(ent) then
+			if inflictorowner ~= targetowner then
 				return
 			end
 		end
 	end
 	
-	if (ent:IsPlayer() or ent:IsNPC()) then LDE:DealPlyDamage(ent,amount,attacker,inflictor) return end
+	if ent:IsPlayer() or ent:IsNPC() then LDE:DealPlyDamage(ent,amount,attacker,inflictor) return end
 	
-	if(ent.OnLDEDamage)then	ent:OnLDEDamage(amount,attacker,inflictor) end
+	if ent.OnLDEDamage then	ent:OnLDEDamage(amount,attacker,inflictor) end
 	
 	LDE:DamageShields(ent,amount,false,attacker)
 end
 
 function LDE:DealPlyDamage(ent,amount,attacker,inflictor)
-	if(not dmginfo)then  ent:TakeDamage(amount,inflictor,attacker) return end
+	if not dmginfo then  ent:TakeDamage(amount,inflictor,attacker) return end
 	if not IsValid(ent) or not ent:Alive() then return false end
-	if(inflictor:IsWorld() or attacker:IsWorld())then return false end
+	if inflictor:IsWorld() or attacker:IsWorld() then return false end
 	if dmginfo:IsFallDamage() then
 		amount = amount/10
 	elseif ent:IsOnFire() then
@@ -541,10 +518,10 @@ function LDE:DealPlyDamage(ent,amount,attacker,inflictor)
 	
 	LDE.PlayerData.HandleMutations(victim,"OnDamage",{weapon=inflictor,attacker=attacker})
 	
-	if(attacker)then
+	if attacker then
 		--print("Attacker ent: "..tostring(attacker))
-		if(not attacker:IsPlayer())then attacker=attacker:CPPIGetOwner() end
-		if(attacker and attacker:IsPlayer())then
+		if not attacker:IsPlayer() then attacker=attacker:CPPIGetOwner() end
+		if attacker and attacker:IsPlayer() then
 			--print("Attacker "..attacker:Name().." \n")
 			local Text = ent:GetName().." was damaged by "..attacker:GetName().." for "..amount
 			----LDE.Logger.LogEvent( Text )
@@ -600,7 +577,7 @@ function LDE:DamageHealth(ent,amount,override,attacker)
 	if IsValid(ent.LDE.Core) and not override and not ent.NoShields then
 		local hitent = ent
 		ent = ent.LDE.Core
-		if(ent.IsSpaceCraft)then ent:HurtHealth(amount) return end
+		if ent.IsSpaceCraft then ent:HurtHealth(amount) return end
 		ent.attacker = attacker
 		WireLib.TriggerOutput( ent, "Attacker", attacker )
 		if ent.LDE.CoreHealth > amount then
@@ -608,7 +585,7 @@ function LDE:DamageHealth(ent,amount,override,attacker)
 						
 			ent.LDE.CoreHealth = math.Clamp(ent.LDE.CoreHealth-math.abs(amount),0,ent.LDE.CoreMaxHealth)
 			
-			if(not ent==hitent or ent~=hitent)then--Makesure the core itself isnt being hit
+			if not ent==hitent or ent~=hitent then--Makesure the core itself isnt being hit
 				local HitDamage = (amount/ent.Data.ArmorRate)
 				if(hitent.OnLDEDamage)then hitent:OnLDEDamage(HitDamage,attacker,attacker) end
 				LDE:DamageHealth(hitent,HitDamage,true) --Damage the entity that was hit.
@@ -622,11 +599,11 @@ function LDE:DamageHealth(ent,amount,override,attacker)
 	else
 		local Health = LDE:GetHealth( ent )
 		if Health > amount then
-			if(ent.OnLDEDamage)then ent:OnLDEDamage(amount,attacker,attacker) end
+			if ent.OnLDEDamage then ent:OnLDEDamage(amount,attacker,attacker) end
 			ent.LDEHealth = Health-amount
 		else
 			--print("Prop is dead now!")
-			if(ent.LDE.Core and ent.LDE.Core:IsValid())then
+			if ent.LDE.Core and IsValid(ent.LDE.Core) then
 				LDE:BreakOff(ent)
 			else
 				LDE:KillEnt(ent)
@@ -741,9 +718,9 @@ end
 
 --Checks if the entity is in a war zone.
 function LDE:IsInPirateZone(ent)
-	if(not IsValid(ent))then return false end
-	if(ent.environment)then
-		if(ent.environment.EnvZone and ent.environment.EnvZone==2)then 
+	if not IsValid(ent) then return false end
+	if ent.environment then
+		if ent.environment.EnvZone and ent.environment.EnvZone==2 then 
 			return true
 		else
 			return false
@@ -755,10 +732,10 @@ end
 
 --Checks if a entity is in a safe zone.
 function LDE:IsInSafeZone(ent)
-	if(not IsValid(ent))then return false end
-	if(ent.ldedamageinsafe)then return false end
-	if(ent.environment)then
-		if(ent.environment.EnvZone and ent.environment.EnvZone>=1)then 
+	if not IsValid(ent) then return false end
+	if ent.ldedamageinsafe then return false end
+	if ent.environment then
+		if ent.environment.EnvZone and ent.environment.EnvZone>=1 then 
 			return true
 		else
 			return false
@@ -778,17 +755,19 @@ function LDE:MinHealth()	-- Get the MinHealth
 end
 
 function LDE:CheckValid( entity )
-	if not entity:IsValid(entity)then return false end
-	if (entity:IsWorld()) then return false end
-	if (not entity:GetPhysicsObject():IsValid()) then return false end
-	if (not entity:GetPhysicsObject():GetVolume()) then return false end
-	if (not entity:GetPhysicsObject():GetMass()) then return false end
+	if not IsValid(entity)then return false end
+	if entity:IsWorld() then return false end
+	if not IsValid(entity:GetPhysicsObject()) then return false end
+	if not entity:GetPhysicsObject():GetVolume() then return false end
+	if not entity:GetPhysicsObject():GetMass() then return false end
 	return true
 end
 
 function LDE:IsImmune(ent)
-	if not IsValid(ent) then return true end
-	if(ent.jailWall or ent.NoLDEDamage)then return true end
+	if not IsValid(ent) or ent.jailWall or ent.NoLDEDamage then 
+		return true 
+	end
+	
 	local str = ent:GetClass()
 	for _,b in pairs(LDE.Blocked) do
 		if(string.find(str,b))then

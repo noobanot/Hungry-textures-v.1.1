@@ -1,8 +1,14 @@
+
+--Get new sounds!
+local sounds = {Sound("tech/sga_impact_01.wav"),Sound("tech/sga_impact_02.wav"),Sound("tech/sga_impact_03.wav"),Sound("tech/sga_impact_04.wav")}
+for k,v in pairs(sounds) do util.PrecacheSound(v) end
+
 LDE.CoreSys = {}
 
 LDE.CoreSys.Cores = {}
 LDE.CoreSys.Shields = {}
 
+--Over Time effects on shields.
 LDE.CoreSys.ShieldAge = function(self,Data)
 	if(not Data)then return false end
 	if(Data.ShieldAge<0)then
@@ -30,6 +36,7 @@ LDE.CoreSys.ShieldAge = function(self,Data)
 	end
 end
 
+--Temperature Change over time.
 LDE.CoreSys.Radiate = function(self,Data)
 	if(not self.LDE or not self.LDE.CoreTemp)then return false end
 	if(self.LDE.CoreTemp>0)then
@@ -53,32 +60,27 @@ local ShipClasses = {
 	"Cruiser",
 	"Battle-Cruiser",
 	"Battleship",
-	"Dreadnaught",
+	"Dreadnought",
 	"Super Battleship",
-	"Class 1 Leviathon",
-	"Class 2 Leviathon",
-	"Class 3 Leviathon",
+	"Class 1 Leviathan",
+	"Class 2 Leviathan",
+	"Class 3 Leviathan",
 	"Class 1 Titan",
 	"Class 2 Titan",
 	"Battle-Barge",
-	"Super Dreadnaught",
-	"Leviathon Destroyer",
+	"Super Dreadnought",
+	"Leviathan Destroyer",
 	"Mega Titan",
-	"Super Leviathon",
+	"Super Leviathan",
 	"Titan Destroyer",
 	"Eversor Regalis",
 	"That's No Moon!",
-	"Mecha Planet",
+	"Mechanical Planet",
 	"Galactic Vengeance",
 	"HOLY FUCKING JESUS"
 }
 
-/*
-for i, cls in pairs( ShipClasses ) do
-	local Scale = 50000*(i*((i/5)+(i/10)))
-	print("Class: "..cls.." V: "..Scale) 
-end
-*/
+--Determines the cores class
 LDE.CoreSys.CoreClass = function(self)
 	local T = self.LDE.CoreMaxShield+self.LDE.CoreMaxHealth
 	self.LDE.TotalHealth = T
@@ -97,6 +99,7 @@ LDE.CoreSys.CoreClass = function(self)
 	self:SetNWInt("LDECoreClass", Classification)
 end
 
+--Calculates the health of a core.
 LDE.CoreSys.CoreHealth = function(self,Data)
 	-- Get all constrained props
 	self.Props = constraint.ShipCoreDetect(self.Entity)

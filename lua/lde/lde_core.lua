@@ -27,7 +27,7 @@ if(SERVER)then
 	resource.AddWorkshop( "247007332" ) --Envx
 	
 	
-	--We have to create a copy of each model so we can accuratly scan for them.
+	--We have to create a copy of each model so we can accurately scan for them.
 	timer.Simple(1,function()
 		for k,v in pairs(LDERequiredModels) do
 			local ent = ents.Create("holograment")
@@ -251,17 +251,35 @@ end
 
 function LDE_EntCreated(ent)--Entity Spawn hook.
 	if(LDE:CheckBanned(ent))then --LDE:Debug("Illegal Entity spawned. Removing it.") 
-		ent:Remove() return 
+		ent:Remove() 
+		return 
 	end
-	if ent:IsValid() and not ent:IsWeapon() and CurTime() > 5 then
-		timer.Simple( 0.25, function()  if(not ent or not ent:IsValid())then return end LDE_Filter( ent ) end)  --Need the timer or the ent will be detect as the base class and with no model.
+	
+	if IsValid(ent) and not ent:IsWeapon() and CurTime() > 5 then
+		timer.Simple( 0.25, function()  
+			if not ent or not IsValid(ent) then 
+				return 
+			end 
+			LDE_Filter( ent ) 
+		end)  --Need the timer or the ent will be detect as the base class and with no model.
+		
+		--Generate an base LDE table if one does not exist.
+		if not ent.LDE then
+			ent.LDE = {
+				Temperature=0,
+				HeatCapacity=0,
+				MeltingPoint=0,
+				FreezingPoint=0,
+				Core=NULL
+			}
+		end
 	end
 end
 Utl:HookHook("OnEntityCreated", "LDE_EntCreated", LDE_EntCreated,1)
 
 
 function LDE_Filter(ent) --Because the hook finds EVERYTHING, lets filter out some usless junk 	
-	if not ent:IsValid() then return false end
+	if not IsValid(ent) then return false end
     if ent:GetClass() == "gmod_ghost" then return false end	
     if ent:GetSolid() == SOLID_NONE then return false end
     if ent:IsNPC() then return false end
@@ -289,20 +307,24 @@ function LDE:Spawned( ent )
 	if(SERVER)then
 	
 		if ent:IsPlayer() then return end
-
+		
+		local Health = LDE:CalcHealth( ent )
+		
 		--HeatSimulation Variables
 		ent.LDE.Temperature = 0
-		ent:SetNWInt("LDEEntTemp", ent.LDE.Temperature) --Network the current Temperature, 0
-		ent.LDE.MeltingPoint=LDE:CalcHealth(ent)/10
-		ent:SetNWInt("LDEMaxTemp", ent.LDE.MeltingPoint) --Network the max Temperature
-		ent.LDE.FreezingPoint=(LDE:CalcHealth(ent)/20)*-1
-		ent:SetNWInt("LDEMinTemp", ent.LDE.FreezingPoint)
+		ent.LDE.MeltingPoint=Health/10
+		ent.LDE.FreezingPoint=(Health/20)*-1
 		ent.LDE.OverHeating = false
+		
+		--Networking....
+		ent:SetNWInt("LDEEntTemp", ent.LDE.Temperature)
+		ent:SetNWInt("LDEMinTemp", ent.LDE.FreezingPoint)
+		ent:SetNWInt("LDEMaxTemp", ent.LDE.MeltingPoint)
 		
 		--Damage Control Spawn function
 		local MaxHealth = LDE:MaxHealth()
 		local MinHealth = LDE:MinHealth()
-		local Health = LDE:CalcHealth( ent )	
+		
 		if Health < MaxHealth and Health > MinHealth then
 			ent.LDEHealth = Health
 			ent.LDEMaxHealth = Health
