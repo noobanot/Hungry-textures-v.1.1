@@ -52,8 +52,8 @@ if(SERVER)then
 			end
 
 			if delay then
-				timer.Simple(0.1, function()
-					NDat.AddDataAll({Name="EnvX_NodeSyncStorage",Val=1,Dat={Node=self:EntIndex(),ResourceMaxs=Sync}})
+				timer.Simple(0.12, function()
+					NDat.AddDataAll({Name="EnvX_NodeSyncStorage",Val=1,Dat={Debug=tostring(ent),Node=self:EntIndex(),ResourceMaxs=Sync}})
 				end)
 			else
 				NDat.AddDataAll({Name="EnvX_NodeSyncStorage",Val=1,Dat={Node=self:EntIndex(),ResourceMaxs=Sync}})

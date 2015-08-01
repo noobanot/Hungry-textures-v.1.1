@@ -4,7 +4,7 @@ TOOL.AddToMenu = true -- Tell gmod not to add it. We will do it manually later!
 TOOL.Description = ""
 TOOL.Command = nil
 TOOL.ConfigName = ""
-TOOL.ClientConVar[ "model" ] = "models/ce_ls3additional/solar_generator/solar_generator_giant.mdl"
+TOOL.ClientConVar[ "model" ] = "models/props_wasteland/panel_leverBase001a.mdl"
 TOOL.ClientConVar[ "Weld" ] = 1
 TOOL.ClientConVar[ "NoCollide" ] = 0
 TOOL.ClientConVar[ "Freeze" ] = 1
@@ -25,20 +25,20 @@ TOOL.Models = {}
 function TOOL:Register()
 	-- Register language clientside
 	local class = self.Entity.Class -- Quick reference
-	if(self.Language["Cleanup"]) then
+	if self.Language["Cleanup"] then
 		cleanup.Register(self.CleanupGroup)
 	end
 	if CLIENT then
 		//Yay, simplified titles
 		language.Add( "tool."..self.Mode..".name", self.Name )
 		language.Add( "tool."..self.Mode..".desc", self.Description )
-		language.Add( "tool."..self.Mode..".0", "Primary: Spawn a "..self.Name.. " Secondary: Repair LS Device" )
+		language.Add( "tool."..self.Mode..".0", "Primary: Spawn a "..self.Name)
 		
 		for k,v in pairs(self.Language) do
 			language.Add(k.."_"..self.CleanupGroup,v);
 		end
 	else
-		if(class) then
+		if class then
 			CreateConVar("sbox_max"..self.CleanupGroup,self.Entity.Limit);
 		end
 	end
@@ -46,7 +46,7 @@ end
 
 function TOOL:GetDeviceModel()
 	local mdl = self:GetClientInfo("model")
-	if (!util.IsValidModel(mdl) or !util.IsValidProp(mdl)) then return "models/ce_ls3additional/solar_generator/solar_generator_giant.mdl" end
+	if not util.IsValidModel(mdl) or not util.IsValidProp(mdl) then return "models/props_wasteland/panel_leverBase001a.mdl" end
 	return mdl
 end
 
@@ -56,9 +56,9 @@ if SERVER then
 	end
 	
 	function TOOL:CreateDevice(ply, trace, Model)
-		if !ply:CheckLimit(self.CleanupGroup) then return end
+		if not ply:CheckLimit(self.CleanupGroup) then return end
 		local ent = ents.Create( self.Entity.Class )
-		if !ent:IsValid() then return end
+		if IsValid(ent) then return end
 			
 		-- Pos/Model/Angle
 		ent:SetModel( Model )
@@ -80,18 +80,18 @@ if SERVER then
 	end
 
 	function TOOL:LeftClick( trace )
-		if !trace then return end
+		if not trace then return end
 		local traceent = trace.Entity
 		local ply = self:GetOwner()
 			
 		-- Get the model
 		local model = self:GetDeviceModel()
-		if !model then return end
+		if not model then return end
 	
 		//create it
 		local ent = self:CreateDevice( ply, trace, model )
 		--	LDE.UnlockCreateCheck(ply,ent) --Check if unlocked!
-		if !ent or !ent:IsValid() then return end
+		if not ent or not IsValid(ent) then return end
 		
 		//effect :D
 		if DoPropSpawnedEffect then
@@ -102,7 +102,7 @@ if SERVER then
 		local weld = nil
 		local nocollide = nil
 		local phys = ent:GetPhysicsObject()
-		if (!traceent:IsWorld() and !traceent:IsPlayer()) then
+		if not traceent:IsWorld() and not traceent:IsPlayer() then
 			if self:GetClientInfo("Weld") == "1" then
 				weld = constraint.Weld( ent, trace.Entity, 0, trace.PhysicsBone, 0 )
 			end
@@ -125,8 +125,8 @@ if SERVER then
 	end
 	
 	function TOOL:RightClick( trace )
-		if !trace then return end
-		if trace.Entity and trace.Entity:IsValid() then
+		if not trace then return end
+		if trace.Entity and IsValid(trace.Entity) then
 			if trace.Entity.Repair then
 				trace.Entity:Repair()
 				self:GetOwner():ChatPrint("Device Repaired!")
@@ -138,7 +138,7 @@ if SERVER then
 	function TOOL:AddUndo(p,...)
 		undo.Create(self.CleanupGroup)
 		for k,v in pairs({...}) do
-			if(k ~= "n") then
+			if k ~= "n" then
 				undo.AddEntity(v)
 			end
 		end
@@ -150,7 +150,7 @@ end
 if game.SinglePlayer() and SERVER or not game.SinglePlayer() and CLIENT then
 	// Ghosts, scary
 	function TOOL:UpdateGhostEntity( ent, player )
-		if !ent or !ent:IsValid() then return end
+		if not ent or not IsValid(ent) then return end
 		local trace = player:GetEyeTrace()
 			
 		ent:SetAngles( trace.HitNormal:Angle() + self.Entity.Angle )
@@ -161,7 +161,7 @@ if game.SinglePlayer() and SERVER or not game.SinglePlayer() and CLIENT then
 		
 	function TOOL:Think()
 		local model = self:GetDeviceModel()
-		if !self.GhostEntity or !self.GhostEntity:IsValid() or self.GhostEntity:GetModel() != model then
+		if not self.GhostEntity or not IsValid(self.GhostEntity) or self.GhostEntity:GetModel() ~= model then
 			local trace = self:GetOwner():GetEyeTrace()
 			self:MakeGhostEntity( Model(model), trace.HitPos, trace.HitNormal:Angle() + self.Entity.Angle )
 		end

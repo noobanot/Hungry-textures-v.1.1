@@ -69,6 +69,9 @@ EnvX.Utl:HookNet("EnvX_NodeSync",function(Data)
 		net.last_update[index] = CurTime()
 	end
 	
+	--print("Syncing Fixed")
+	--PrintTable(Data.ResourceMaxs)
+	
 	local ResourceMaxs = Data.ResourceMaxs
 	for index, res in pairs(ResourceMaxs) do
 		net.maxresources[index]=res
@@ -77,6 +80,10 @@ end)
 
 EnvX.Utl:HookNet("EnvX_NodeSyncStorage",function(Data)
 	local net = Environments.GetNetTable(Data.Node)
+	
+	--print("Syncing")
+	--print("Debug: "..tostring(Data.Debug or "Nothing"))
+	--PrintTable(Data.ResourceMaxs)
 	
 	local ResourceMaxs = Data.ResourceMaxs
 	for index, res in pairs(ResourceMaxs) do

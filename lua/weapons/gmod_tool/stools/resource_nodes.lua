@@ -1,4 +1,4 @@
-include("weapons/gmod_tool/environments_tool_base.lua")
+include("weapons/gmod_tool/envx_tool_base.lua")
 
 TOOL.Category = "Tools"
 TOOL.Name = "Resource Nodes"

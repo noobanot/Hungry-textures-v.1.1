@@ -89,11 +89,6 @@ function Environments.BuildDupeInfo( ent ) --need to add duping for cables
 	
 	info.extra = ent.env_extra
 	
-	info.LinkMat = ent:GetNWString("CableMat", nil)
-	info.LinkPos = ent:GetNWVector("CablePos", nil)
-	info.LinkForw = ent:GetNWVector("CableForward", nil)
-	info.LinkColor = ent:GetNWVector("CableColor", nil)
-	
 	duplicator.StoreEntityModifier( ent, "EnvDupeInfo", info )
 end
 
@@ -129,7 +124,7 @@ end
 
 if SERVER then
 	function Environments.RDPlayerUpdate(ply)
-		print("Ply Joined! Syncing!")
+		--print("Ply Joined! Syncing!")
 		local Nodes = {}
 		
 		for k,ent in pairs(ents.FindByClass("resource_node_env")) do

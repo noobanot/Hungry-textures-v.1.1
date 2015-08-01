@@ -1,19 +1,5 @@
 //Creates Tools
-AddCSLuaFile("weapons/gmod_tool/environments_tool_base.lua")
-
-local scripted_ents = scripted_ents
-local table = table
-local util = util
-local timer = timer
-local ents = ents
-local duplicator = duplicator
-local math = math
-local tostring = tostring
-local MeshQuad = MeshQuad
-local Vector = Vector
-local type = type
-local tonumber = tonumber
-local pairs = pairs
+AddCSLuaFile("weapons/gmod_tool/envx_tool_base.lua")
 
 if not Environments then
 	Environments = {}
@@ -40,7 +26,7 @@ LoadFile(P.."autorun_ludtech.lua",1)
 LoadFile(P.."ls_core_entities_merged.lua",1)
 LoadFile(P.."ls3_reversecompatability.lua",1)
 
-//Load devices and stuff from addons
+//Load devices and stuff from addons --Disabled to increase performance. (And other reasons)
 --[[
 local Files
 if file.FindInLua then

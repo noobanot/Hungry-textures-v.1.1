@@ -264,7 +264,9 @@ function Environments.RegisterLSStorage(name, class, res, basevolume, basehealth
 		
 		function ENT:AddResource(name,amt)--adds to storage
 			if not self.maxresources then self.maxresources = {} end
-			self.maxresources[name] = (self.maxresources[name] or 0) + amt
+			if amt > 0 then
+				self.maxresources[name] = (self.maxresources[name] or 0) + amt
+			end
 		end
 
 		function ENT:Damage()

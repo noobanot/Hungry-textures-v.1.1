@@ -294,7 +294,9 @@ function RD_Register(ENT, bLive)//live is if the entity is spawned or this is at
 
 	ENT.AddResource = function(self,name,amt)--adds to storage
 		if not self.maxresources then self.maxresources = {} end
-		self.maxresources[name] = (self.maxresources[name] or 0) + amt
+		if amt > 0 then
+			self.maxresources[name] = (self.maxresources[name] or 0) + amt
+		end
 	end
 
 	ENT.Link = function(self, ent, delay)
