@@ -58,7 +58,7 @@ if SERVER then
 	function TOOL:CreateDevice(ply, trace, Model)
 		if not ply:CheckLimit(self.CleanupGroup) then return end
 		local ent = ents.Create( self.Entity.Class )
-		if IsValid(ent) then return end
+		if not IsValid(ent) then print(tostring(self.Entity.Class)) print("Not Valid") return end
 			
 		-- Pos/Model/Angle
 		ent:SetModel( Model )
@@ -126,12 +126,6 @@ if SERVER then
 	
 	function TOOL:RightClick( trace )
 		if not trace then return end
-		if trace.Entity and IsValid(trace.Entity) then
-			if trace.Entity.Repair then
-				trace.Entity:Repair()
-				self:GetOwner():ChatPrint("Device Repaired!")
-			end
-		end
 	end
 	
 	//Cleanups and stuff

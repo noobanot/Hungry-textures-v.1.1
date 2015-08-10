@@ -46,7 +46,7 @@ OOO[1] = "On"
 OOO[2] = "Overdrive"
 
 function ENT:GetStatusInfo(Info) --Entities overwrite this to show stuff above resources.
-	local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
+	local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] or {} --replace this
 	local HasOOO = OverlaySettings.HasOOO or false
 	if HasOOO then
 		local runmode = "UnKnown"
@@ -137,7 +137,7 @@ function ENT:GetResInfo(Info)
 			table.insert(Info,{Type="Label",Value="No Resources Connected"})
 		end	
 	else
-		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] --replace this
+		local OverlaySettings = list.Get( "LSEntOverlayText" )[self:GetClass()] or {} --replace this
 		local resnames = OverlaySettings.resnames or {}
 		local genresnames = OverlaySettings.genresnames or {}
 		

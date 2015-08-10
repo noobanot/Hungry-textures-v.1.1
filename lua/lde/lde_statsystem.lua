@@ -1,160 +1,18 @@
 module( "LDEplystats", package.seeall )
 
 LDE.Cash = {}
-LDE.Cash.Market = {}
+LDE.Market = {}
 
 --------------------Market------------------------------
-LDE.Cash.Market.Resources = {}
-//nickame = {startingamount=1,starting cost=1,name="name",description="blah"}
-
-
-LDE.Cash.Resources = {
-	energy = {E=true,S=5000000000,C=0.000003,O="energy",name="Energy",desc={"","","Energy is the base form of everything in the universe.","It is used to power nearly everything.","",""}},
-	water = {E=true,S=3000000000,C=0.000005,O="water",name="Water",desc={"","","Water is a combination of an Oxygen molecule and 2 Hydrogen.","It is used for cooling, or split in to H and O2.","",""}},
-	oxygen = {E=true,S=5000000000,C=0.000006,O="oxygen",name="Oxygen",desc={"","","Oxygen is a requirement for habitation. You breathe it,","and your muscles use it for power.","",""}},
-	hydrogen = {E=true,S=5000000000,C=0.000006,O="hydrogen",name="Hydrogen",desc={"","","Hydrogen is a very volatile, flammable element.","It is part of the makeup for water, and is used for jetpacks.","",""}},
-	nitrogen = {E=true,S=1000000000,C=0.000001,O="nitrogen",name="Nitrogen",desc={"","","Nitrogen is one of the most efficient coolants,","much more so than water. It is also harder to produce.","",""}},
-	steam = {E=true,S=5000000000,C=0.000005,O="steam",name="Steam",desc={"","","Steam is a different form of water, one with more energy.","It is used to make ","",""}},
-	carbondioxide = {E=true,S=3000000000,C=0.000002,O="carbon dioxide",name="Carbon Dioxide",desc={"","","Carbon Dioxide, or CO2, is exhaled by humans.","It is used to make nitrogen, or split in to Carbon and Oxygen.","",""}},
-	Carbon = {S=600000000,C=0.8,O="Carbon",name="Carbon",desc={"","","Used for armor, or to produce CO2, carbon is a base element.","",""}},
-	RawOre = {S=400000000,C=0.2,O="Raw Ore",name="Raw Ore",desc={"","","Raw ore is produced by drilling deep within a planet or asteroids'","core, and extracting the ores from the dirt and rock.","",""}},
-	RefinedOre = {S=300000000,C=0.4,O="Refined Ore",name="Refined Ore",desc={"","","Refined ore is made by refining raw ore, by taking out impurities.","",""}},
-	HardenedOre = {S=250000000,C=0.8,O="Hardened Ore",name="Hardened Ore",desc={"","","Hardened ore is made by hardening refined ore", "with crystal polylodarium.","",""}},
-	BasicRounds = {S=1000000000,C=0.6,O="Basic Rounds",name="Basic Rounds",desc={"","","Basic rounds are self-contained oxidizing explosive charges,","thrown out of a gun at very, very high speeds by their explosion.","",""}},
-	Shells = {S=800000000,C=1,O="Shells",name="Shells",desc={"","","A larger form of bullets, shells are generally used in ordnance.","",""}},
-	Plasma = {S=800000000,C=0.8,O="Plasma",name="Plasma",desc={"","","Super Heated Polylodarium, Most commonly used as ammunition.","",""}},
-	HeavyShells = {S=250000000,C=2,O="Heavy Shells",name="Heavy Shells",desc={"","","An even larger form of shells,", "heavy shells are generally used in superordnance.","",""}},
-	MissileParts = {S=1000000000,C=0.9,O="Missile Parts",name="Missile Parts",desc={"","","Missile parts are used by missile launchers to", "assemble missiles and fire them.","",""}},
-	Casings = {S=5000000000,C=0.5,O="Casings",name="Casings",desc={"","","Casings are used to create ammunition,", "and store the explosive arm and payload before firing.","",""}},
-	CrystalisedPolylodarium = {S=800000000,C=0.8,O="Crystalised Polylodarium",name="Crystalised Polylodarium",desc={"","","Is a form of alien fauna that stablises","antimatter in extremely heated enviroments.",""}},
-	LiquidPolylodarium = {S=500000000,C=1.2,O="Liquid Polylodarium",name="Liquid Polylodarium",desc={"","","Liquid Polylodarium is the stablised antimatter particles","from refined Crystalised Polylodarium.",""}},
-	Blackholium = {S=1000,C=800,O="Blackholium",name="Blackholium",desc={"","","First discovered by scientists in a freak accident", " involving a research ship, ","scientists have no idea what blackholium is,", " or how it works, or even what it does.","",""}}
+LDE.Market.Resources = {
+	RefinedOre = {Modes={Buy=false,Sell=true},C=0.4,O="Refined Ore",name="Refined Ore",desc="Refined ore is made by refining raw ore, by taking out impurities."},
+	HardenedOre = {Modes={Buy=false,Sell=true},C=0.8,O="Hardened Ore",name="Hardened Ore",desc="Hardened ore is made by hardening refined ore with crystal polylodarium."},
+	BasicRounds = {Modes={Buy=true,Sell=true},C=0.6,O="Basic Rounds",name="Basic Rounds",desc="Basic rounds are self-contained oxidizing explosive charges, thrown out of a gun at very, very high speeds by their explosion."},
+	Shells = {Modes={Buy=true,Sell=true},C=1,O="Shells",name="Shells",desc="A larger form of bullets, shells are generally used in ordnance."},
+	Plasma = {Modes={Buy=true,Sell=false},C=0.8,O="Plasma",name="Plasma",desc="Super Heated Polylodarium, Most commonly used as ammunition."},
+	HeavyShells = {Modes={Buy=true,Sell=true},C=2,O="Heavy Shells",name="Heavy Shells",desc="An even larger form of shells, heavy shells are generally used in superordnance."},
+	MissileParts = {Modes={Buy=true,Sell=true},C=0.9,O="Missile Parts",name="Missile Parts",desc="Missile parts are used by missile launchers to assemble missiles and fire them."},
 }
-
-if SERVER then
-
-function LDE.Cash.Market.UpResource(Resource,Amount,Cost)
-	local row = sql.Query( "SELECT amount, value FROM ldemarket WHERE resource = '" .. Resource .. "';" ) //Check for the resource
-	if row then//IF Data found.
-		MsgAll("Updating "..Resource.." to "..Amount.." at cost "..Cost.." \n") //To console!
-		sql.Query( "UPDATE ldemarket SET value = ".. Cost ..", amount = " .. Amount .. " WHERE resource = '" .. Resource .. "';" )//Update the current data
-	else
-		MsgAll("Inserting '"..Resource.."' to "..Amount.." at cost "..Cost.." \n")
-		sql.Query( "INSERT into ldemarket ( resource, amount, value ) VALUES ( '" .. Resource .. "', " .. Amount .. ", " .. Cost .. " );" )//Add the new data
-	end
-	LDE.Cash.Market.Resources[Resource] = {Amount=Amount,CPU=Cost} //Update the server table. (This is for devices to read from.)
-end
-
-function LDE.Cash.Market.ResetAll()
-	for k,v in pairs(LDE.Cash.Resources) do
-		LDE.Cash.Market.UpResource(v.O,v.S,v.C)
-	end
-end
-concommand.Add("LDE_tradenetworkreset",LDE.Cash.Market.ResetAll)
-
-//Check of the LDE Market table exists
-if not sql.TableExists("ldemarket") then
-	local query = "CREATE TABLE ldemarket (resource varchar(255), amount int, value int);" //Format the query
-	local result = sql.Query(query) //Send the query in
-	if (sql.TableExists("ldemarket")) then
-		Msg("Succes! market table created \n") //Woo!
-		LDE.Cash.Market.ResetAll() //Fill the new table with the base data.
-	else
-		Msg("Somthing went wrong with the ldemarket query ! \n")
-		Msg( sql.LastError( result ) .. "\n" ) // Dam
-	end
-end
-
-//Sell Resource Function
-function LDE.Cash.Market.AddResource(Resource,Mount)
-	local RTab = LDE.Cash.Market.Resources[Resource]
-	local RValue = RTab.CPU
-	local Rmount=RTab.Amount
-	local Amount = Mount+Rmount
-	local PerChange = (((Rmount/(Amount))*100)-100)*-1
-	local Value = RValue-((RValue*(PerChange*100)))
-	local profit = (RValue*Mount)*0.9
-	MsgAll("PerChange: "..PerChange.." Amount: "..Amount.." SV: "..RValue.." V: "..Value.." Money: "..profit)
-	LDE.Cash.Market.UpResource(Resource,Amount,Value)
-	return profit
-end
-
-//Buy Resource Function
-function LDE.Cash.Market.TakeResource(Resource,Mount,ply)
-	local RTab = LDE.Cash.Market.Resources[Resource]
-	local RValue = RTab.CPU
-	local Rmount=RTab.Amount
-	local Amount = Rmount-Mount
-	local PerChange = (((Rmount/(Amount))*100)-100)*-1
-	local Value = RValue-((RValue*(PerChange)))
-	local profit = (RValue)*Mount
-	
-	if(tonumber(ply:GetLDEStat("Cash"))<tonumber(profit))then --Dont edit the trade market if we cant afford it.
-		return 0
-	end
-	
-	MsgAll("PerChange: "..PerChange.." Amount: "..Amount.." SV: "..RValue.." V: "..Value.." Money: "..profit)
-	LDE.Cash.Market.UpResource(Resource,Amount,Value)
-	return profit
-end
-
-function LDE.Cash.Market.GetResource(Resource)
-	local row = sql.Query( "SELECT amount, value FROM ldemarket WHERE resource = '" .. Resource .. "';" ) //Check for the resource
-	if row then//IF Data found.
-		local Amount = tonumber(sql.QueryValue("SELECT amount FROM ldemarket WHERE resource = '" .. Resource .. "';"))
-		local Cost = tonumber(sql.QueryValue("SELECT value FROM ldemarket WHERE resource = '" .. Resource .. "';"))
-		if(Amount>=0)then
-			MsgAll("Syncing "..Resource.." A "..Amount.." C "..Cost.." \n")
-			LDE.Cash.Market.Resources[Resource] = {Amount=Amount,CPU=Cost} //Update the server table.
-		else
-			MsgAll("Corrupted resource detected. Reseting it. "..Resource.." \n")
-			local v =  LDE.Cash.Market.FindResourceSData(Resource)
-			LDE.Cash.Market.UpResource(v.O,v.S,v.C)
-		end
-	end
-end
-
-function LDE.Cash.Market.FindResourceSData(Resource)
-	for k,v in pairs(LDE.Cash.Resources) do
-		if(v.O==Resource)then
-			return v
-		end
-	end
-end
-
-function LDE.Cash.Market.UpdateAll()
-	for k,v in pairs(LDE.Cash.Resources) do
-		LDE.Cash.Market.GetResource(v.O)
-	end	
-end
-
-timer.Simple(4,function() LDE.Cash.Market.UpdateAll() end)
-concommand.Add("LDE_tradenetworkupdate",LDE.Cash.Market.UpdateAll)
-
-
-function LDE.GetRealCost(ent)
-	return 0
-end
-
-local ErrorCheck, PCallError = pcall(include, "lde/cashsystem/lde_globalDB.lua") --Include the database, it will override the functions if it actually runs.
-if !ErrorCheck then
-	Msg(PCallError.."\n")
-end
-end
-
-function LDE.Cash:UpdatePerson(ply)
-	updatePlayer(ply)
-end
-
-function LDE.GiveMoney(ply,amount)
-	ply:GiveLDEStat("Cash",amount)
-	updatePlayer(ply)
-end
-
-function LDE.TakeMoney(ply,amount)
-	ply:TakeLDEStat("Cash",amount)
-	updatePlayer(ply)
-end
 
 if(SERVER)then	
 	function LDE.FindByNamePly(name)

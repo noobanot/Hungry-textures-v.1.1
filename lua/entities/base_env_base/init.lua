@@ -24,7 +24,8 @@ function ENT:Initialize()
 	self.maxresources = {}
 	
 	--Failsafe against bad models check!
-	if not util.IsValidProp( self:GetModel() ) then  	
+	if not util.IsValidProp( self:GetModel() ) then 
+		print("Model Invalid!")
 		self:Remove()
 		return 
 	end

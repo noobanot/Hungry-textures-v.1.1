@@ -225,7 +225,7 @@ if(SERVER)then
 		end
 		if WireAddon then Wire_Remove(self) end
 	end
-
+	
 	function ENT:GetResourceAmount(resource)
 		if self.resources[resource] then
 			return self.resources[resource].value
@@ -243,4 +243,4 @@ else
 		self.resources_last = nettable.resources_last
 		self.last_update = nettable.last_update
 	end
-end		
+end	
