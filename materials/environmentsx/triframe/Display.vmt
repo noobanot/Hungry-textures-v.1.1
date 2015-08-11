@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/triframe/triframe_diffuse"
+	"$surfaceprop" "Metal"
+	"$selfillum" 1
+	"$selfillummaskscale" "0.1"
+	"$selfillummask" "environmentsx/triframe/triframe_diffuse"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" "1"
+	"$envmaptint" "[0.65 0.95 0.65]"
+	"$envmapmapmask" "environmentsx/triframe/triframe_specular"
+	"$model" 1
+}

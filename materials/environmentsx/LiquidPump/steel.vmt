@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/LiquidPump/steel"
+	"$surfaceprop" "solidmetal"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" "0.85"
+	"$envmaptint" "[0.55 0.55 0.55]"
+	"$model" 1
+}

@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/triframe/triframe_diffuse"
+	"$envmap" "env_cubemap"
+	"$envmapsaturation" "1"
+	"$envmapcontrast" "1"
+	"$envmaptint" "[0.80 0.80 0.90]"
+	"$envmapmapmask" "environmentsx/triframe/triframe_specular"
+	"$surfaceprop" "Metal"
+	"$model" 1
+}

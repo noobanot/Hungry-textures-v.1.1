@@ -1,0 +1,8 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/gastank/gastank-diffuse"
+	"$bumpmap" "environmentsx/gastank/gastank-normal"
+	"$normalmapalphaenvmapmask" "1"
+	"$surfaceprop" "rubber"
+	"$model" 1
+}

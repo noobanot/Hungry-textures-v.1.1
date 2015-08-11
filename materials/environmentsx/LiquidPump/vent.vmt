@@ -1,0 +1,9 @@
+"VertexLitgeneric"
+{
+	"$basetexture" "environmentsx/LiquidPump/vent"
+	"$surfaceprop" "plastic"
+	"$selfillum" 1
+	"$selfillummask" "environmentsx/LiquidPump/vent"
+	"$selfillummaskscale" "2"
+	"$model" 1
+}

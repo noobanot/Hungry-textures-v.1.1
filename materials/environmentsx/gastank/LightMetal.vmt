@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/gastank/gastank-diffuse"
+	"$envmap" "env_cubemap"
+	"$envmapsaturation" "1"
+	"$envmapcontrast" "1"
+	"$envmaptint" "[0.40 0.40 0.40]"
+	"$envmapmapmask" "environmentsx/gastank/gastank_specular"
+	"$surfaceprop" "Metal"
+	"$model" 1
+}

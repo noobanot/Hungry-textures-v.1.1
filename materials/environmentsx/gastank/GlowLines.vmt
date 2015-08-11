@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/gastank/gastank-diffuse"
+	"$surfaceprop" "metal"
+	"$selfillum" 1
+	"$selfillumtint" "[10 10 20]"
+	"$selfillummask" "environmentsx/gastank/gastank-diffuse"
+	"$model" 1
+}
