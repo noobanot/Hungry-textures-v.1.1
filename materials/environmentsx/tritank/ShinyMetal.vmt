@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/tritank/tritank-diffuse"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" "0.6"
+	"$envmapsaturation" "0.1"
+	"$envmaptint" "[0.75 0.75 0.60]"
+	"$surfaceprop" "canister"
+	"$model" 1
+}

@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/solarmedium/solarmedium-diffuse"
+	"$surfaceprop" "Metal"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" "0.15"
+	"$envmapsaturation" "0.5"
+	"$envmaptint" "[0.55 0.55 0.15]"
+	"$model" 1
+}

@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/atmosensor/atmosensor_diffuse"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" "1"
+	"$envmapsaturation" "1"
+	"$envmaptint" "[0.15 0.15 0.15]"
+	"$surfaceprop" "Metal"
+	"$model" 1
+}

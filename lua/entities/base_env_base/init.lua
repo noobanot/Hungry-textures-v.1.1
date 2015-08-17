@@ -23,6 +23,10 @@ function ENT:Initialize()
 	
 	self.maxresources = {}
 	
+			
+	self.AnimTimer = CurTime() + 1
+	self.Animate = 0
+	
 	--Failsafe against bad models check!
 	if not util.IsValidProp( self:GetModel() ) then 
 		print("Model Invalid!")
@@ -223,7 +227,27 @@ function ENT:GetStorageLeft(res)
 	end
 	return 0
 end
+	
+function ENT:AnimateCorePlay(Animation)
+	if not Animation then return end
+	self.Animate = 1
+	self.Animation = Animation
+end
 
+function ENT:AnimateThink()
+	if self.Animate > 0 then
+		if self.AnimTimer < CurTime() then
+			local cycle,rate = 0,1
+			self:SetSequence(self.Animation)
+			self:ResetSequence(self.Animation)
+			self:SetPlaybackRate(rate)
+			self:SetCycle(cycle)
+			self.AnimTimer=CurTime()+self:SequenceDuration(self.Animation)
+			self.Animate=0
+		end
+	end
+end
+	
 function ENT:OnRestore()
 	if WireLib then WireLib.Restored(self) end
 end

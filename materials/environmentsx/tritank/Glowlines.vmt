@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/tritank/tritank-diffuse"
+	"$surfaceprop" "plastic"
+	"$selfillum" 1
+	"$selfillumtint" "[10 10 20]"
+	"$selfillummask" "environmentsx/tritank/tritank-diffuse"
+	"$model" 1
+}

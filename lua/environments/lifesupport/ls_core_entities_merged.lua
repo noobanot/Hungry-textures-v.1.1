@@ -51,6 +51,8 @@ Environments.RegisterDevice("Generators", "Atmospheric Water Generator", "Atmosp
 --SolarPanels
 Environments.RegisterDevice("Generators", "Solar Panel", "Mounted Solar Panels", "generator_solar", "models/Slyfo_2/miscequipmentsolar.mdl")
 Environments.RegisterDevice("Generators", "Solar Panel", "Small Mounted Solar Panel", "generator_solar", "models/Slyfo_2/acc_sci_spaneltanks.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Micro Solar Panel Plate", "generator_solar", "models/environmentsx/solarsmall.mdl")
+Environments.RegisterDevice("Generators", "Solar Panel", "Small Solar Panel Plate", "generator_solar", "models/environmentsx/solarmedium.mdl")
 
 --Hydroponics
 Environments.RegisterDevice("Life Support", "HydroPonics","Hydroponics Bush", "generator_plant", "models/props_foliage/tree_deciduous_03b.mdl",1)
@@ -88,6 +90,7 @@ Environments.RegisterDevice("Life Support", "LS Core","SmallBridge LS Core", "en
 
 --AtmosProbe
 Environments.RegisterDevice("Life Support", "Atmospheric Probe", "Atmospheric Probe", "env_probe", "models/props_combine/combine_mine01.mdl")
+Environments.RegisterDevice("Life Support", "Atmospheric Probe", "Atmospheric Probe", "env_probe", "models/environmentsx/atmosensor.mdl")
 
 --Trade Console
 Environments.RegisterDevice("Life Support", "TradeConsoles","Deluxe TradeConsole", "env_tradeconsole", "models/SBEP_community/errject_smbwallcons.mdl")

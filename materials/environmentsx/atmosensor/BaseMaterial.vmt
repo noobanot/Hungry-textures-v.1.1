@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "environmentsx/atmosensor/atmosensor_diffuse"
+	"$bumpmap" "environmentsx/atmosensor/atmosensor_normal"
+	"$surfaceprop" "Metal"
+	"$model" 1
+}
