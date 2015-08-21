@@ -18,6 +18,10 @@ function(self)
 	self:SupplyResource("steam", amt) 
 end, 70000, 300, 300)
 
+//Advanced Generators
+Environments.RegisterDevice("Advanced Generators", "Blackholium", "Reactor Core", "generator_blackholium_reactor", "models/hunter/blocks/cube2x2x2.mdl")
+
+
 //Generator Tool
 --Autogen
 Environments.RegisterDevice("Generators", "Resource Management", "R01 Automatic Resource Manager", "env_autogen", "models/rawr/minispire.mdl")

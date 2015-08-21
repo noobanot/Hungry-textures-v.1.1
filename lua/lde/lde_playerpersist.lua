@@ -63,7 +63,7 @@ if SERVER then
 		--Only Sync Connected Players.
 		local plys = player.GetAll()
 		for k,v in pairs(plys) do
-			SyncData[v:SteamID()]=PlayerData.GetAllData(v)
+			SyncData[v:SteamID()]=PlayerData.GetData(v)
 		end
 		
 		NDat.AddData({Name="EnvxPlayerPersistSync",Val=5,Dat={PlayerData=SyncData}},ply)
@@ -127,10 +127,10 @@ function meta:PersistSyncData(Type)
 	NDat.AddDataAll({Name="EnvxPlayerPersistSync",Val=2.5,Dat={ply=self,Type=Type,Dat=PlayerData.GetData(self)[Type]}})
 end
 
-function meta:GetStats() return PlayerData.GetData(self).Stats.Stats end
-function meta:GetStrings() return PlayerData.GetData(self).Stats.Strings end
-function meta:GetUnlocks() return PlayerData.GetData(self).Unlocks end
-function meta:GetMutations() return PlayerData.GetData(self).Mutations end
+function meta:GetStats() return ((PlayerData.GetData(self) or {}).Stats or {}).Stats or {} end
+function meta:GetStrings() return ((PlayerData.GetData(self) or {}).Stats or {}).Strings or {} end
+function meta:GetUnlocks() return (PlayerData.GetData(self) or {}).Unlocks or {} end
+function meta:GetMutations() return (PlayerData.GetData(self) or {}).Mutations or {} end
 function meta:UnlockItem(Item) self:GetUnlocks()[Item] = true end
 
 function meta:ClearMutations()

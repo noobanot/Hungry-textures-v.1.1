@@ -30,11 +30,11 @@ end
 
 function TOOL:LeftClick( trace )
 	//if not valid or player, exit
-	if !trace.Entity:IsValid() or trace.Entity:IsPlayer() or trace.HitWorld then return end
+	if not IsValid(trace.Entity) or trace.Entity:IsPlayer() or trace.HitWorld then return end
 	//if client exit
 	if CLIENT then return true end
 	// If there's no physics object then we can't constraint it!
-	if ( !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
+	if not util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) then return false end
 
 	//how many objects stored
 	local iNum = self:NumObjects() + 1
@@ -47,7 +47,6 @@ function TOOL:LeftClick( trace )
 	if ( iNum > 1 ) then
 		local Ent1 = self:GetEnt(1) 	//get first ent
 		local Ent2 = self:GetEnt(iNum) 	//get last ent
-		local length = ( self:GetPos(1) - self:GetPos(iNum)):Length()
 
 		if Ent1.IsNode or Ent2.IsNode then
 			if Ent1.IsNode and Ent2.IsNode then
@@ -56,19 +55,6 @@ function TOOL:LeftClick( trace )
 				if Ent1.Link and Ent2.Link then --only let LS ents, need to fix, lets all ents with a Link() function
 					Ent1:Link(Ent2)
 					Ent2:Link(Ent1)
-					if tonumber(self:GetClientInfo("cable")) == 1 then
-						if Ent1.IsNode then
-							Environments.Create_Beam(Ent2, self:GetLocalPos(iNum), self.Objects[iNum].Normal, self:GetClientInfo("material"), Color(tonumber(self:GetClientInfo("color_r")), tonumber(self:GetClientInfo("color_g")), tonumber(self:GetClientInfo("color_b")), 255))
-						else
-							Environments.Create_Beam(Ent1, self:GetLocalPos(1), self.Objects[1].Normal, self:GetClientInfo("material"), Color(tonumber(self:GetClientInfo("color_r")), tonumber(self:GetClientInfo("color_g")), tonumber(self:GetClientInfo("color_b")), 255))
-						end
-					else
-						if Ent1.IsNode then
-							Ent2:SetNWVector("CablePos", Vector(0,0,0))
-						else
-							Ent1:SetNWVector("CablePos", Vector(0,0,0))
-						end
-					end
 				else
 					self:GetOwner():SendLua( "GAMEMODE:AddNotify('Invalid Combination!', NOTIFY_GENERIC, 7);" )
 				end
@@ -96,14 +82,14 @@ end
 
 function TOOL:RightClick( trace )
 	//if not valid or player, exit
-	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	if not IsValid(trace.Entity) or trace.Entity:IsPlayer() then return end
 
 	return true
 end
 
 function TOOL:Reload(trace)
 	//if not valid or player, exit
-	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	if not IsValid(trace.Entity) or trace.Entity:IsPlayer() then return end
 	//if client exit
 	if ( CLIENT ) then return true end
 

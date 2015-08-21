@@ -26,7 +26,7 @@ end
 
 function TOOL:LeftClick( trace )
 	//if not valid or player, exit
-	if !trace.Entity:IsValid() or trace.Entity:IsPlayer() or trace.HitWorld then return end
+	if not trace.Entity:IsValid() or trace.Entity:IsPlayer() or trace.HitWorld then return end
 	//if client exit
 	if CLIENT then return true end
 	
@@ -37,11 +37,6 @@ function TOOL:LeftClick( trace )
 				if v:GetPlayer() == self:GetOwner() then//only the owner can do this
 					v:Link(trace.Entity)
 					trace.Entity:Link(v)
-					if tonumber(self:GetClientInfo("cable")) == 1 then
-						Environments.Create_Beam(v, Vector(0,1,0), Vector(1,0,0), "", Color(200,200,200,255))
-					else
-						v:SetNWVector("CablePos", Vector(0,0,0))
-					end
 				else
 					//print("not owner", v:GetPlayer(), self:GetOwner())
 				end
@@ -57,14 +52,14 @@ end
 
 function TOOL:RightClick( trace )
 	//if not valid or player, exit
-	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	if not IsValid(trace.Entity) or trace.Entity:IsPlayer() then return end
 
 	return true
 end
 
 function TOOL:Reload(trace)
 	//if not valid or player, exit
-	if ( trace.Entity:IsValid() && trace.Entity:IsPlayer() ) then return end
+	if not IsValid(trace.Entity) or trace.Entity:IsPlayer()  then return end
 	//if client exit
 	if ( CLIENT ) then return true end
 
