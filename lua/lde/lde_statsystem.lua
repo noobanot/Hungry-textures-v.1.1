@@ -5,13 +5,13 @@ LDE.Market = {}
 
 --------------------Market------------------------------
 LDE.Market.Resources = {
-	RefinedOre = {Modes={Buy=false,Sell=true},C=0.4,O="Refined Ore",name="Refined Ore",desc="Refined ore is made by refining raw ore, by taking out impurities."},
-	HardenedOre = {Modes={Buy=false,Sell=true},C=0.8,O="Hardened Ore",name="Hardened Ore",desc="Hardened ore is made by hardening refined ore with crystal polylodarium."},
-	BasicRounds = {Modes={Buy=true,Sell=true},C=0.6,O="Basic Rounds",name="Basic Rounds",desc="Basic rounds are self-contained oxidizing explosive charges, thrown out of a gun at very, very high speeds by their explosion."},
+	RefinedOre = {Modes={Buy=false,Sell=true},C=0.4,O="RefinedOre",name="Refined Ore",desc="Refined ore is made by refining raw ore, by taking out impurities."},
+	HardenedOre = {Modes={Buy=false,Sell=true},C=0.8,O="HardenedOre",name="Hardened Ore",desc="Hardened ore is made by hardening refined ore with crystal polylodarium."},
+	BasicRounds = {Modes={Buy=true,Sell=true},C=0.6,O="BasicRounds",name="Basic Rounds",desc="Basic rounds are self-contained oxidizing explosive charges, thrown out of a gun at very, very high speeds by their explosion."},
 	Shells = {Modes={Buy=true,Sell=true},C=1,O="Shells",name="Shells",desc="A larger form of bullets, shells are generally used in ordnance."},
 	Plasma = {Modes={Buy=true,Sell=false},C=0.8,O="Plasma",name="Plasma",desc="Super Heated Polylodarium, Most commonly used as ammunition."},
-	HeavyShells = {Modes={Buy=true,Sell=true},C=2,O="Heavy Shells",name="Heavy Shells",desc="An even larger form of shells, heavy shells are generally used in superordnance."},
-	MissileParts = {Modes={Buy=true,Sell=true},C=0.9,O="Missile Parts",name="Missile Parts",desc="Missile parts are used by missile launchers to assemble missiles and fire them."},
+	HeavyShells = {Modes={Buy=true,Sell=true},C=2,O="HeavyShells",name="Heavy Shells",desc="An even larger form of shells, heavy shells are generally used in superordnance."},
+	MissileParts = {Modes={Buy=true,Sell=true},C=0.9,O="MissileParts",name="Missile Parts",desc="Missile parts are used by missile launchers to assemble missiles and fire them."},
 }
 
 if(SERVER)then	

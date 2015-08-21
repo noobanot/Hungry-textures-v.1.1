@@ -6,7 +6,7 @@ ENT.PrintName 	= "Atmospheric Probe"
 ENT.Author			= "Ludsoe"
 ENT.Category		= "Environments"
 
-ENT.Spawnable		= true
+ENT.Spawnable		= false
 ENT.AutomaticFrameAdvance = true
 
 util.PrecacheSound( "Buttons.snd17" )
@@ -43,7 +43,7 @@ if(SERVER)then
 	local running = 0
 	
 	function ENT:SpawnFunction(ply, tr) -- Spawn function needed to make it appear on the spawn menu
-		local ent = ents.Create("env_probe_prototype") -- Create the entity
+		local ent = ents.Create("env_probe") -- Create the entity
 		ent:SetPos(tr.HitPos + Vector(0, 0, 1) ) -- Set it to spawn 50 units over the spot you aim at when spawning it
 		ent:SetModel("models/props_combine/combine_mine01.mdl")
 		ent:Spawn() -- Spawn it

@@ -1,25 +1,32 @@
 if(SERVER)then
-
+	
+	function GetResourceData(Name)
+		for t, r in pairs(LDE.Market.Resources) do
+			if r.name == Name then
+				return r
+			end
+		end
+	end
+	
 	function requestmarket(ply, cmd, args)
 		print("Market Request from: "..ply:Name().." for "..args[1])
-		local Resource = LDE.Cash.Market.Resources[args[1]]
-		if(not Resource)then Resource=LDE.Cash.Market.Resources[string.lower(args[1])]  end
+		local Resource = GetResourceData(args[1])
+		if not Resource then Resource=GetResourceData(string.lower(args[1]))  end
+		if not Resource then print("Couldnt Find Resource.. "..args[1]) return end
 		umsg.Start("envmarketupdate",ply)
-		umsg.String(Resource.Amount)
-		umsg.String(Resource.CPU);
+		umsg.String(Resource.C);
 		umsg.End()
 		print("Request sent out.")
 	end
 	concommand.Add("requestmarket", requestmarket)
 
 	function findvalue(find)
-		for k,v in pairs(LDE.Cash.Resources) do
+		for k,v in pairs(LDE.Market.Resources) do
 			if(find==v.O)then
-				return LDE.Cash.Market.Resources[v.O]
+				return LDE.Market.Resources[v.O]
 			end
 		end
 	end
-
 
 	function sellstuff(ply, cmd, args)
 	//	Msg("Attempting to sell "..args[1].." A: "..args[2].."\n")
@@ -79,7 +86,7 @@ else
 	local VGUI = {}
 	function VGUI:Init()
 		
-		local TradeList = LDE.Cash.Resources
+		local TradeList = LDE.Market.Resources
 		local curselected = {}	
 
 		local MarketMenu = MC.CreateFrame({x=700,y=400},true,true,false,true)
@@ -100,8 +107,8 @@ else
 		infoBox:SetPos( 165, 35 )
 		infoBox:SetSize( 350, 350)
 		infoBox:SetParent(MarketMenu)
-		infoBox.Paint = function()   
-			draw.RoundedBox( 16, 0, 0, infoBox:GetWide(), infoBox:GetTall(), EnvX.GuiThemeColor.FG )
+		infoBox.Paint = function(self,w,h)   
+			draw.RoundedBox( 16, 0, 0, w, h, EnvX.GuiThemeColor.FG )
 			
 			if schematicBox:GetSelected() and schematicBox:GetSelected()[1] then 
 				local selectedValue = schematicBox:GetSelected()[1]:GetValue(1) 
@@ -127,14 +134,31 @@ else
 				surface.DrawText(curselected.name)
 				posy = posy + 10
 				surface.SetTextPos( 15, posy )
-				if(cost and amount)then
-					surface.DrawText("Amount: "..amount.." V.P.U: "..(cost))
+				if(cost)then
+					surface.DrawText("Cost Per Unit: "..(cost))
 				end
 				posy = posy + 10
 				surface.SetTextPos( 15, posy )
 				surface.DrawText("-----------------")
 				posy = posy + 10
-				for _, textLine in pairs (itemDesc) do
+				
+				local explode = string.Explode(" ",itemDesc or "")
+				local NewLines = {}
+				
+				local line = ""
+				for _, textLine in pairs(explode) do
+					local text = line..textLine.." "
+					tw,th = surface.GetTextSize(text)
+					if tw < w-20 then
+						line = text
+					else
+						table.insert(NewLines,line)
+						line = textLine.." " 
+					end
+				end
+				table.insert(NewLines,line)
+				
+				for _, textLine in pairs (NewLines) do
 					surface.SetTextPos( 15, posy )
 					surface.DrawText(textLine)
 					posy = posy + 10
@@ -153,7 +177,7 @@ else
 		local change = MC.CreateButton(MarketMenu,{x=180,y=40},{x=520,y=165})
 		change.DoClick = function() end
 		change.Paint = function() 
-			local cost = cost or 0
+			local cost = tonumber(cost) or 0
 			if(Mode=="Buy")then
 				change:SetText( "Taus: "..Smallifynumber(cost*GetTradeAmount()) )
 			else
@@ -210,8 +234,7 @@ else
 	usermessage.Hook("envmarketTrigger", envMarketTrigger)
 
 	function marketupdate(um)
-		amount = um:ReadString()
-		cost = um:ReadString()
+		cost = tonumber(um:ReadString())
 		print("Recieved market update.")
 	end
 	usermessage.Hook("envmarketupdate", marketupdate)

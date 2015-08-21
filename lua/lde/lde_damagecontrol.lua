@@ -341,7 +341,7 @@ end
 function LDE:ShieldDamageEffect(ent)
 	if(not IsValid(ent) or not ent.LDE)then return end
 	if not ent.LDE.ShieldSound then 				
-		ent:EmitSound( sounds[math.random(1,4)], 100, math.Rand(90,110) )
+		--ent:EmitSound( sounds[math.random(1,4)], 100, math.Rand(90,110) )
 		--WorldSound( sounds[math.random(1,4)], hitent:GetPos(), 100, 100 )
 		ent.LDE.ShieldSound = true
  		timer.Simple( 0.2, function() if(not ent or not ent:IsValid())then return end ent.LDE.ShieldSound = false end )					
