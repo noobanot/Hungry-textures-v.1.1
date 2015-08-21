@@ -8,7 +8,7 @@ ENT.Category = "Environments"
 
 ENT.Spawnable = false
 
-list.Set( "LSEntOverlayText" , "env_lscore", {HasOOO = true, resnames ={ "oxygen", "energy", "water", "nitrogen"} } )
+list.Set( "LSEntOverlayText" , "env_lscore", {HasOOO = true, resnames ={ "oxygen", "energy", "water"} } )
 
 util.PrecacheSound( "apc_engine_start" )
 util.PrecacheSound( "apc_engine_stop" )

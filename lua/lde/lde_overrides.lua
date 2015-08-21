@@ -19,3 +19,5 @@ if SERVER then
 	duplicator.RegisterEntityClass("warpdrive", Environments.DupeFix, "Data" )
 	duplicator.RegisterEntityClass("resource_node_env", Environments.DupeFix, "Data" )
 end
+
+timer.Simple(20,function() RunConsoleCommand( "wire_holograms_modelany", "1" ) end)
